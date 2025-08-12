@@ -1,0 +1,126 @@
+name: Build and Release Assets
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+  release:
+    types: [created]
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build project
+        run: yarn build
+
+      - name: Update theme configuration
+        run: |
+          # Get current date in YY.MM.DD format
+          VERSION_DATE=$(date +"%y.%m.%d")
+          # Get commit hash (short)
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+
+          echo "VERSION_DATE=${VERSION_DATE}" >> $GITHUB_ENV
+          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+
+          # Update komari-theme.json with new version and description
+          jq --arg version "$VERSION_DATE" \
+             --arg desc "Theme for Komari Monitor (commit: $COMMIT_HASH)" \
+             '.version = $version | .description = $desc' \
+             komari-theme.json > komari-theme-updated.json
+
+          mv komari-theme-updated.json komari-theme.json
+
+          echo "Updated theme configuration:"
+          cat komari-theme.json
+
+      - name: Verify required files exist
+        run: |
+          echo "Checking required files..."
+          ls -la preview.png || (echo "preview.png not found" && exit 1)
+          ls -la komari-theme.json || (echo "komari-theme.json not found" && exit 1)
+          ls -la dist/ || (echo "dist/ directory not found" && exit 1)
+          echo "All required files found!"
+
+      - name: Create theme package
+        run: |
+          # Create a temporary directory for the package
+          mkdir -p theme-package
+
+          # Copy required files
+          cp preview.png theme-package/
+          cp komari-theme.json theme-package/
+          cp -r dist/ theme-package/
+
+          # Create zip file with version and commit hash
+          ZIP_NAME="komari-theme-purcarte-v${VERSION_DATE}-${COMMIT_HASH}.zip"
+
+          cd theme-package
+          zip -r ../${ZIP_NAME} .
+          cd ..
+
+          echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
+          echo "Created package: ${ZIP_NAME}"
+          ls -la ${ZIP_NAME}
+
+  create-release:
+    needs: build-and-package
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: theme-package
+          path: .
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            New release based on commit ${{ env.COMMIT_HASH }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ env.ZIP_NAME }}
+          asset_name: ${{ env.ZIP_NAME }}
+          asset_content_type: application/zip
