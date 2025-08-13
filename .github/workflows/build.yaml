@@ -91,6 +91,16 @@ jobs:
         run: |
           ASSET_NAME=$(ls *.zip)
           echo "ASSET_NAME=${ASSET_NAME}" >> $GITHUB_ENV
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          git fetch --prune --unshallow
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1` 2>/dev/null || git rev-list --max-parents=0 HEAD)
+          echo "Previous tag: $PREVIOUS_TAG"
+          CHANGELOG=$(git log $PREVIOUS_TAG..${{ github.ref_name }} --pretty=format:"* %s (%h)")
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -99,7 +109,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref_name }}
-          body: "Automated release for tag ${{ github.ref_name }}"
+          body: ${{ env.CHANGELOG }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
