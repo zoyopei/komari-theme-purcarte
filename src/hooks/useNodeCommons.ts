@@ -39,13 +39,27 @@ export const useNodeCommons = (node: NodeWithStatus) => {
       )
     : null;
 
+  let daysLeftTag = null;
+  if (daysLeft !== null) {
+    if (daysLeft < 0) {
+      daysLeftTag = "已过期";
+    } else if (daysLeft < 36500) {
+      daysLeftTag = `余 ${daysLeft} 天`;
+    } else {
+      daysLeftTag = "长期";
+    }
+  }
+
+  const expired_at =
+    daysLeft !== null && daysLeft > 36500
+      ? "长期"
+      : node.expired_at
+      ? new Date(node.expired_at).toLocaleDateString()
+      : "N/A";
+
   const tagList = [
     price,
-    `${daysLeft && daysLeft < 0 ? "已过期" : ""}${
-      daysLeft && daysLeft >= 0 && daysLeft < 36500
-        ? "余 " + daysLeft + " 天"
-        : ""
-    }`,
+    ...(daysLeftTag ? [daysLeftTag] : []),
     ...(typeof node.tags === "string"
       ? node.tags
           .split(";")
@@ -63,6 +77,6 @@ export const useNodeCommons = (node: NodeWithStatus) => {
     swapUsage,
     diskUsage,
     load,
-    daysLeft,
+    expired_at,
   };
 };

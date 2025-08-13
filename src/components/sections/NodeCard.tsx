@@ -35,7 +35,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
     swapUsage,
     diskUsage,
     load,
-    daysLeft,
+    expired_at,
   } = useNodeCommons(node);
 
   const getProgressBarClass = (percentage: number) => {
@@ -166,13 +166,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
         <div className="flex justify-between text-xs">
           <div className="flex justify-between w-full">
             <span className="text-secondary-foreground">到期</span>
-            <div className="flex items-center gap-1">
-              {daysLeft !== null && daysLeft > 36500
-                ? "长期"
-                : node.expired_at
-                ? new Date(node.expired_at).toLocaleDateString()
-                : "N/A"}
-            </div>
+            <div className="flex items-center gap-1">{expired_at}</div>
           </div>
           <div className="border-l border-border/60 mx-2"></div>
           <div className="flex justify-between w-full">
