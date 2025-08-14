@@ -7,12 +7,12 @@ export function cn(...inputs: ClassValue[]) {
 
 // Helper function to format bytes
 export const formatBytes = (bytes: number, isSpeed = false, decimals = 2) => {
-  if (bytes === 0) return isSpeed ? "0 B/s" : "0 Bytes";
+  if (bytes === 0) return isSpeed ? "0 B/s" : "0 B";
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = isSpeed
     ? ["B/s", "KB/s", "MB/s", "GB/s", "TB/s"]
-    : ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"];
+    : ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 };
@@ -52,7 +52,7 @@ export const formatPrice = (
   billingCycle: number
 ) => {
   if (price === -1) return "免费";
-  if (price === 0) return "未设置";
+  if (price === 0) return "";
   if (!currency || !billingCycle) return "N/A";
 
   let cycleStr = `${billingCycle}天`;

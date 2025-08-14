@@ -58,6 +58,7 @@ export interface PublicInfo {
   record_enabled: boolean;
   record_preserve_time: number;
   sitename: string;
+  theme_settings: object | null;
 }
 
 export interface HistoryRecord {

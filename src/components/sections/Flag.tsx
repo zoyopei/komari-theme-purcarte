@@ -93,6 +93,7 @@ const Flag = React.memo(({ flag, size }: FlagProps) => {
         src={imgSrc}
         alt={altText}
         style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        loading="lazy"
       />
     </Box>
   );
