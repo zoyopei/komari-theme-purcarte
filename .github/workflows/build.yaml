@@ -7,7 +7,7 @@ on:
       - "v*"
 
 jobs:
-  build-and-package:
+  build-and-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -67,41 +67,20 @@ jobs:
           echo "Created package: ${ZIP_NAME}"
           ls -la ${ZIP_NAME}
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: theme-package
-          path: ${{ env.ZIP_NAME }}
-          retention-days: 1
-
-  create-release-on-tag-push:
-    needs: build-and-package
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    permissions:
-      contents: write
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: theme-package
-          path: .
-      - name: Get Asset Name
-        id: get_asset_name
-        run: |
-          ASSET_NAME=$(ls *.zip)
-          echo "ASSET_NAME=${ASSET_NAME}" >> $GITHUB_ENV
       - name: Generate Changelog
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         id: changelog
         run: |
-          git fetch --prune --unshallow
+          git fetch --prune
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1` 2>/dev/null || git rev-list --max-parents=0 HEAD)
           echo "Previous tag: $PREVIOUS_TAG"
           CHANGELOG=$(git log $PREVIOUS_TAG..${{ github.ref_name }} --pretty=format:"* %s (%h)")
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
           echo "$CHANGELOG" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+
       - name: Create Release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -112,12 +91,14 @@ jobs:
           body: ${{ env.CHANGELOG }}
           draft: false
           prerelease: false
+
       - name: Upload Release Asset
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ env.ASSET_NAME }}
-          asset_name: ${{ env.ASSET_NAME }}
+          asset_path: ./${{ env.ZIP_NAME }}
+          asset_name: ${{ env.ZIP_NAME }}
           asset_content_type: application/zip

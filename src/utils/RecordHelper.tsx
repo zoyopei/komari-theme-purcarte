@@ -232,10 +232,11 @@ export function cutPeakValues<T extends { [key: string]: any }>(
       if (currentValue != null && typeof currentValue === "number") {
         if (ewma === null) {
           // 第一个有效值作为初始EWMA值
-          ewma = currentValue;
+          ewma = Math.round(currentValue * 100) / 100;
         } else {
           // EWMA = α * 当前值 + (1-α) * 前一个EWMA值
-          ewma = alpha * currentValue + (1 - alpha) * ewma;
+          ewma =
+            Math.round((alpha * currentValue + (1 - alpha) * ewma) * 100) / 100;
         }
         result[i] = { ...result[i], [key]: ewma };
       } else if (ewma !== null) {
