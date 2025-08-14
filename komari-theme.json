@@ -18,24 +18,8 @@
                 "name": "背景图片链接",
                 "type": "string",
                 "required": false,
-                "default": "https://i.yon.li/w/682f73d97eade.png",
-                "help": "多张图片请以英文逗号分隔（eg:https://img.com/1.png,https://test.com/2.jpg）"
-            },
-            {
-                "key": "switchTime",
-                "name": "切换时间（秒）",
-                "type": "number",
-                "required": false,
-                "default": 10,
-                "help": "背景图片切换的时间间隔，单位为秒（仅设置多张图片时生效）"
-            },
-            {
-                "key": "transition",
-                "name": "背景切换过渡效果",
-                "type": "string",
-                "required": false,
-                "default": "background-image 0.8s ease-in-out",
-                "help": "CSS 过渡效果，用于背景图片切换时的动画效果（仅设置多张图片时生效）"
+                "default": "/assets/Moonlit-Scenery.webp",
+                "help": "目前仅支持单张背景图片（eg: https://test.com/1.png）"
             }
         ]
     }

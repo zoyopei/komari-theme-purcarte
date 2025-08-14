@@ -81,7 +81,7 @@
   --frosted-border-light: rgba(255, 255, 255, 0.2);
 
   --body-background-url: url("");
-  --body-background-transition: background-image 0.8s ease-in-out;
+  /* --body-background-transition: background-image 0.8s ease-in-out; */
 }
 
 .dark {
@@ -145,7 +145,7 @@ body::before {
   height: 100%;
   z-index: -1;
   background: var(--body-background-url) center/cover no-repeat;
-  transition: var(--body-background-transition);
+  /* transition: var(--body-background-transition); */
 }
 
 .striped-bg-red-translucent-diagonal {
