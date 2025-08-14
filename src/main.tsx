@@ -5,6 +5,7 @@ import "./index.css";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { Header } from "@/components/sections/Header";
+import DynamicPseudoBackground from "@/components/sections/Background";
 import { useTheme } from "@/hooks/useTheme";
 import { NodeDataProvider } from "@/contexts/NodeDataContext";
 import { LiveDataProvider } from "@/contexts/LiveDataContext";
@@ -45,6 +46,10 @@ const App = () => {
       appearance="inherit"
       scaling="110%"
       style={{ backgroundColor: "transparent" }}>
+      {/* 使用动态背景组件 */}
+      {publicSettings && (
+        <DynamicPseudoBackground publicSettings={publicSettings} />
+      )}
       <div className="min-h-screen flex flex-col text-sm">
         <Header
           viewMode={viewMode}
