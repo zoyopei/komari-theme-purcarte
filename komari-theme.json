@@ -71,10 +71,7 @@
                 "key": "selectedDefaultView",
                 "name": "默认展示视图",
                 "type": "select",
-                "options": [
-                    "grid",
-                    "table"
-                ],
+                "options": "grid,table",
                 "default": "grid",
                 "help": "设置默认展示视图为网格或表格（优先使用 localStorage）"
             },
@@ -82,11 +79,7 @@
                 "key": "selectedDefaultAppearance",
                 "name": "默认外观",
                 "type": "select",
-                "options": [
-                    "light",
-                    "dark",
-                    "system"
-                ],
+                "options": "system,light,dark",
                 "default": "system",
                 "help": "设置默认外观为浅色、深色或系统主题（优先使用 localStorage）"
             },
