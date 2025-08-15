@@ -2,7 +2,7 @@
     "name": "Komari Theme PurCart",
     "short": "PurCarte",
     "description": "A frosted glass theme for Komari",
-    "version": "0.1.3",
+    "version": "1.0.0",
     "author": "Montia & Gemini",
     "url": "https://github.com/Montia37/Komari-theme-purcarte",
     "preview": "preview.png",
@@ -10,16 +10,135 @@
         "type": "managed",
         "data": [
             {
-                "name": "背景",
+                "name": "样式调整",
                 "type": "title"
             },
             {
                 "key": "backgroundImage",
                 "name": "背景图片链接",
                 "type": "string",
-                "required": false,
                 "default": "/assets/Moonlit-Scenery.webp",
                 "help": "目前仅支持单张背景图片（eg: https://test.com/1.png）"
+            },
+            {
+                "key": "tagDefaultColorList",
+                "name": "标签默认颜色列表",
+                "type": "string",
+                "default": "ruby,gray,gold,bronze,brown,yellow,amber,orange,tomato,red,crimson,pink,plum,purple,violet,iris,indigo,blue,cyan,teal,jade,green,grass,lime,mint,sky",
+                "help": "标签默认颜色列表，用于修改默认解析颜色顺序以及使用的颜色池，逗号分隔（可用的颜色列表请参考：https://www.radix-ui.com/themes/docs/theme/color，改完没有生效则说明填写有误）"
+            },
+            {
+                "name": "标题栏设置",
+                "type": "title"
+            },
+            {
+                "key": "enableLogo",
+                "name": "启用标题栏左侧 Logo",
+                "type": "switch",
+                "default": false,
+                "help": "启用后默认在标题栏左侧显示 Logo"
+            },
+            {
+                "key": "logoUrl",
+                "name": "Logo 图片链接",
+                "type": "string",
+                "required": false,
+                "default": "/assets/logo.png",
+                "help": "Logo 图片链接（eg: https://test.com/logo.png）"
+            },
+            {
+                "key": "enableTitle",
+                "name": "启用标题栏标题",
+                "type": "switch",
+                "default": true,
+                "help": "启用后默认在顶栏左侧显示标题"
+            },
+            {
+                "key": "titleText",
+                "name": "标题栏标题文本",
+                "type": "string",
+                "default": "",
+                "help": "标题栏左侧显示的文本（留空则使用站点标题）"
+            },
+            {
+                "key": "enableSearchButton",
+                "name": "启用标题栏按钮",
+                "type": "switch",
+                "default": true,
+                "help": "启用后默认在标题栏右侧显示搜索按钮"
+            },
+            {
+                "key": "selectedDefaultView",
+                "name": "默认展示视图",
+                "type": "select",
+                "options": [
+                    "grid",
+                    "table"
+                ],
+                "default": "grid",
+                "help": "设置默认展示视图为网格或表格（优先使用 localStorage）"
+            },
+            {
+                "key": "selectedDefaultAppearance",
+                "name": "默认外观",
+                "type": "select",
+                "options": [
+                    "light",
+                    "dark",
+                    "system"
+                ],
+                "default": "system",
+                "help": "设置默认外观为浅色、深色或系统主题（优先使用 localStorage）"
+            },
+            {
+                "key": "enableAdminButton",
+                "name": "启用管理按钮",
+                "type": "switch",
+                "default": true,
+                "help": "启用后默认在标题栏右侧显示管理按钮"
+            },
+            {
+                "name": "内容设置",
+                "type": "title"
+            },
+            {
+                "key": "enableStatsBar",
+                "name": "启用统计栏",
+                "type": "switch",
+                "default": true,
+                "help": "启用后默认显示统计栏"
+            },
+            {
+                "key": "enableGroupedBar",
+                "name": "启用分组栏",
+                "type": "switch",
+                "default": true,
+                "help": "启用后默认显示分组栏"
+            },
+            {
+                "name": "Instance 设置",
+                "type": "title"
+            },
+            {
+                "key": "enableInstanceDetail",
+                "name": "启用 Instance 详情信息",
+                "type": "switch",
+                "default": true,
+                "help": "启用后默认显示 Instance 详情"
+            },
+            {
+                "key": "enablePingChart",
+                "name": "启用延迟图表",
+                "type": "switch",
+                "default": true,
+                "help": "启用后默认显示延迟图表"
+            },
+            {
+                "key": "pingChatrtMaxPoints",
+                "name": "延迟图表最大渲染点数",
+                "type": "number",
+                "default": 0,
+                "help": "设置延迟图表的最大渲染点数来优化图表渲染，0 表示不限制，推荐值为 2000 或更小的值"
             }
         ]
     }

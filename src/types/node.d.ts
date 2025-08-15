@@ -18,6 +18,8 @@ export interface NodeData {
   expired_at: string | null;
   group: string;
   tags: string;
+  traffic_limit?: number;
+  traffic_limit_type?: "sum" | "max" | "min" | "up" | "down";
   created_at: string;
   updated_at: string;
 }

@@ -8,16 +8,16 @@ import {
   Sun,
   CircleUserIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useConfigItem } from "@/config";
 
 interface HeaderProps {
-  viewMode: "card" | "list";
-  setViewMode: (mode: "card" | "list") => void;
+  viewMode: "grid" | "table";
+  setViewMode: (mode: "grid" | "table") => void;
   theme: string;
   toggleTheme: () => void;
-  sitename: string;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
@@ -27,7 +27,6 @@ export const Header = ({
   setViewMode,
   theme,
   toggleTheme,
-  sitename,
   searchTerm,
   setSearchTerm,
 }: HeaderProps) => {
@@ -35,13 +34,30 @@ export const Header = ({
   const location = useLocation();
   const isInstancePage = location.pathname.startsWith("/instance");
   const isMobile = useIsMobile();
+  const enableTitle = useConfigItem("enableTitle");
+  const sitename = useConfigItem("titleText");
+  const enableLogo = useConfigItem("enableLogo");
+  const logoUrl = useConfigItem("logoUrl");
+  const enableSearchButton = useConfigItem("enableSearchButton");
+  const enableAdminButton = useConfigItem("enableAdminButton");
+
+  useEffect(() => {
+    if (sitename) {
+      document.title = sitename;
+    }
+  }, [sitename]);
 
   return (
     <header className="bg-background/60 backdrop-blur-[10px] border-b border-border/60 sticky top-0 flex items-center justify-center shadow-sm z-10">
       <div className="w-[90%] max-w-screen-2xl px-4 py-2 flex items-center justify-between">
         <div className="flex items-center text-shadow-lg text-accent-foreground">
-          <a href="/" className="text-2xl font-bold">
-            {sitename}
+          <a href="/" className="flex items-center gap-2 text-2xl font-bold">
+            {enableLogo && logoUrl && (
+              <img src={logoUrl} alt="logo" className="h-8" />
+            )}
+            {enableTitle && (
+              <span className="hidden md:inline">{sitename}</span>
+            )}
           </a>
         </div>
         <div className="flex items-center space-x-2">
@@ -81,19 +97,21 @@ export const Header = ({
                   />
                 </div>
               )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSearchOpen(!isSearchOpen)}>
-                <Search className="size-5 text-primary" />
-              </Button>
+              {enableSearchButton && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearchOpen(!isSearchOpen)}>
+                  <Search className="size-5 text-primary" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() =>
-                  setViewMode(viewMode === "card" ? "list" : "card")
+                  setViewMode(viewMode === "grid" ? "table" : "grid")
                 }>
-                {viewMode === "card" ? (
+                {viewMode === "grid" ? (
                   <Table2 className="size-5 text-primary" />
                 ) : (
                   <Grid3X3 className="size-5 text-primary" />
@@ -108,11 +126,13 @@ export const Header = ({
               <Moon className="size-5 text-primary" />
             )}
           </Button>
-          <a href="/admin" target="_blank" rel="noopener noreferrer">
-            <Button variant="ghost" size="icon">
-              <CircleUserIcon className="size-5 text-primary" />
-            </Button>
-          </a>
+          {enableAdminButton && (
+            <a href="/admin" target="_blank" rel="noopener noreferrer">
+              <Button variant="ghost" size="icon">
+                <CircleUserIcon className="size-5 text-primary" />
+              </Button>
+            </a>
+          )}
         </div>
       </div>
     </header>

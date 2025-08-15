@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
+import { useConfigItem } from "@/config/hooks";
 
 type Theme = "light" | "dark" | "system";
 
 export const useTheme = () => {
+  const defaultAppearance = useConfigItem("selectedDefaultAppearance");
+
   const [theme, setTheme] = useState<Theme>(() => {
     const storedTheme = localStorage.getItem("appearance");
     if (
@@ -12,7 +15,7 @@ export const useTheme = () => {
     ) {
       return storedTheme;
     }
-    return "system";
+    return (defaultAppearance as Theme) || "system";
   });
 
   useEffect(() => {

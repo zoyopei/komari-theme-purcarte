@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import type { HistoryRecord, NodeData, NodeStats } from "@/types/node";
 import { useLiveData } from "@/contexts/LiveDataContext";
+import fillMissingTimePoints from "@/utils/RecordHelper";
 
 export const useLoadCharts = (node: NodeData | null, hours: number) => {
   const { getLoadHistory, getRecentLoadHistory } = useNodeData();
@@ -97,43 +98,60 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
     });
   }, [liveData, node?.uuid, isRealtime]);
 
-  const historicalChartData = useMemo(() => {
-    return historicalData.map((record) => ({
+  const chartData = useMemo(() => {
+    const rawData = isRealtime ? realtimeData : historicalData;
+    const mappedData = rawData.map((record) => ({
+      ...record,
       time: new Date(record.time).getTime(),
-      cpu: record.cpu,
-      ram: record.ram,
-      disk: record.disk,
-      load: record.load,
-      net_out: record.net_out,
-      net_in: record.net_in,
-      connections: record.connections,
-      process: record.process,
-      swap: record.swap,
-      connections_udp: record.connections_udp,
     }));
-  }, [historicalData]);
 
-  const realtimeChartData = useMemo(() => {
-    return realtimeData.map((record) => ({
-      time: new Date(record.time).getTime(),
-      cpu: record.cpu,
-      ram: record.ram,
-      disk: record.disk,
-      load: record.load,
-      net_out: record.net_out,
-      net_in: record.net_in,
-      connections: record.connections,
-      process: record.process,
-      swap: record.swap,
-      connections_udp: record.connections_udp,
+    if (isRealtime) {
+      return mappedData;
+    }
+
+    const minute = 60;
+    const hour = minute * 60;
+
+    const stringifiedData = mappedData.map((d) => ({
+      ...d,
+      time: new Date(d.time).toISOString(),
     }));
-  }, [realtimeData]);
 
-  const chartData = isRealtime ? realtimeChartData : historicalChartData;
+    let filledData;
+    if (hours === 1) {
+      filledData = fillMissingTimePoints(
+        stringifiedData,
+        minute,
+        hour,
+        minute * 2
+      );
+    } else {
+      const interval = hours > 120 ? hour : minute * 15;
+      const maxGap = interval * 2;
+      filledData = fillMissingTimePoints(
+        stringifiedData,
+        interval,
+        hour * hours,
+        maxGap
+      );
+    }
+    return filledData.map((d) => ({ ...d, time: new Date(d.time!).getTime() }));
+  }, [isRealtime, realtimeData, historicalData, hours]);
+
+  const memoryChartData = useMemo(() => {
+    return chartData.map((item) => ({
+      ...item,
+      ram: ((item.ram ?? 0) / (node?.mem_total ?? 1)) * 100,
+      ram_raw: item.ram,
+      swap: ((item.swap ?? 0) / (node?.swap_total ?? 1)) * 100,
+      swap_raw: item.swap,
+    }));
+  }, [chartData, node?.mem_total, node?.swap_total]);
 
   return {
     loading,
     error,
     chartData,
+    memoryChartData,
   };
 };
