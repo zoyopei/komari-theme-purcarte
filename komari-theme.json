@@ -2,7 +2,7 @@
     "name": "Komari Theme PurCart",
     "short": "PurCarte",
     "description": "A frosted glass theme for Komari",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "author": "Montia & Gemini",
     "url": "https://github.com/Montia37/Komari-theme-purcarte",
     "preview": "preview.png",
@@ -62,7 +62,7 @@
             },
             {
                 "key": "enableSearchButton",
-                "name": "启用标题栏按钮",
+                "name": "启用搜索按钮",
                 "type": "switch",
                 "default": true,
                 "help": "启用后默认在标题栏右侧显示搜索按钮"

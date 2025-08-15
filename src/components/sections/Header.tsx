@@ -7,11 +7,18 @@ import {
   Moon,
   Sun,
   CircleUserIcon,
+  Menu,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useConfigItem } from "@/config";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   viewMode: "grid" | "table";
@@ -55,9 +62,7 @@ export const Header = ({
             {enableLogo && logoUrl && (
               <img src={logoUrl} alt="logo" className="h-8" />
             )}
-            {enableTitle && (
-              <span className="hidden md:inline">{sitename}</span>
-            )}
+            {enableTitle && <span>{sitename}</span>}
           </a>
         </div>
         <div className="flex items-center space-x-2">
@@ -65,73 +70,154 @@ export const Header = ({
             <>
               {isMobile ? (
                 <>
-                  {isSearchOpen && (
-                    <div className="absolute top-full left-0 w-full bg-background/80 backdrop-blur-md p-2 border-b border-border/60 shadow-sm z-10 transition-all duration-300 ease-in-out">
-                      <Input
-                        type="search"
-                        placeholder="搜索服务器..."
-                        className="w-full"
-                        value={searchTerm}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setSearchTerm(e.target.value)
-                        }
-                      />
-                    </div>
+                  <div
+                    className={`absolute top-full left-0 w-full bg-background/60 backdrop-blur-[10px] p-2 border-b border-border/60 shadow-sm z-10 transform transition-all duration-300 ease-in-out ${
+                      isSearchOpen
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-4 pointer-events-none"
+                    }`}>
+                    <Input
+                      type="search"
+                      placeholder="搜索服务器..."
+                      className="w-full"
+                      value={searchTerm}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setSearchTerm(e.target.value)
+                      }
+                    />
+                  </div>
+                  {enableSearchButton && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsSearchOpen(!isSearchOpen)}>
+                      <Search className="size-5 text-primary" />
+                    </Button>
                   )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="relative group">
+                        <Menu className="size-5 text-primary transition-transform duration-300 group-data-[state=open]:rotate-180" />
+                        <span className="absolute -bottom-1 left-1/2 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2 scale-0 transition-transform duration-300 group-data-[state=open]:scale-100"></span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="animate-in slide-in-from-top-5 duration-300 bg-background/60 backdrop-blur-[10px] border-border/60 rounded-xl">
+                      <DropdownMenuItem
+                        onClick={() =>
+                          setViewMode(viewMode === "grid" ? "table" : "grid")
+                        }>
+                        {viewMode === "grid" ? (
+                          <Table2 className="size-4 mr-2 text-primary" />
+                        ) : (
+                          <Grid3X3 className="size-4 mr-2 text-primary" />
+                        )}
+                        <span>
+                          {viewMode === "grid" ? "表格视图" : "网格视图"}
+                        </span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={toggleTheme}>
+                        {theme === "dark" ? (
+                          <Sun className="size-4 mr-2 text-primary" />
+                        ) : (
+                          <Moon className="size-4 mr-2 text-primary" />
+                        )}
+                        <span>
+                          {theme === "dark" ? "浅色模式" : "深色模式"}
+                        </span>
+                      </DropdownMenuItem>
+                      {enableAdminButton && (
+                        <DropdownMenuItem asChild>
+                          <a
+                            href="/admin"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center">
+                            <CircleUserIcon className="size-4 mr-2 text-primary" />
+                            <span>管理员</span>
+                          </a>
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               ) : (
-                <div
-                  className={`flex items-center transition-all duration-300 ease-in-out overflow-hidden ${
-                    isSearchOpen ? "w-48" : "w-0"
-                  }`}>
-                  <Input
-                    type="search"
-                    placeholder="搜索服务器..."
-                    className={`transition-all duration-300 ease-in-out ${
-                      isSearchOpen ? "opacity-100" : "opacity-0"
-                    } ${!isSearchOpen && "invisible"}`}
-                    value={searchTerm}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setSearchTerm(e.target.value)
-                    }
-                  />
-                </div>
+                <>
+                  <div
+                    className={`flex items-center transition-all duration-300 ease-in-out overflow-hidden transform ${
+                      isSearchOpen ? "w-48 opacity-100" : "w-0 opacity-0"
+                    }`}>
+                    <Input
+                      type="search"
+                      placeholder="搜索服务器..."
+                      className={`transition-all duration-300 ease-in-out ${
+                        !isSearchOpen && "invisible"
+                      }`}
+                      value={searchTerm}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setSearchTerm(e.target.value)
+                      }
+                    />
+                  </div>
+                  {enableSearchButton && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsSearchOpen(!isSearchOpen)}>
+                      <Search className="size-5 text-primary" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      setViewMode(viewMode === "grid" ? "table" : "grid")
+                    }>
+                    {viewMode === "grid" ? (
+                      <Table2 className="size-5 text-primary" />
+                    ) : (
+                      <Grid3X3 className="size-5 text-primary" />
+                    )}
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                    {theme === "dark" ? (
+                      <Sun className="size-5 text-primary" />
+                    ) : (
+                      <Moon className="size-5 text-primary" />
+                    )}
+                  </Button>
+                  {enableAdminButton && (
+                    <a href="/admin" target="_blank" rel="noopener noreferrer">
+                      <Button variant="ghost" size="icon">
+                        <CircleUserIcon className="size-5 text-primary" />
+                      </Button>
+                    </a>
+                  )}
+                </>
               )}
-              {enableSearchButton && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsSearchOpen(!isSearchOpen)}>
-                  <Search className="size-5 text-primary" />
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() =>
-                  setViewMode(viewMode === "grid" ? "table" : "grid")
-                }>
-                {viewMode === "grid" ? (
-                  <Table2 className="size-5 text-primary" />
-                ) : (
-                  <Grid3X3 className="size-5 text-primary" />
-                )}
-              </Button>
             </>
           )}
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {theme === "dark" ? (
-              <Sun className="size-5 text-primary" />
-            ) : (
-              <Moon className="size-5 text-primary" />
-            )}
-          </Button>
-          {enableAdminButton && (
-            <a href="/admin" target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="icon">
-                <CircleUserIcon className="size-5 text-primary" />
+          {isInstancePage && (
+            <>
+              <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                {theme === "dark" ? (
+                  <Sun className="size-5 text-primary" />
+                ) : (
+                  <Moon className="size-5 text-primary" />
+                )}
               </Button>
-            </a>
+              {enableAdminButton && (
+                <a href="/admin" target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="icon">
+                    <CircleUserIcon className="size-5 text-primary" />
+                  </Button>
+                </a>
+              )}
+            </>
           )}
         </div>
       </div>
