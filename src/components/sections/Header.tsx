@@ -203,19 +203,59 @@ export const Header = ({
           )}
           {isInstancePage && (
             <>
-              <Button variant="ghost" size="icon" onClick={toggleTheme}>
-                {theme === "dark" ? (
-                  <Sun className="size-5 text-primary" />
-                ) : (
-                  <Moon className="size-5 text-primary" />
-                )}
-              </Button>
-              {enableAdminButton && (
-                <a href="/admin" target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="icon">
-                    <CircleUserIcon className="size-5 text-primary" />
+              {isMobile ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative group">
+                      <Menu className="size-5 text-primary transition-transform duration-300 group-data-[state=open]:rotate-180" />
+                      <span className="absolute -bottom-1 left-1/2 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2 scale-0 transition-transform duration-300 group-data-[state=open]:scale-100"></span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="animate-in slide-in-from-top-5 duration-300 bg-background/60 backdrop-blur-[10px] border-border/60 rounded-xl">
+                    <DropdownMenuItem onClick={toggleTheme}>
+                      {theme === "dark" ? (
+                        <Sun className="size-4 mr-2 text-primary" />
+                      ) : (
+                        <Moon className="size-4 mr-2 text-primary" />
+                      )}
+                      <span>{theme === "dark" ? "浅色模式" : "深色模式"}</span>
+                    </DropdownMenuItem>
+                    {enableAdminButton && (
+                      <DropdownMenuItem asChild>
+                        <a
+                          href="/admin"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center">
+                          <CircleUserIcon className="size-4 mr-2 text-primary" />
+                          <span>管理员</span>
+                        </a>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                    {theme === "dark" ? (
+                      <Sun className="size-5 text-primary" />
+                    ) : (
+                      <Moon className="size-5 text-primary" />
+                    )}
                   </Button>
-                </a>
+                  {enableAdminButton && (
+                    <a href="/admin" target="_blank" rel="noopener noreferrer">
+                      <Button variant="ghost" size="icon">
+                        <CircleUserIcon className="size-5 text-primary" />
+                      </Button>
+                    </a>
+                  )}
+                </>
               )}
             </>
           )}

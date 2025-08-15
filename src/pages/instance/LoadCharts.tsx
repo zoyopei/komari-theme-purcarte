@@ -65,8 +65,8 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
   );
 
   // 样式和颜色
-  const cn = "flex flex-col w-full h-full gap-4 justify-between";
-  const chartMargin = { top: 10, right: 16, bottom: 10, left: 16 };
+  const cn = "flex flex-col w-full overflow-hidden";
+  const chartMargin = { top: 8, right: 16, bottom: 8, left: 16 };
   const colors = ["#F38181", "#FCE38A", "#EAFFD0", "#95E1D3"];
 
   // 图表配置
@@ -266,6 +266,12 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
     const DataComponent =
       config.type === "area" ? Area : (Line as React.ComponentType<any>);
 
+    // 只指定高度，让宽度自适应
+    const chartProps = {
+      height: 140, // 更小的高度以确保完全适应容器
+      style: { overflow: "visible" }, // 通过内联样式解决Safari溢出问题
+    };
+
     const chartConfig = config.series
       ? config.series.reduce((acc: any, series: any) => {
           acc[series.dataKey] = {
@@ -282,62 +288,73 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
         };
 
     return (
-      <Card className={cn} key={config.id}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <Card className={cn} key={config.id} style={{ height: "220px" }}>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 h-[80px]">
           <CardTitle className="text-sm font-medium">{config.title}</CardTitle>
-          <span className="text-sm font-bold">{config.value}</span>
+          <div className="text-sm font-bold min-h-[20px] flex items-center">
+            {config.value}
+          </div>
         </CardHeader>
-        <ChartContainer config={chartConfig}>
-          <ChartComponent data={config.data} margin={chartMargin}>
-            <CartesianGrid strokeDasharray="2 4" vertical={false} />
-            <XAxis
-              dataKey="time"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 11 }}
-              tickFormatter={timeFormatter}
-              interval={0}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              domain={config.yAxisDomain}
-              tickFormatter={config.yAxisFormatter}
-              orientation="left"
-              type="number"
-              tick={{ dx: -10 }}
-              mirror={true}
-            />
-            <Tooltip
-              cursor={false}
-              content={(props: any) => (
-                <CustomTooltip {...props} chartConfig={config} />
-              )}
-            />
-            {config.series ? (
-              config.series.map((series: any) => (
+        <div
+          className="h-[150px] w-full px-2 pb-2 align-bottom"
+          style={{ minHeight: 0 }}>
+          <ChartContainer config={chartConfig} className="h-full w-full">
+            <ChartComponent
+              data={config.data}
+              margin={chartMargin}
+              {...chartProps}>
+              <CartesianGrid strokeDasharray="2 4" vertical={false} />
+              <XAxis
+                dataKey="time"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 10 }}
+                tickFormatter={timeFormatter}
+                interval={0}
+                height={20}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                domain={config.yAxisDomain}
+                tickFormatter={config.yAxisFormatter}
+                orientation="left"
+                type="number"
+                tick={{ fontSize: 10, dx: -8 }}
+                width={25}
+                mirror={true}
+              />
+              <Tooltip
+                cursor={false}
+                content={(props: any) => (
+                  <CustomTooltip {...props} chartConfig={config} />
+                )}
+              />
+              {config.series ? (
+                config.series.map((series: any) => (
+                  <DataComponent
+                    key={series.dataKey}
+                    dataKey={series.dataKey}
+                    animationDuration={0}
+                    stroke={series.color}
+                    fill={config.type === "area" ? series.color : undefined}
+                    opacity={0.8}
+                    dot={false}
+                  />
+                ))
+              ) : (
                 <DataComponent
-                  key={series.dataKey}
-                  dataKey={series.dataKey}
+                  dataKey={config.dataKey}
                   animationDuration={0}
-                  stroke={series.color}
-                  fill={config.type === "area" ? series.color : undefined}
+                  stroke={config.color}
+                  fill={config.type === "area" ? config.color : undefined}
                   opacity={0.8}
                   dot={false}
                 />
-              ))
-            ) : (
-              <DataComponent
-                dataKey={config.dataKey}
-                animationDuration={0}
-                stroke={config.color}
-                fill={config.type === "area" ? config.color : undefined}
-                opacity={0.8}
-                dot={false}
-              />
-            )}
-          </ChartComponent>
-        </ChartContainer>
+              )}
+            </ChartComponent>
+          </ChartContainer>
+        </div>
       </Card>
     );
   };
@@ -354,7 +371,9 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
           <p className="text-red-500">{error}</p>
         </div>
       )}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div
+        className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+        style={{ minHeight: 0, overflow: "hidden" }}>
         {chartConfigs.map(renderChart)}
       </div>
     </div>
