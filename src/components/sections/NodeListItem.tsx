@@ -93,9 +93,9 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
         <div>↓ {stats ? formatBytes(stats.network.down, true) : "N/A"}</div>
       </div>
       <div className="col-span-2">
-        <div className="flex items-center justify-around">
+        <div className="flex items-center justify-around text-nowrap">
           {node.traffic_limit !== 0 && isOnline && stats && (
-            <div className="flex items-center">
+            <div className="flex items-center justify-center w-1/4">
               <CircleProgress
                 value={trafficPercentage}
                 maxValue={100}
@@ -105,7 +105,8 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
               />
             </div>
           )}
-          <div className={node.traffic_limit !== 0 ? "w-2/3" : "w-full"}>
+          <div
+            className={node.traffic_limit !== 0 ? "w-3/4 text-left" : "w-full"}>
             <div>
               <span>
                 ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}

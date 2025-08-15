@@ -145,9 +145,9 @@ export const NodeCard = ({ node }: NodeCardProps) => {
           </div>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-secondary-foreground w-1/4">流量</span>
-          <div className="flex items-center justify-between w-3/4">
-            <div className="flex items-center justify-center w-1/3">
+          <span className="text-secondary-foreground w-1/5">流量</span>
+          <div className="flex items-center justify-between w-4/5">
+            <div className="flex items-center w-1/4">
               {node.traffic_limit !== 0 && isOnline && stats && (
                 <CircleProgress
                   value={trafficPercentage}
@@ -158,7 +158,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
                 />
               )}
             </div>
-            <div className="w-2/3 text-right">
+            <div className="w-3/4 text-right text-nowrap">
               <div>
                 <span>
                   ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}
