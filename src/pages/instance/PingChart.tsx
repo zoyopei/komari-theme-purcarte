@@ -17,6 +17,7 @@ import Loading from "@/components/loading";
 import { usePingChart } from "@/hooks/usePingChart";
 import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
 import { Button } from "@/components/ui/button";
+import { useConfigItem } from "@/config";
 
 interface PingChartProps {
   node: NodeData;
@@ -28,6 +29,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   const [visiblePingTasks, setVisiblePingTasks] = useState<number[]>([]);
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
   const [cutPeak, setCutPeak] = useState(false);
+  const maxPointsToRender = useConfigItem("pingChartMaxPoints") || 0; // 0表示不限制
 
   useEffect(() => {
     if (pingHistory?.tasks) {
@@ -106,12 +108,11 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     }
 
     // 添加渲染硬限制以防止崩溃，即使在间隔调整后也是如此
-    const MAX_POINTS_TO_RENDER = 0;
-    if (full.length > MAX_POINTS_TO_RENDER && MAX_POINTS_TO_RENDER > 0) {
+    if (full.length > maxPointsToRender && maxPointsToRender > 0) {
       console.log(
-        `数据量过大 (${full.length}), 降采样至 ${MAX_POINTS_TO_RENDER} 个点。`
+        `数据量过大 (${full.length}), 降采样至 ${maxPointsToRender} 个点。`
       );
-      const samplingFactor = Math.ceil(full.length / MAX_POINTS_TO_RENDER);
+      const samplingFactor = Math.ceil(full.length / maxPointsToRender);
       const sampledData = [];
       for (let i = 0; i < full.length; i += samplingFactor) {
         sampledData.push(full[i]);
@@ -125,7 +126,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     }
 
     return full;
-  }, [pingHistory, hours, cutPeak]);
+  }, [pingHistory, hours, maxPointsToRender, cutPeak]);
 
   const handleTaskVisibilityToggle = (taskId: number) => {
     setVisiblePingTasks((prev) =>

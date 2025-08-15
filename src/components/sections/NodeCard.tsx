@@ -6,24 +6,11 @@ import { CpuIcon, MemoryStickIcon, HardDriveIcon } from "lucide-react";
 import Flag from "./Flag";
 import { Tag } from "../ui/tag";
 import { useNodeCommons } from "@/hooks/useNodeCommons";
+import { ProgressBar } from "../ui/progress-bar";
 
 interface NodeCardProps {
   node: NodeWithStatus;
 }
-
-const ProgressBar = ({
-  value,
-  className,
-}: {
-  value: number;
-  className?: string;
-}) => (
-  <div className="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700">
-    <div
-      className={`h-3 rounded-full ${className}`}
-      style={{ width: `${value}%` }}></div>
-  </div>
-);
 
 export const NodeCard = ({ node }: NodeCardProps) => {
   const {

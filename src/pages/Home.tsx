@@ -8,9 +8,10 @@ import Loading from "@/components/loading";
 import type { NodeWithStatus } from "@/types/node";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import { useLiveData } from "@/contexts/LiveDataContext";
+import { useConfigItem } from "@/config";
 
 interface HomePageProps {
-  viewMode: "card" | "list";
+  viewMode: "grid" | "table";
   searchTerm: string;
 }
 
@@ -18,6 +19,8 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
   const { nodes: staticNodes, loading, getGroups } = useNodeData();
   const { liveData } = useLiveData();
   const [selectedGroup, setSelectedGroup] = useState("所有");
+  const enableGroupedBar = useConfigItem("enableGroupedBar");
+  const enableStatsBar = useConfigItem("enableStatsBar");
   const [displayOptions, setDisplayOptions] = useState({
     time: true,
     online: true,
@@ -80,47 +83,51 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
 
   return (
     <div className="w-[90%] max-w-screen-2xl mx-auto flex-1 flex flex-col pb-10">
-      <StatsBar
-        displayOptions={displayOptions}
-        setDisplayOptions={setDisplayOptions}
-        stats={stats}
-        loading={loading}
-        currentTime={currentTime}
-      />
+      {enableStatsBar && (
+        <StatsBar
+          displayOptions={displayOptions}
+          setDisplayOptions={setDisplayOptions}
+          stats={stats}
+          loading={loading}
+          currentTime={currentTime}
+        />
+      )}
 
       <main className="flex-1 px-4 pb-4">
-        <div className="flex overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground box-border border space-x-4 px-4 rounded-lg mb-4 bg-card backdrop-blur-[10px]">
-          <span>分组</span>
-          {groups.map((group: string) => (
-            <Button
-              key={group}
-              variant={selectedGroup === group ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setSelectedGroup(group)}>
-              {group}
-            </Button>
-          ))}
-        </div>
+        {enableGroupedBar && (
+          <div className="flex overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground box-border border space-x-4 px-4 rounded-lg mb-4 bg-card backdrop-blur-[10px]">
+            <span>分组</span>
+            {groups.map((group: string) => (
+              <Button
+                key={group}
+                variant={selectedGroup === group ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setSelectedGroup(group)}>
+                {group}
+              </Button>
+            ))}
+          </div>
+        )}
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-4">
           {loading ? (
             <Loading text="正在努力获取数据中..." />
           ) : filteredNodes.length > 0 ? (
             <div
               className={
-                viewMode === "card"
+                viewMode === "grid"
                   ? ""
                   : "space-y-2 bg-card overflow-auto backdrop-blur-[10px] rounded-lg p-2"
               }>
               <div
                 className={
-                  viewMode === "card"
+                  viewMode === "grid"
                     ? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4"
                     : "min-w-[1080px]"
                 }>
-                {viewMode === "list" && <NodeListHeader />}
+                {viewMode === "table" && <NodeListHeader />}
                 {filteredNodes.map((node: NodeWithStatus) =>
-                  viewMode === "card" ? (
+                  viewMode === "grid" ? (
                     <NodeCard key={node.uuid} node={node} />
                   ) : (
                     <NodeListItem key={node.uuid} node={node} />

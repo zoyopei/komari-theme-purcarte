@@ -10,6 +10,7 @@ const LoadCharts = lazy(() => import("./LoadCharts"));
 const PingChart = lazy(() => import("./PingChart"));
 import Loading from "@/components/loading";
 import Flag from "@/components/sections/Flag";
+import { useConfigItem } from "@/config";
 
 const InstancePage = () => {
   const { uuid } = useParams<{ uuid: string }>();
@@ -20,12 +21,13 @@ const InstancePage = () => {
     loading: nodesLoading,
   } = useNodeData();
   const { liveData } = useLiveData();
-  const { getRecentLoadHistory } = useNodeData();
+  useNodeData();
   const [staticNode, setStaticNode] = useState<NodeData | null>(null);
   const [chartType, setChartType] = useState<"load" | "ping">("load");
   const [loadHours, setLoadHours] = useState<number>(0);
   const [pingHours, setPingHours] = useState<number>(1); // 默认1小时
-  const [realtimeChartData, setRealtimeChartData] = useState<any[]>([]);
+  const enableInstanceDetail = useConfigItem("enableInstanceDetail");
+  const enablePingChart = useConfigItem("enablePingChart");
 
   const maxRecordPreserveTime = publicSettings?.record_preserve_time || 0; // 默认0表示关闭
   const maxPingRecordPreserveTime =
@@ -76,57 +78,6 @@ const InstancePage = () => {
     setStaticNode(foundNode || null);
   }, [staticNodes, uuid]);
 
-  // Effect for fetching initial realtime data
-  useEffect(() => {
-    if (uuid && loadHours === 0) {
-      const fetchInitialData = async () => {
-        try {
-          const data = await getRecentLoadHistory(uuid);
-          setRealtimeChartData(data?.records || []);
-        } catch (error) {
-          console.error("Failed to fetch initial realtime chart data:", error);
-          setRealtimeChartData([]);
-        }
-      };
-      fetchInitialData();
-    }
-  }, [uuid, loadHours, getRecentLoadHistory]);
-
-  // Effect for handling live data updates
-  useEffect(() => {
-    if (loadHours !== 0 || !liveData?.data || !uuid || !liveData.data[uuid]) {
-      return;
-    }
-
-    const stats = liveData.data[uuid];
-    const newRecord = {
-      client: uuid,
-      time: new Date(stats.updated_at).toISOString(),
-      cpu: stats.cpu.usage,
-      ram: stats.ram.used,
-      disk: stats.disk.used,
-      load: stats.load.load1,
-      net_in: stats.network.down,
-      net_out: stats.network.up,
-      process: stats.process,
-      connections: stats.connections.tcp,
-      gpu: 0,
-      ram_total: stats.ram.total,
-      swap: stats.swap.used,
-      swap_total: stats.swap.total,
-      temp: 0,
-      disk_total: stats.disk.total,
-      net_total_up: stats.network.totalUp,
-      net_total_down: stats.network.totalDown,
-      connections_udp: stats.connections.udp,
-    };
-
-    setRealtimeChartData((prev) => {
-      const updated = [...prev, newRecord];
-      return updated.length > 600 ? updated.slice(-600) : updated;
-    });
-  }, [liveData, uuid, loadHours]);
-
   const node = useMemo(() => {
     if (!staticNode) return null;
     const isOnline = liveData?.online.includes(staticNode.uuid) ?? false;
@@ -174,45 +125,49 @@ const InstancePage = () => {
         </div>
       </div>
 
-      <Instance node={node as NodeWithStatus} />
+      {enableInstanceDetail && <Instance node={node as NodeWithStatus} />}
 
-      <div className="flex justify-center space-x-2">
-        <Button
-          variant={chartType === "load" ? "secondary" : "ghost"}
-          onClick={() => setChartType("load")}>
-          负载
-        </Button>
-        <Button
-          variant={chartType === "ping" ? "secondary" : "ghost"}
-          onClick={() => setChartType("ping")}>
-          延迟
-        </Button>
+      <div className="bg-card border rounded-lg py-3 px-4 inline-block mx-auto">
+        <div className="flex justify-center space-x-2">
+          <Button
+            variant={chartType === "load" ? "secondary" : "ghost"}
+            onClick={() => setChartType("load")}>
+            负载
+          </Button>
+          {enablePingChart && (
+            <Button
+              variant={chartType === "ping" ? "secondary" : "ghost"}
+              onClick={() => setChartType("ping")}>
+              延迟
+            </Button>
+          )}
+        </div>
+        {chartType === "load" ? (
+          <div className="flex justify-center space-x-2 mt-2">
+            {loadTimeRanges.map((range) => (
+              <Button
+                key={range.label}
+                variant={loadHours === range.hours ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setLoadHours(range.hours)}>
+                {range.label}
+              </Button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex justify-center space-x-2 mt-2">
+            {pingTimeRanges.map((range) => (
+              <Button
+                key={range.label}
+                variant={pingHours === range.hours ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setPingHours(range.hours)}>
+                {range.label}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
-      {chartType === "load" ? (
-        <div className="flex justify-center space-x-2">
-          {loadTimeRanges.map((range) => (
-            <Button
-              key={range.label}
-              variant={loadHours === range.hours ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setLoadHours(range.hours)}>
-              {range.label}
-            </Button>
-          ))}
-        </div>
-      ) : (
-        <div className="flex justify-center space-x-2">
-          {pingTimeRanges.map((range) => (
-            <Button
-              key={range.label}
-              variant={pingHours === range.hours ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setPingHours(range.hours)}>
-              {range.label}
-            </Button>
-          ))}
-        </div>
-      )}
 
       <Suspense
         fallback={
@@ -224,7 +179,6 @@ const InstancePage = () => {
           <LoadCharts
             node={staticNode}
             hours={loadHours}
-            data={realtimeChartData}
             liveData={liveData?.data[staticNode.uuid]}
           />
         ) : chartType === "ping" && staticNode ? (

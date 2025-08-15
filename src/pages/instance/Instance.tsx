@@ -1,40 +1,30 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { NodeWithStatus } from "@/types/node";
 import { useMemo, memo } from "react";
+import { formatBytes, formatUptime } from "@/utils";
 
 interface InstanceProps {
   node: NodeWithStatus;
 }
 
-const formatUptime = (uptime: number) => {
-  if (!uptime) return "N/A";
-  const days = Math.floor(uptime / 86400);
-  const hours = Math.floor((uptime % 86400) / 3600);
-  const minutes = Math.floor((uptime % 3600) / 60);
-  const seconds = Math.floor(uptime % 60);
+const formatTrafficLimit = (
+  limit?: number,
+  type?: "sum" | "max" | "min" | "up" | "down"
+) => {
+  if (!limit) return "未设置";
 
-  let result = "";
-  if (days > 0) result += `${days} 天 `;
-  if (hours > 0 || days > 0) result += `${hours} 时 `;
-  if (minutes > 0 || hours > 0 || days > 0) result += `${minutes} 分 `;
-  result += `${seconds} 秒`;
+  const limitText = formatBytes(limit);
 
-  return result.trim();
-};
+  const typeText =
+    {
+      sum: "总和",
+      max: "最大值",
+      min: "最小值",
+      up: "上传",
+      down: "下载",
+    }[type || "max"] || "";
 
-const formatBytes = (bytes: number, unit: "KB" | "MB" | "GB" = "GB") => {
-  if (bytes === 0) return `0 ${unit}`;
-  const k = 1024;
-  switch (unit) {
-    case "KB":
-      return `${(bytes / k).toFixed(2)} KB`;
-    case "MB":
-      return `${(bytes / (k * k)).toFixed(2)} MB`;
-    case "GB":
-      return `${(bytes / (k * k * k)).toFixed(2)} GB`;
-    default:
-      return `${bytes} B`;
-  }
+  return `${limitText} (${typeText})`;
 };
 
 const Instance = memo(({ node }: InstanceProps) => {
@@ -47,33 +37,33 @@ const Instance = memo(({ node }: InstanceProps) => {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-2">
         <CardTitle>详细信息</CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div>
-          <p className="text-muted-foreground">CPU</p>
-          <p>{`${node.cpu_name} (x${node.cpu_cores})`}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground">架构</p>
-          <p>{node.arch}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground">虚拟化</p>
-          <p>{node.virtualization}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground">GPU</p>
-          <p>{node.gpu_name || "N/A"}</p>
-        </div>
+      <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
         <div className="md:col-span-2">
-          <p className="text-muted-foreground">操作系统</p>
-          <p>{node.os}</p>
+          <p className="text-muted-foreground text-sm">CPU</p>
+          <p className="text-sm">{`${node.cpu_name} (x${node.cpu_cores})`}</p>
         </div>
         <div>
-          <p className="text-muted-foreground">内存</p>
-          <p>
+          <p className="text-muted-foreground text-sm">架构</p>
+          <p className="text-sm">{node.arch}</p>
+        </div>
+        <div>
+          <p className="text-muted-foreground text-sm">虚拟化</p>
+          <p className="text-sm">{node.virtualization}</p>
+        </div>
+        <div>
+          <p className="text-muted-foreground text-sm">GPU</p>
+          <p className="text-sm">{node.gpu_name || "N/A"}</p>
+        </div>
+        <div>
+          <p className="text-muted-foreground text-sm">操作系统</p>
+          <p className="text-sm">{node.os}</p>
+        </div>
+        <div>
+          <p className="text-muted-foreground text-sm">内存</p>
+          <p className="text-sm">
             {stats && isOnline
               ? `${formatBytes(stats.ram.used)} / ${formatBytes(
                   node.mem_total
@@ -82,18 +72,18 @@ const Instance = memo(({ node }: InstanceProps) => {
           </p>
         </div>
         <div>
-          <p className="text-muted-foreground">交换</p>
-          <p>
+          <p className="text-muted-foreground text-sm">交换</p>
+          <p className="text-sm">
             {stats && isOnline
-              ? `${formatBytes(stats.swap.used, "MB")} / ${formatBytes(
+              ? `${formatBytes(stats.swap.used)} / ${formatBytes(
                   node.swap_total
                 )}`
               : `N/A / ${formatBytes(node.swap_total)}`}
           </p>
         </div>
         <div>
-          <p className="text-muted-foreground">磁盘</p>
-          <p>
+          <p className="text-muted-foreground text-sm">磁盘</p>
+          <p className="text-sm">
             {stats && isOnline
               ? `${formatBytes(stats.disk.used)} / ${formatBytes(
                   node.disk_total
@@ -101,20 +91,24 @@ const Instance = memo(({ node }: InstanceProps) => {
               : `N/A / ${formatBytes(node.disk_total)}`}
           </p>
         </div>
+        <div>
+          <p className="text-muted-foreground text-sm">运行时间</p>
+          <p className="text-sm">{formatUptime(stats?.uptime || 0)}</p>
+        </div>
         <div className="md:col-span-2">
-          <p className="text-muted-foreground">网络</p>
-          <p>
+          <p className="text-muted-foreground text-sm">实时网络</p>
+          <p className="text-sm">
             {stats && isOnline
-              ? `↑ ${formatBytes(stats.network.up, "KB")}/s ↓ ${formatBytes(
+              ? `↑ ${formatBytes(stats.network.up, true)} ↓ ${formatBytes(
                   stats.network.down,
-                  "KB"
-                )}/s`
+                  true
+                )}`
               : "N/A"}
           </p>
         </div>
-        <div>
-          <p className="text-muted-foreground">总流量</p>
-          <p>
+        <div className="md:col-span-2">
+          <p className="text-muted-foreground text-sm">总流量</p>
+          <p className="text-sm">
             {stats && isOnline
               ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
                   stats.network.totalDown
@@ -122,13 +116,15 @@ const Instance = memo(({ node }: InstanceProps) => {
               : "N/A"}
           </p>
         </div>
-        <div>
-          <p className="text-muted-foreground">运行时间</p>
-          <p>{formatUptime(stats?.uptime || 0)}</p>
+        <div className="md:col-span-2">
+          <p className="text-muted-foreground text-sm">流量限制</p>
+          <p className="text-sm">
+            {formatTrafficLimit(node.traffic_limit, node.traffic_limit_type)}
+          </p>
         </div>
         <div>
-          <p className="text-muted-foreground">最后上报</p>
-          <p>
+          <p className="text-muted-foreground text-sm">最后上报</p>
+          <p className="text-sm">
             {stats && isOnline
               ? new Date(stats.updated_at).toLocaleString()
               : "N/A"}
