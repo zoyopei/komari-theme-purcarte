@@ -76,3 +76,23 @@ export const formatPrice = (
 
   return `${currency}${price.toFixed(2)}/${cycleStr}`;
 };
+
+export const formatTrafficLimit = (
+  limit?: number,
+  type?: "sum" | "max" | "min" | "up" | "down"
+) => {
+  if (!limit) return "未设置";
+
+  const limitText = formatBytes(limit);
+
+  const typeText =
+    {
+      sum: "总和",
+      max: "最大值",
+      min: "最小值",
+      up: "上传",
+      down: "下载",
+    }[type || "max"] || "";
+
+  return `总 ${limitText} (${typeText})`;
+};

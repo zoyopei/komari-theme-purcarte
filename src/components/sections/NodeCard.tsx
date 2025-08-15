@@ -1,5 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatBytes, formatUptime, getOSImage } from "@/utils";
+import {
+  formatBytes,
+  formatUptime,
+  getOSImage,
+  formatTrafficLimit,
+} from "@/utils";
 import type { NodeWithStatus } from "@/types/node";
 import { Link } from "react-router-dom";
 import { CpuIcon, MemoryStickIcon, HardDriveIcon } from "lucide-react";
@@ -7,6 +12,7 @@ import Flag from "./Flag";
 import { Tag } from "../ui/tag";
 import { useNodeCommons } from "@/hooks/useNodeCommons";
 import { ProgressBar } from "../ui/progress-bar";
+import { CircleProgress } from "../ui/circle-progress";
 
 interface NodeCardProps {
   node: NodeWithStatus;
@@ -23,6 +29,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
     diskUsage,
     load,
     expired_at,
+    trafficPercentage,
   } = useNodeCommons(node);
 
   const getProgressBarClass = (percentage: number) => {
@@ -129,7 +136,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
         </div>
         <div className="border-t border-border/60 my-2"></div>
         <div className="flex justify-between text-xs">
-          <span className="text-secondary-foreground">网络</span>
+          <span className="text-secondary-foreground">网络：</span>
           <div>
             <span>↑ {stats ? formatBytes(stats.network.up, true) : "N/A"}</span>
             <span className="ml-2">
@@ -137,13 +144,38 @@ export const NodeCard = ({ node }: NodeCardProps) => {
             </span>
           </div>
         </div>
-        <div className="flex justify-between text-xs">
-          <span className="text-secondary-foreground">流量</span>
-          <div>
-            <span>↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}</span>
-            <span className="ml-2">
-              ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
-            </span>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-secondary-foreground w-1/4">流量</span>
+          <div className="flex items-center justify-between w-3/4">
+            <div className="flex items-center justify-center w-1/3">
+              {node.traffic_limit !== 0 && isOnline && stats && (
+                <CircleProgress
+                  value={trafficPercentage}
+                  maxValue={100}
+                  size={32}
+                  strokeWidth={4}
+                  showPercentage={true}
+                />
+              )}
+            </div>
+            <div className="w-2/3 text-right">
+              <div>
+                <span>
+                  ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}
+                </span>
+                <span className="ml-2">
+                  ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
+                </span>
+              </div>
+              {node.traffic_limit !== 0 && isOnline && stats && (
+                <div className="text-right">
+                  {formatTrafficLimit(
+                    node.traffic_limit,
+                    node.traffic_limit_type
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex justify-between text-xs">
@@ -151,13 +183,13 @@ export const NodeCard = ({ node }: NodeCardProps) => {
           <span>{load}</span>
         </div>
         <div className="flex justify-between text-xs">
-          <div className="flex justify-between w-full">
-            <span className="text-secondary-foreground">到期</span>
+          <div className="flex justify-start w-full">
+            <span className="text-secondary-foreground">到期：</span>
             <div className="flex items-center gap-1">{expired_at}</div>
           </div>
           <div className="border-l border-border/60 mx-2"></div>
-          <div className="flex justify-between w-full">
-            <span className="text-secondary-foreground">在线</span>
+          <div className="flex justify-start w-full">
+            <span className="text-secondary-foreground">在线：</span>
             <span>
               {isOnline && stats ? formatUptime(stats.uptime) : "离线"}
             </span>

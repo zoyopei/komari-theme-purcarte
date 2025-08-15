@@ -1,31 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { NodeWithStatus } from "@/types/node";
 import { useMemo, memo } from "react";
-import { formatBytes, formatUptime } from "@/utils";
+import { formatBytes, formatUptime, formatTrafficLimit } from "@/utils";
+import { CircleProgress } from "@/components/ui/circle-progress";
 
 interface InstanceProps {
   node: NodeWithStatus;
 }
-
-const formatTrafficLimit = (
-  limit?: number,
-  type?: "sum" | "max" | "min" | "up" | "down"
-) => {
-  if (!limit) return "未设置";
-
-  const limitText = formatBytes(limit);
-
-  const typeText =
-    {
-      sum: "总和",
-      max: "最大值",
-      min: "最小值",
-      up: "上传",
-      down: "下载",
-    }[type || "max"] || "";
-
-  return `${limitText} (${typeText})`;
-};
 
 const Instance = memo(({ node }: InstanceProps) => {
   const { stats, isOnline } = useMemo(() => {
@@ -34,6 +15,33 @@ const Instance = memo(({ node }: InstanceProps) => {
       isOnline: node.status === "online",
     };
   }, [node]);
+
+  // 计算流量使用百分比
+  const trafficPercentage = useMemo(() => {
+    if (!node.traffic_limit || !stats || !isOnline) return 0;
+
+    // 根据流量限制类型确定使用的流量值
+    let usedTraffic = 0;
+    switch (node.traffic_limit_type) {
+      case "up":
+        usedTraffic = stats.network.totalUp;
+        break;
+      case "down":
+        usedTraffic = stats.network.totalDown;
+        break;
+      case "sum":
+        usedTraffic = stats.network.totalUp + stats.network.totalDown;
+        break;
+      case "min":
+        usedTraffic = Math.min(stats.network.totalUp, stats.network.totalDown);
+        break;
+      default: // max 或者未设置
+        usedTraffic = Math.max(stats.network.totalUp, stats.network.totalDown);
+        break;
+    }
+
+    return (usedTraffic / node.traffic_limit) * 100;
+  }, [node.traffic_limit, node.traffic_limit_type, stats, isOnline]);
 
   return (
     <Card>
@@ -95,7 +103,7 @@ const Instance = memo(({ node }: InstanceProps) => {
           <p className="text-muted-foreground text-sm">运行时间</p>
           <p className="text-sm">{formatUptime(stats?.uptime || 0)}</p>
         </div>
-        <div className="md:col-span-2">
+        <div>
           <p className="text-muted-foreground text-sm">实时网络</p>
           <p className="text-sm">
             {stats && isOnline
@@ -106,20 +114,41 @@ const Instance = memo(({ node }: InstanceProps) => {
               : "N/A"}
           </p>
         </div>
-        <div className="md:col-span-2">
+        <div>
           <p className="text-muted-foreground text-sm">总流量</p>
-          <p className="text-sm">
-            {stats && isOnline
-              ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
-                  stats.network.totalDown
-                )}`
-              : "N/A"}
+          <p className="flex items-center gap-2">
+            {node.traffic_limit && isOnline && (
+              <CircleProgress
+                value={trafficPercentage}
+                maxValue={100}
+                size={36}
+              />
+            )}
+            <div>
+              <p className="text-sm">
+                {stats && isOnline
+                  ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
+                      stats.network.totalDown
+                    )}`
+                  : "N/A"}
+              </p>
+              <p className="text-sm">
+                {formatTrafficLimit(
+                  node.traffic_limit,
+                  node.traffic_limit_type
+                )}
+              </p>
+            </div>
           </p>
         </div>
-        <div className="md:col-span-2">
-          <p className="text-muted-foreground text-sm">流量限制</p>
+        <div>
+          <p className="text-muted-foreground text-sm">负载</p>
           <p className="text-sm">
-            {formatTrafficLimit(node.traffic_limit, node.traffic_limit_type)}
+            {stats && isOnline
+              ? `${stats.load.load1.toFixed(2)} | ${stats.load.load5.toFixed(
+                  2
+                )} | ${stats.load.load15.toFixed(2)}`
+              : "N/A"}
           </p>
         </div>
         <div>

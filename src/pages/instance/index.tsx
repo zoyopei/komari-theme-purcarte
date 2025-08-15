@@ -127,46 +127,48 @@ const InstancePage = () => {
 
       {enableInstanceDetail && <Instance node={node as NodeWithStatus} />}
 
-      <div className="bg-card border rounded-lg py-3 px-4 inline-block mx-auto">
-        <div className="flex justify-center space-x-2">
-          <Button
-            variant={chartType === "load" ? "secondary" : "ghost"}
-            onClick={() => setChartType("load")}>
-            负载
-          </Button>
-          {enablePingChart && (
+      <div className="flex justify-center w-full">
+        <div className="bg-card border rounded-lg py-3 px-4">
+          <div className="flex justify-center space-x-2">
             <Button
-              variant={chartType === "ping" ? "secondary" : "ghost"}
-              onClick={() => setChartType("ping")}>
-              延迟
+              variant={chartType === "load" ? "secondary" : "ghost"}
+              onClick={() => setChartType("load")}>
+              负载
             </Button>
+            {enablePingChart && (
+              <Button
+                variant={chartType === "ping" ? "secondary" : "ghost"}
+                onClick={() => setChartType("ping")}>
+                延迟
+              </Button>
+            )}
+          </div>
+          {chartType === "load" ? (
+            <div className="flex justify-center space-x-2 mt-2">
+              {loadTimeRanges.map((range) => (
+                <Button
+                  key={range.label}
+                  variant={loadHours === range.hours ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setLoadHours(range.hours)}>
+                  {range.label}
+                </Button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex justify-center space-x-2 mt-2">
+              {pingTimeRanges.map((range) => (
+                <Button
+                  key={range.label}
+                  variant={pingHours === range.hours ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setPingHours(range.hours)}>
+                  {range.label}
+                </Button>
+              ))}
+            </div>
           )}
         </div>
-        {chartType === "load" ? (
-          <div className="flex justify-center space-x-2 mt-2">
-            {loadTimeRanges.map((range) => (
-              <Button
-                key={range.label}
-                variant={loadHours === range.hours ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => setLoadHours(range.hours)}>
-                {range.label}
-              </Button>
-            ))}
-          </div>
-        ) : (
-          <div className="flex justify-center space-x-2 mt-2">
-            {pingTimeRanges.map((range) => (
-              <Button
-                key={range.label}
-                variant={pingHours === range.hours ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => setPingHours(range.hours)}>
-                {range.label}
-              </Button>
-            ))}
-          </div>
-        )}
       </div>
 
       <Suspense
