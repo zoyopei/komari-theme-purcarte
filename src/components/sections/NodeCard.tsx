@@ -39,18 +39,18 @@ export const NodeCard = ({ node }: NodeCardProps) => {
           : "striped-bg-red-translucent-diagonal ring-2 ring-red-500/50"
       }`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="flex items-center gap-2">
-          <Flag flag={node.region}></Flag>
-          <img
-            src={getOSImage(node.os)}
-            alt={node.os}
-            className="w-6 h-6 rounded-full"
-            loading="lazy"
-          />
-          <CardTitle className="text-base font-bold">
-            <Link to={`/instance/${node.uuid}`}>{node.name}</Link>
-          </CardTitle>
-        </div>
+        <Link to={`/instance/${node.uuid}`}>
+          <div className="flex items-center gap-2">
+            <Flag flag={node.region}></Flag>
+            <img
+              src={getOSImage(node.os)}
+              alt={node.os}
+              className="w-6 h-6 rounded-full"
+              loading="lazy"
+            />
+            <CardTitle className="text-base font-bold">{node.name}</CardTitle>
+          </div>
+        </Link>
       </CardHeader>
       <CardContent className="flex-grow space-y-3 text-sm">
         <div className="flex flex-wrap gap-1">

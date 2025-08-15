@@ -44,7 +44,8 @@ export function ConfigProvider({
       enableLogo: theme.enableLogo ?? DEFAULT_CONFIG.enableLogo,
       logoUrl: theme.logoUrl || DEFAULT_CONFIG.logoUrl,
       enableTitle: theme.enableTitle ?? DEFAULT_CONFIG.enableTitle,
-      titleText: theme.titleText || DEFAULT_CONFIG.titleText,
+      titleText:
+        theme.titleText || publicSettings?.sitename || DEFAULT_CONFIG.titleText,
       enableSearchButton:
         theme.enableSearchButton ?? DEFAULT_CONFIG.enableSearchButton,
       selectedDefaultView:
@@ -64,7 +65,7 @@ export function ConfigProvider({
         theme.pingChartMaxPoints || DEFAULT_CONFIG.pingChartMaxPoints,
       backgroundImage,
     }),
-    [theme, backgroundImage]
+    [theme, backgroundImage, publicSettings?.sitename]
   );
 
   return (

@@ -55,10 +55,10 @@ export const useNodeCommons = (node: NodeWithStatus) => {
       ? "长期"
       : node.expired_at
       ? new Date(node.expired_at).toLocaleDateString()
-      : "N/A";
+      : "未设置";
 
   const tagList = [
-    price,
+    ...(price ? [price] : []),
     ...(daysLeftTag ? [daysLeftTag] : []),
     ...(typeof node.tags === "string"
       ? node.tags

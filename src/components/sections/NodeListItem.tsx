@@ -32,25 +32,25 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
       } text-secondary-foreground transition-colors duration-200`}>
       <div className="col-span-3 flex items-center text-left">
         <Flag flag={node.region} />
-        <div className="ml-2 w-full">
-          <div className="text-base font-bold">
-            <Link to={`/instance/${node.uuid}`}>{node.name}</Link>
-          </div>
-          <Tag className="text-xs" tags={tagList} />
-          <div className="flex text-xs">
-            <div className="flex">
-              <span className="text-secondary-foreground">到期：</span>
-              <div className="flex items-center gap-1">{expired_at}</div>
+        <Link to={`/instance/${node.uuid}`}>
+          <div className="ml-2 w-full">
+            <div className="text-base font-bold">{node.name}</div>
+            <Tag className="text-xs" tags={tagList} />
+            <div className="flex text-xs">
+              <div className="flex">
+                <span className="text-secondary-foreground">到期：</span>
+                <div className="flex items-center gap-1">{expired_at}</div>
+              </div>
+              <div className="border-l border-border/60 mx-2"></div>
+              <div className="flex">
+                <span className="text-secondary-foreground">在线：</span>
+                <span>
+                  {isOnline && stats ? formatUptime(stats.uptime) : "离线"}
+                </span>
+              </div>
             </div>
-            <div className="border-l border-border/60 mx-2"></div>
-            <div className="flex">
-              <span className="text-secondary-foreground">在线：</span>
-              <span>
-                {isOnline && stats ? formatUptime(stats.uptime) : "离线"}
-              </span>
-            </div>
           </div>
-        </div>
+        </Link>
       </div>
       <div className="col-span-1">
         <div className="gap-1 flex items-center justify-center whitespace-nowrap">
