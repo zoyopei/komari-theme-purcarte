@@ -59,7 +59,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
           </div>
         </Link>
       </CardHeader>
-      <CardContent className="flex-grow space-y-3 text-sm">
+      <CardContent className="flex-grow space-y-3 text-sm text-nowrap">
         <div className="flex flex-wrap gap-1">
           <Tag tags={tagList} />
         </div>
@@ -158,7 +158,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
                 />
               )}
             </div>
-            <div className="w-3/4 text-right text-nowrap">
+            <div className="w-3/4 text-right">
               <div>
                 <span>
                   ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}

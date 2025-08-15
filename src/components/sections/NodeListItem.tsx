@@ -27,7 +27,7 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
 
   return (
     <div
-      className={`grid grid-cols-10 text-center shadow-md gap-4 p-2 items-center rounded-lg ${
+      className={`grid grid-cols-10 text-center shadow-md gap-4 p-2 text-nowrap items-center rounded-lg ${
         isOnline
           ? ""
           : "striped-bg-red-translucent-diagonal ring-2 ring-red-500/50"
@@ -38,7 +38,7 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
           <div className="ml-2 w-full">
             <div className="text-base font-bold">{node.name}</div>
             <Tag className="text-xs" tags={tagList} />
-            <div className="flex text-xs text-nowrap">
+            <div className="flex text-xs">
               <div className="flex">
                 <span className="text-secondary-foreground">到期：</span>
                 <div className="flex items-center gap-1">{expired_at}</div>
@@ -93,7 +93,7 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
         <div>↓ {stats ? formatBytes(stats.network.down, true) : "N/A"}</div>
       </div>
       <div className="col-span-2">
-        <div className="flex items-center justify-around text-nowrap">
+        <div className="flex items-center justify-around">
           {node.traffic_limit !== 0 && isOnline && stats && (
             <div className="flex items-center justify-center w-1/4">
               <CircleProgress
