@@ -16,6 +16,7 @@ import { formatBytes } from "@/utils";
 import { Flex } from "@radix-ui/themes";
 import Loading from "@/components/loading";
 import { useLoadCharts } from "@/hooks/useLoadCharts";
+import { CustomTooltip } from "@/components/ui/tooltip";
 
 interface LoadChartsProps {
   node: NodeData;
@@ -212,54 +213,6 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
     },
   ];
 
-  // 通用提示组件
-  const CustomTooltip = ({ active, payload, label, chartConfig }: any) => {
-    if (!active || !payload || !payload.length) return null;
-
-    return (
-      <div className="bg-background/80 p-3 border rounded-lg shadow-lg max-w-xs">
-        <p className="text-xs font-medium text-muted-foreground mb-2">
-          {labelFormatter(label)}
-        </p>
-        <div className="space-y-1">
-          {payload.map((item: any, index: number) => {
-            const series = chartConfig.series
-              ? chartConfig.series.find((s: any) => s.dataKey === item.dataKey)
-              : {
-                  dataKey: chartConfig.dataKey,
-                  tooltipLabel: chartConfig.tooltipLabel,
-                  tooltipFormatter: chartConfig.tooltipFormatter,
-                };
-
-            let value = item.value;
-            if (series?.tooltipFormatter) {
-              value = series.tooltipFormatter(value, item.payload);
-            } else {
-              value = value.toString();
-            }
-
-            return (
-              <div
-                key={`${item.dataKey}-${index}`}
-                className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-sm"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="text-sm font-medium text-foreground">
-                    {series?.tooltipLabel || item.dataKey}:
-                  </span>
-                </div>
-                <span className="text-sm font-bold ml-2">{value}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
   // 根据配置渲染图表
   const renderChart = (config: any) => {
     const ChartComponent = config.type === "area" ? AreaChart : LineChart;
@@ -327,7 +280,11 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
               <Tooltip
                 cursor={false}
                 content={(props: any) => (
-                  <CustomTooltip {...props} chartConfig={config} />
+                  <CustomTooltip
+                    {...props}
+                    chartConfig={config}
+                    labelFormatter={labelFormatter}
+                  />
                 )}
               />
               {config.series ? (

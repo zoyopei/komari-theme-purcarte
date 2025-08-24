@@ -9,15 +9,15 @@ import {
   ResponsiveContainer,
   Brush,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@radix-ui/react-label";
 import type { NodeData } from "@/types/node";
 import Loading from "@/components/loading";
 import { usePingChart } from "@/hooks/usePingChart";
 import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
-import { Button } from "@/components/ui/button";
 import { useConfigItem } from "@/config";
+import { CustomTooltip } from "@/components/ui/tooltip";
 
 interface PingChartProps {
   node: NodeData;
@@ -56,6 +56,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     },
     [hours]
   );
+
+  const chartMargin = { top: 8, right: 16, bottom: 8, left: 16 };
 
   const chartData = useMemo(() => {
     if (!pingHistory || !pingHistory.records || !pingHistory.tasks) return [];
@@ -136,21 +138,24 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     );
   };
 
-  const stringToColor = useCallback((str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    let color = "#";
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += ("00" + value.toString(16)).substr(-2);
-    }
-    return color;
-  }, []);
+  const sortedTasks = useMemo(() => {
+    if (!pingHistory?.tasks) return [];
+    return [...pingHistory.tasks].sort((a, b) => a.name.localeCompare(b.name));
+  }, [pingHistory?.tasks]);
+
+  const generateColor = useCallback(
+    (taskName: string, total: number) => {
+      const index = sortedTasks.findIndex((t) => t.name === taskName);
+      if (index === -1) return "#000000"; // Fallback color
+
+      const hue = (index * (360 / total)) % 360;
+      return `hsl(${hue}, 50%, 60%)`;
+    },
+    [sortedTasks]
+  );
 
   return (
-    <div className="relative">
+    <div className="relative space-y-4">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-card/50 backdrop-blur-sm rounded-lg z-10">
           <Loading text="正在加载图表数据..." />
@@ -161,60 +166,63 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
           <p className="text-red-500">{error}</p>
         </div>
       )}
+
+      <Card>
+        <CardContent className="p-2">
+          <div className="flex flex-wrap gap-2 items-center justify-center">
+            {sortedTasks.map((task) => {
+              const values = chartData
+                .map((d) => d[task.id])
+                .filter((v) => v !== null && v !== undefined) as number[];
+              const loss =
+                chartData.length > 0
+                  ? (1 - values.length / chartData.length) * 100
+                  : 0;
+              const min = values.length > 0 ? Math.min(...values) : 0;
+              const isVisible = visiblePingTasks.includes(task.id);
+              const color = generateColor(task.name, sortedTasks.length);
+
+              return (
+                <div
+                  key={task.id}
+                  className={`h-auto px-3 py-1.5 flex flex-col leading-snug text-center cursor-pointer rounded-md transition-all outline-2 outline ${
+                    isVisible ? "" : "outline-transparent"
+                  }`}
+                  onClick={() => handleTaskVisibilityToggle(task.id)}
+                  style={{
+                    outlineColor: isVisible ? color : undefined,
+                    boxShadow: isVisible ? `0 0 8px ${color}` : undefined,
+                  }}>
+                  <div className="font-semibold">{task.name}</div>
+                  <span className="text-xs font-normal">
+                    {loss.toFixed(1)}% | {min.toFixed(0)}ms
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-sm font-medium">Ping 延迟</CardTitle>
-              <div className="flex items-center space-x-2 mt-2">
+              <div className="flex items-center space-x-2">
                 <Switch
                   id="peak-shaving"
                   checked={cutPeak}
                   onCheckedChange={setCutPeak}
                 />
-                <Label htmlFor="peak-shaving">开启削峰</Label>
+                <Label htmlFor="peak-shaving">平滑</Label>
               </div>
-            </div>
-            <div className="flex flex-wrap gap-2 justify-end">
-              {(pingHistory?.tasks || []).map((task) => {
-                const values = chartData
-                  .map((d) => d[task.id])
-                  .filter((v) => v !== null && v !== undefined) as number[];
-                const loss =
-                  chartData.length > 0
-                    ? (1 - values.length / chartData.length) * 100
-                    : 0;
-                const min = values.length > 0 ? Math.min(...values) : 0;
-                const isVisible = visiblePingTasks.includes(task.id);
-
-                return (
-                  <div key={task.id} className="flex flex-col items-center">
-                    <Button
-                      variant={isVisible ? "default" : "outline"}
-                      size="sm"
-                      className="h-auto px-2 py-1 flex flex-col"
-                      onClick={() => handleTaskVisibilityToggle(task.id)}
-                      style={{
-                        backgroundColor: isVisible
-                          ? stringToColor(task.name)
-                          : undefined,
-                        color: isVisible ? "white" : undefined,
-                      }}>
-                      <div>{task.name}</div>
-                      <span className="text-xs">
-                        {loss.toFixed(1)}% | {min.toFixed(0)}ms
-                      </span>
-                    </Button>
-                  </div>
-                );
-              })}
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           {pingHistory?.tasks && pingHistory.tasks.length > 0 ? (
             <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={chartData}>
+              <LineChart data={chartData} margin={chartMargin}>
                 <CartesianGrid strokeDasharray="2 4" vertical={false} />
                 <XAxis
                   type="number"
@@ -238,15 +246,18 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   }}
                   scale="time"
                 />
-                <YAxis />
-                <Tooltip labelFormatter={lableFormatter} />
-                {pingHistory.tasks.map((task) => (
+                <YAxis mirror={true} width={30} />
+                <Tooltip
+                  cursor={false}
+                  content={<CustomTooltip labelFormatter={lableFormatter} />}
+                />
+                {sortedTasks.map((task) => (
                   <Line
                     key={task.id}
                     type={cutPeak ? "basis" : "linear"}
                     dataKey={String(task.id)}
                     name={task.name}
-                    stroke={stringToColor(task.name)}
+                    stroke={generateColor(task.name, sortedTasks.length)}
                     strokeWidth={2}
                     hide={!visiblePingTasks.includes(task.id)}
                     dot={false}
@@ -264,6 +275,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                       return date.toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
+                        second: "2-digit",
                       });
                     }
                     return date.toLocaleDateString([], {

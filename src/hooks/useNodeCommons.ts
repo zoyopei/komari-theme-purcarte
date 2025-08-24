@@ -59,7 +59,7 @@ export const useNodeCommons = (node: NodeWithStatus) => {
 
   const tagList = [
     ...(price ? [price] : []),
-    ...(daysLeftTag ? [daysLeftTag] : []),
+    ...(daysLeftTag && price ? [daysLeftTag] : []),
     ...(typeof node.tags === "string"
       ? node.tags
           .split(";")
