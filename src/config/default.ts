@@ -1,6 +1,8 @@
 // 配置类型定义
 export interface ConfigOptions {
   backgroundImage?: string; // 背景图片URL
+  blurValue?: number; // 磨砂玻璃模糊值
+  blurBackgroundColor?: string; // 磨砂玻璃背景颜色
   tagDefaultColorList?: string; // 标签默认颜色列表
   enableLogo?: boolean; // 是否启用Logo
   logoUrl?: string; // Logo图片URL
@@ -15,11 +17,14 @@ export interface ConfigOptions {
   enableInstanceDetail?: boolean; // 是否启用实例详情
   enablePingChart?: boolean; // 是否启用延迟图表
   pingChartMaxPoints?: number; // 延迟图表最大点数
+  enableSwap?: boolean; // 是否启用SWAP显示
 }
 
 // 默认配置值
 export const DEFAULT_CONFIG: ConfigOptions = {
   backgroundImage: "/assets/Moonlit-Scenery.webp",
+  blurValue: 10,
+  blurBackgroundColor: "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
   tagDefaultColorList:
     "ruby,gray,gold,bronze,brown,yellow,amber,orange,tomato,red,crimson,pink,plum,purple,violet,iris,indigo,blue,cyan,teal,jade,green,grass,lime,mint,sky",
   enableLogo: false,
@@ -35,4 +40,5 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   enableInstanceDetail: true,
   enablePingChart: true,
   pingChartMaxPoints: 0,
+  enableSwap: true,
 };

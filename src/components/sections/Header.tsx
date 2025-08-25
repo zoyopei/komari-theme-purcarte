@@ -55,7 +55,7 @@ export const Header = ({
   }, [sitename]);
 
   return (
-    <header className="bg-background/60 backdrop-blur-[10px] border-b border-border/60 sticky top-0 flex items-center justify-center shadow-sm z-10">
+    <header className="purcarte-blur border-b border-border sticky top-0 flex items-center justify-center shadow-sm z-10">
       <div className="w-[90%] max-w-screen-2xl px-4 py-2 flex items-center justify-between">
         <div className="flex items-center text-shadow-lg text-accent-foreground">
           <a href="/" className="flex items-center gap-2 text-2xl font-bold">
@@ -71,7 +71,7 @@ export const Header = ({
               {isMobile ? (
                 <>
                   <div
-                    className={`absolute top-full left-0 w-full bg-background/60 backdrop-blur-[10px] p-2 border-b border-border/60 shadow-sm z-10 transform transition-all duration-300 ease-in-out ${
+                    className={`absolute top-full left-0 w-full purcarte-blur p-2 border-b border-border shadow-sm z-10 transform transition-all duration-300 ease-in-out ${
                       isSearchOpen
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 -translate-y-4 pointer-events-none"
@@ -106,7 +106,7 @@ export const Header = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="animate-in slide-in-from-top-5 duration-300 bg-background/60 backdrop-blur-[10px] border-border/60 rounded-xl">
+                      className="animate-in slide-in-from-top-5 duration-300 purcarte-blur border-border rounded-xl">
                       <DropdownMenuItem
                         onClick={() =>
                           setViewMode(viewMode === "grid" ? "table" : "grid")
@@ -216,7 +216,7 @@ export const Header = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="animate-in slide-in-from-top-5 duration-300 bg-background/60 backdrop-blur-[10px] border-border/60 rounded-xl">
+                    className="animate-in slide-in-from-top-5 duration-300 purcarte-blur border-border rounded-xl">
                     <DropdownMenuItem onClick={toggleTheme}>
                       {theme === "dark" ? (
                         <Sun className="size-4 mr-2 text-primary" />

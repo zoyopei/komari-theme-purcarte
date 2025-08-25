@@ -9,9 +9,10 @@ import { CircleProgress } from "../ui/circle-progress";
 
 interface NodeListItemProps {
   node: NodeWithStatus;
+  enableSwap: boolean | undefined;
 }
 
-export const NodeListItem = ({ node }: NodeListItemProps) => {
+export const NodeListItem = ({ node, enableSwap }: NodeListItemProps) => {
   const {
     stats,
     isOnline,
@@ -25,9 +26,11 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
     trafficPercentage,
   } = useNodeCommons(node);
 
+  const gridCols = enableSwap ? "grid-cols-10" : "grid-cols-9";
+
   return (
     <div
-      className={`grid grid-cols-10 text-center shadow-md gap-4 p-2 text-nowrap items-center rounded-lg ${
+      className={`grid ${gridCols} text-center shadow-md gap-4 p-2 text-nowrap items-center rounded-lg ${
         isOnline
           ? ""
           : "striped-bg-red-translucent-diagonal ring-2 ring-red-500/50"
@@ -39,53 +42,56 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
             <div className="text-base font-bold">{node.name}</div>
             <Tag className="text-xs" tags={tagList} />
             <div className="flex text-xs">
-              <div className="flex">
-                <span className="text-secondary-foreground">到期：</span>
-                <div className="flex items-center gap-1">{expired_at}</div>
-              </div>
-              <div className="border-l border-border/60 mx-2"></div>
-              <div className="flex">
-                <span className="text-secondary-foreground">在线：</span>
-                <span>
-                  {isOnline && stats ? formatUptime(stats.uptime) : "离线"}
-                </span>
-              </div>
+              <span className="text-secondary-foreground">到期：</span>
+              <div className="flex items-center gap-1">{expired_at}</div>
+            </div>
+            <div className="flex text-xs">
+              <span className="text-secondary-foreground">在线：</span>
+              <span>
+                {isOnline && stats ? formatUptime(stats.uptime) : "离线"}
+              </span>
             </div>
           </div>
         </Link>
       </div>
-      <div className="col-span-1">
-        <div className="gap-1 flex items-center justify-center whitespace-nowrap">
-          <CpuIcon className="inline-block size-4 flex-shrink-0 text-blue-600" />
-          {node.cpu_cores} Cores
-        </div>
-        <div className="mt-1">
-          {isOnline ? `${cpuUsage.toFixed(1)}%` : "N/A"}
+      <div className="col-span-1 flex items-center text-left">
+        <CpuIcon className="inline-block size-5 flex-shrink-0 text-blue-600" />
+        <div className="ml-1 w-full items-center justify-center">
+          <div>{node.cpu_cores} Cores</div>
+          <div>{isOnline ? `${cpuUsage.toFixed(1)}%` : "N/A"}</div>
         </div>
       </div>
-      <div className="col-span-1">
-        <div className="gap-1 flex items-center justify-center whitespace-nowrap">
-          <MemoryStickIcon className="inline-block size-4 flex-shrink-0 text-green-600" />
-          {formatBytes(node.mem_total)}
-        </div>
-        <div className="mt-1">
-          {isOnline ? `${memUsage.toFixed(1)}%` : "N/A"}
+      <div className="col-span-1 flex items-center text-left">
+        <MemoryStickIcon className="inline-block size-5 flex-shrink-0 text-green-600" />
+        <div className="ml-1 w-full items-center justify-center">
+          <div>{formatBytes(node.mem_total)}</div>
+          <div className="mt-1">
+            {isOnline ? `${memUsage.toFixed(1)}%` : "N/A"}
+          </div>
         </div>
       </div>
-      {node.swap_total > 0 ? (
-        <div className="col-span-1">
-          {isOnline ? `${swapUsage.toFixed(1)}%` : "N/A"}
+      {enableSwap && (
+        <div className="col-span-1 flex items-center text-left">
+          <MemoryStickIcon className="inline-block size-5 flex-shrink-0 text-purple-600" />
+          {node.swap_total > 0 ? (
+            <div className="ml-1 w-full items-center justify-center">
+              <div>{formatBytes(node.swap_total)}</div>
+              <div className="mt-1">
+                {isOnline ? `${swapUsage.toFixed(1)}%` : "N/A"}
+              </div>
+            </div>
+          ) : (
+            <div className="ml-1 w-full item-center justify-center">OFF</div>
+          )}
         </div>
-      ) : (
-        <div className="col-span-1 text-secondary-foreground">OFF</div>
       )}
-      <div className="col-span-1">
-        <div className="gap-1 flex items-center justify-center whitespace-nowrap">
-          <HardDriveIcon className="inline-block size-4 flex-shrink-0 text-red-600" />
-          {formatBytes(node.disk_total)}
-        </div>
-        <div className="mt-1">
-          {isOnline ? `${diskUsage.toFixed(1)}%` : "N/A"}
+      <div className="col-span-1 flex items-center text-left">
+        <HardDriveIcon className="inline-block size-5 flex-shrink-0 text-red-600" />
+        <div className="ml-1 w-full items-center justify-center">
+          <div>{formatBytes(node.disk_total)}</div>
+          <div className="mt-1">
+            {isOnline ? `${diskUsage.toFixed(1)}%` : "N/A"}
+          </div>
         </div>
       </div>
       <div className="col-span-1">
@@ -95,7 +101,7 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
       <div className="col-span-2">
         <div className="flex items-center justify-around">
           {node.traffic_limit !== 0 && isOnline && stats && (
-            <div className="flex items-center justify-center w-1/4">
+            <div className="flex items-center justify-center w-1/3">
               <CircleProgress
                 value={trafficPercentage}
                 maxValue={100}
@@ -106,14 +112,12 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
             </div>
           )}
           <div
-            className={node.traffic_limit !== 0 ? "w-3/4 text-left" : "w-full"}>
+            className={node.traffic_limit !== 0 ? "w-2/3 text-left" : "w-full"}>
             <div>
-              <span>
-                ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}
-              </span>
-              <span className="ml-2">
+              <div>↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}</div>
+              <div>
                 ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
-              </span>
+              </div>
             </div>
             {node.traffic_limit !== 0 && isOnline && stats && (
               <div>
@@ -127,7 +131,9 @@ export const NodeListItem = ({ node }: NodeListItemProps) => {
         </div>
       </div>
       <div className="col-span-1">
-        <span>{load}</span>
+        {load.split("|").map((item, index) => (
+          <div key={index}>{item.trim()}</div>
+        ))}
       </div>
     </div>
   );

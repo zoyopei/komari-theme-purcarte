@@ -97,14 +97,14 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
               ? `${formatBytes(liveData.ram.used)} / ${formatBytes(
                   node?.mem_total || 0
                 )}`
-              : "-"}
+              : "N/A"}
           </label>
           <label>
             {liveData?.swap?.used
               ? `${formatBytes(liveData.swap.used)} / ${formatBytes(
                   node?.swap_total || 0
                 )}`
-              : "-"}
+              : "N/A"}
           </label>
         </Flex>
       ),
@@ -199,6 +199,8 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
           tooltipLabel: "UDP 连接",
         },
       ],
+      yAxisFormatter: (value: number, index: number) =>
+        index !== 0 ? `${value}` : "",
       data: chartData,
     },
     {
@@ -208,6 +210,8 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
       value: liveData?.process || "-",
       dataKey: "process",
       color: colors[0],
+      yAxisFormatter: (value: number, index: number) =>
+        index !== 0 ? `${value}` : "",
       data: chartData,
       tooltipLabel: "进程数",
     },
@@ -260,8 +264,8 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
               <XAxis
                 dataKey="time"
                 tickLine={false}
-                axisLine={false}
-                tick={{ fontSize: 10 }}
+                axisLine={{ stroke: "var(--muted-foreground)" }}
+                tick={{ fill: "var(--muted-foreground)" }}
                 tickFormatter={timeFormatter}
                 interval={0}
                 height={20}
@@ -273,8 +277,11 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
                 tickFormatter={config.yAxisFormatter}
                 orientation="left"
                 type="number"
-                tick={{ fontSize: 10, dx: -8 }}
-                width={25}
+                tick={{
+                  dx: -8,
+                  fill: "var(--muted-foreground)",
+                }}
+                width={200}
                 mirror={true}
               />
               <Tooltip
@@ -319,12 +326,12 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
   return (
     <div className="relative">
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-card/50 backdrop-blur-sm rounded-lg z-10">
+        <div className="absolute inset-0 flex items-center justify-center purcarte-blur rounded-lg z-10">
           <Loading text="正在加载图表数据..." />
         </div>
       )}
       {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-card/50 backdrop-blur-sm rounded-lg z-10">
+        <div className="absolute inset-0 flex items-center justify-center purcarte-blur rounded-lg z-10">
           <p className="text-red-500">{error}</p>
         </div>
       )}

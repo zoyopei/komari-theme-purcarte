@@ -8,7 +8,7 @@ import Loading from "@/components/loading";
 import type { NodeWithStatus } from "@/types/node";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import { useLiveData } from "@/contexts/LiveDataContext";
-import { useConfigItem } from "@/config";
+import { useAppConfig } from "@/config";
 
 interface HomePageProps {
   viewMode: "grid" | "table";
@@ -19,8 +19,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
   const { nodes: staticNodes, loading, getGroups } = useNodeData();
   const { liveData } = useLiveData();
   const [selectedGroup, setSelectedGroup] = useState("所有");
-  const enableGroupedBar = useConfigItem("enableGroupedBar");
-  const enableStatsBar = useConfigItem("enableStatsBar");
+  const { enableGroupedBar, enableStatsBar, enableSwap } = useAppConfig();
   const [displayOptions, setDisplayOptions] = useState({
     time: true,
     online: true,
@@ -95,7 +94,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
 
       <main className="flex-1 px-4 pb-4">
         {enableGroupedBar && (
-          <div className="flex overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground box-border border space-x-4 px-4 rounded-lg mb-4 bg-card backdrop-blur-[10px]">
+          <div className="flex overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground box-border border border-border space-x-4 px-4 rounded-lg mb-4 purcarte-blur">
             <span>分组</span>
             {groups.map((group: string) => (
               <Button
@@ -117,7 +116,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
               className={
                 viewMode === "grid"
                   ? ""
-                  : "space-y-2 bg-card overflow-auto backdrop-blur-[10px] rounded-lg p-2"
+                  : "space-y-2 overflow-auto box-border border border-border purcarte-blur rounded-lg p-2"
               }>
               <div
                 className={
@@ -125,12 +124,22 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
                     ? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4"
                     : "min-w-[1080px]"
                 }>
-                {viewMode === "table" && <NodeListHeader />}
+                {viewMode === "table" && (
+                  <NodeListHeader enableSwap={enableSwap} />
+                )}
                 {filteredNodes.map((node: NodeWithStatus) =>
                   viewMode === "grid" ? (
-                    <NodeCard key={node.uuid} node={node} />
+                    <NodeCard
+                      key={node.uuid}
+                      node={node}
+                      enableSwap={enableSwap}
+                    />
                   ) : (
-                    <NodeListItem key={node.uuid} node={node} />
+                    <NodeListItem
+                      key={node.uuid}
+                      node={node}
+                      enableSwap={enableSwap}
+                    />
                   )
                 )}
               </div>

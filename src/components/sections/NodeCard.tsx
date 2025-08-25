@@ -16,9 +16,10 @@ import { CircleProgress } from "../ui/circle-progress";
 
 interface NodeCardProps {
   node: NodeWithStatus;
+  enableSwap: boolean | undefined;
 }
 
-export const NodeCard = ({ node }: NodeCardProps) => {
+export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
   const {
     stats,
     isOnline,
@@ -40,7 +41,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
 
   return (
     <Card
-      className={`flex flex-col mx-auto bg-card backdrop-blur-xs w-full min-w-[280px] max-w-sm ${
+      className={`flex flex-col mx-auto purcarte-blur w-full min-w-[280px] max-w-sm ${
         isOnline
           ? ""
           : "striped-bg-red-translucent-diagonal ring-2 ring-red-500/50"
@@ -104,7 +105,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
             <span className="w-12 text-right">{memUsage.toFixed(0)}%</span>
           </div>
         </div>
-        {node.swap_total > 0 ? (
+        {enableSwap && (
           <div className="flex items-center justify-between">
             <span className="text-secondary-foreground">SWAP</span>
             <div className="w-3/4 flex items-center gap-2">
@@ -112,15 +113,11 @@ export const NodeCard = ({ node }: NodeCardProps) => {
                 value={swapUsage}
                 className={getProgressBarClass(swapUsage)}
               />
-              <span className="w-12 text-right">{swapUsage.toFixed(0)}%</span>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between">
-            <span className="text-secondary-foreground">SWAP</span>
-            <div className="w-3/4 flex items-center gap-2">
-              <ProgressBar value={0} />
-              <span className="w-12 text-right">OFF</span>
+              {node.swap_total > 0 ? (
+                <span className="w-12 text-right">{swapUsage.toFixed(0)}%</span>
+              ) : (
+                <span className="w-12 text-right">OFF</span>
+              )}
             </div>
           </div>
         )}
@@ -188,7 +185,7 @@ export const NodeCard = ({ node }: NodeCardProps) => {
             <div className="flex items-center gap-1">{expired_at}</div>
           </div>
           <div className="border-l border-border/60 mx-2"></div>
-          <div className="flex justify-start w-full">
+          <div className="flex justify-end w-full">
             <span className="text-secondary-foreground">在线：</span>
             <span>
               {isOnline && stats ? formatUptime(stats.uptime) : "离线"}

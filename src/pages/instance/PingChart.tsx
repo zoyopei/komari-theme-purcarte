@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Brush,
+  ReferenceLine,
 } from "recharts";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -18,6 +19,7 @@ import { usePingChart } from "@/hooks/usePingChart";
 import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
 import { useConfigItem } from "@/config";
 import { CustomTooltip } from "@/components/ui/tooltip";
+import Tips from "@/components/ui/tips";
 
 interface PingChartProps {
   node: NodeData;
@@ -29,6 +31,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   const [visiblePingTasks, setVisiblePingTasks] = useState<number[]>([]);
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
   const [cutPeak, setCutPeak] = useState(false);
+  const [connectBreaks, setConnectBreaks] = useState(false);
   const maxPointsToRender = useConfigItem("pingChartMaxPoints") || 0; // 0表示不限制
 
   useEffect(() => {
@@ -144,70 +147,103 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   }, [pingHistory?.tasks]);
 
   const generateColor = useCallback(
-    (taskName: string, total: number) => {
+    (taskName: string, total: number, isBreakPoints?: boolean) => {
       const index = sortedTasks.findIndex((t) => t.name === taskName);
       if (index === -1) return "#000000"; // Fallback color
 
       const hue = (index * (360 / total)) % 360;
-      return `hsl(${hue}, 50%, 60%)`;
+      return `hsla(${hue}, 50%, 60%, ${isBreakPoints ? 0.7 : 1})`;
     },
     [sortedTasks]
   );
 
+  const breakPoints = useMemo(() => {
+    if (!connectBreaks || !chartData || chartData.length < 2) {
+      return [];
+    }
+    const points: { x: number; color: string }[] = [];
+    for (const task of sortedTasks) {
+      if (!visiblePingTasks.includes(task.id)) {
+        continue;
+      }
+      const taskKey = String(task.id);
+      for (let i = 1; i < chartData.length; i++) {
+        const prevPoint = chartData[i - 1];
+        const currentPoint = chartData[i];
+
+        const isBreak =
+          (currentPoint[taskKey] === null ||
+            currentPoint[taskKey] === undefined) &&
+          prevPoint[taskKey] !== null &&
+          prevPoint[taskKey] !== undefined;
+
+        if (isBreak) {
+          points.push({
+            x: currentPoint.time,
+            color: generateColor(task.name, sortedTasks.length, true),
+          });
+        }
+      }
+    }
+    return points;
+  }, [chartData, sortedTasks, visiblePingTasks, generateColor, connectBreaks]);
+
   return (
     <div className="relative space-y-4">
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-card/50 backdrop-blur-sm rounded-lg z-10">
+        <div className="absolute inset-0 flex items-center justify-center purcarte-blur rounded-lg z-10">
           <Loading text="正在加载图表数据..." />
         </div>
       )}
       {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-card/50 backdrop-blur-sm rounded-lg z-10">
+        <div className="absolute inset-0 flex items-center justify-center purcarte-blur rounded-lg z-10">
           <p className="text-red-500">{error}</p>
         </div>
       )}
 
-      <Card>
-        <CardContent className="p-2">
-          <div className="flex flex-wrap gap-2 items-center justify-center">
-            {sortedTasks.map((task) => {
-              const values = chartData
-                .map((d) => d[task.id])
-                .filter((v) => v !== null && v !== undefined) as number[];
-              const loss =
-                chartData.length > 0
-                  ? (1 - values.length / chartData.length) * 100
-                  : 0;
-              const min = values.length > 0 ? Math.min(...values) : 0;
-              const isVisible = visiblePingTasks.includes(task.id);
-              const color = generateColor(task.name, sortedTasks.length);
+      {pingHistory?.tasks && pingHistory.tasks.length > 0 && (
+        <Card>
+          <CardContent className="p-2">
+            <div className="flex flex-wrap gap-2 items-center justify-center">
+              {sortedTasks.map((task) => {
+                const values = chartData
+                  .map((d) => d[task.id])
+                  .filter((v) => v !== null && v !== undefined) as number[];
+                const loss =
+                  chartData.length > 0
+                    ? (1 - values.length / chartData.length) * 100
+                    : 0;
+                const min = values.length > 0 ? Math.min(...values) : 0;
+                const isVisible = visiblePingTasks.includes(task.id);
+                const color = generateColor(task.name, sortedTasks.length);
 
-              return (
-                <div
-                  key={task.id}
-                  className={`h-auto px-3 py-1.5 flex flex-col leading-snug text-center cursor-pointer rounded-md transition-all outline-2 outline ${
-                    isVisible ? "" : "outline-transparent"
-                  }`}
-                  onClick={() => handleTaskVisibilityToggle(task.id)}
-                  style={{
-                    outlineColor: isVisible ? color : undefined,
-                    boxShadow: isVisible ? `0 0 8px ${color}` : undefined,
-                  }}>
-                  <div className="font-semibold">{task.name}</div>
-                  <span className="text-xs font-normal">
-                    {loss.toFixed(1)}% | {min.toFixed(0)}ms
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                return (
+                  <div
+                    key={task.id}
+                    className={`h-auto px-3 py-1.5 flex flex-col leading-snug text-center cursor-pointer rounded-md transition-all outline-2 outline ${
+                      isVisible ? "" : "outline-transparent"
+                    }`}
+                    onClick={() => handleTaskVisibilityToggle(task.id)}
+                    style={{
+                      outlineColor: isVisible ? color : undefined,
+                      boxShadow: isVisible ? `0 0 8px ${color}` : undefined,
+                    }}>
+                    <div className="font-semibold">{task.name}</div>
+                    <span className="text-xs font-normal">
+                      {loss.toFixed(1)}% | {min.toFixed(0)}ms
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start">
-            <div>
+            <div className="flex items-center gap-4">
               <div className="flex items-center space-x-2">
                 <Switch
                   id="peak-shaving"
@@ -215,6 +251,30 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   onCheckedChange={setCutPeak}
                 />
                 <Label htmlFor="peak-shaving">平滑</Label>
+                <Tips>
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        '<h2 class="text-lg font-bold">关于数据平滑的提示</h2><p>当您开启平滑后，您在统计图中看到的曲线经过<strong>指数加权移动平均 (EWMA)</strong> 算法处理，这是一种常用的数据平滑技术。</p></br><p>需要注意的是，经过EWMA算法平滑后的曲线所展示的数值，<strong>并非原始的、真实的测量数据</strong>。它们是根据EWMA算法计算得出的一个<strong>平滑趋势线</strong>，旨在减少数据波动，使数据模式和趋势更容易被识别。</p></br><p>因此，您看到的数值更像是<strong>视觉上的呈现</strong>，帮助您更好地理解数据的整体走向和长期趋势，而不是每一个时间点的精确真实值。如果您需要查看具体、原始的数据点，请参考未经平滑处理的数据视图。</p>',
+                    }}
+                  />
+                </Tips>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="connect-breaks"
+                  checked={connectBreaks}
+                  onCheckedChange={setConnectBreaks}
+                />
+                <Label htmlFor="connect-breaks">连接断点</Label>
+                <Tips>
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        '<h2 class="text-lg font-bold">关于连接断点的提示</h2><p>当您开启"连接断点"功能后，图表中的曲线将会跨过那些由于网络问题或其他原因导致的丢包点，形成一条连续的线条。同时，系统会在丢包位置显示<strong>半透明的垂直参考线</strong>来标记断点位置。</p>',
+                    }}
+                  />
+                </Tips>
               </div>
             </div>
           </div>
@@ -244,24 +304,39 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                       minute: "2-digit",
                     });
                   }}
+                  tick={{ fill: "var(--muted-foreground)" }}
                   scale="time"
                 />
-                <YAxis mirror={true} width={30} />
+                <YAxis
+                  mirror={true}
+                  width={30}
+                  tick={{ fill: "var(--muted-foreground)" }}
+                />
                 <Tooltip
                   cursor={false}
                   content={<CustomTooltip labelFormatter={lableFormatter} />}
                 />
+                {connectBreaks &&
+                  breakPoints.map((point, index) => (
+                    <ReferenceLine
+                      key={`break-${index}`}
+                      x={point.x}
+                      stroke={point.color}
+                      strokeWidth={1}
+                      strokeOpacity={0.5}
+                    />
+                  ))}
                 {sortedTasks.map((task) => (
                   <Line
                     key={task.id}
-                    type={cutPeak ? "basis" : "linear"}
+                    type={"basis"}
                     dataKey={String(task.id)}
                     name={task.name}
                     stroke={generateColor(task.name, sortedTasks.length)}
                     strokeWidth={2}
                     hide={!visiblePingTasks.includes(task.id)}
                     dot={false}
-                    connectNulls={false}
+                    connectNulls={connectBreaks}
                   />
                 ))}
                 <Brush
