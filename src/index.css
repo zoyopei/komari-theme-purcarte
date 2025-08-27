@@ -144,6 +144,11 @@ body::before {
   /* transition: var(--body-background-transition); */
 }
 
+.purcarte-blur {
+  background: var(--color-card);
+  backdrop-filter: blur(var(--purcarte-blur));
+}
+
 .striped-bg-red-translucent-diagonal {
   background-image: linear-gradient(
     45deg,
@@ -156,9 +161,4 @@ body::before {
     transparent 100%
   );
   background-size: 60px 60px;
-}
-
-.purcarte-blur {
-  background: var(--color-card);
-  backdrop-filter: blur(var(--purcarte-blur));
 }

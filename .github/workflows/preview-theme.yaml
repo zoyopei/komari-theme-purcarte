@@ -2,9 +2,6 @@ name: Build Preview Theme Package
 
 on:
   workflow_dispatch:
-    inputs:
-      ref:
-        default: "dev"
 
 jobs:
   build-and-package:
