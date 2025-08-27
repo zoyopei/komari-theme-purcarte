@@ -12,6 +12,11 @@ interface OSConfig {
 // 操作系统匹配组
 const osConfigs: OSConfig[] = [
   {
+    name: "Alibaba",
+    image: "/assets/os-alibaba.svg",
+    keywords: ["alibaba"],
+  },
+  {
     name: "AlmaLinux",
     image: "/assets/os-alma.svg",
     keywords: ["alma", "almalinux"],
@@ -20,6 +25,16 @@ const osConfigs: OSConfig[] = [
     name: "Alpine Linux",
     image: "/assets/os-alpine.webp",
     keywords: ["alpine", "alpine linux"],
+  },
+  {
+    name: "Arch Linux",
+    image: "/assets/os-arch.svg",
+    keywords: ["arch", "archlinux", "arch linux"],
+  },
+  {
+    name: "Armbian",
+    image: "/assets/os-armbian.svg",
+    keywords: ["armbian"],
   },
   {
     name: "CentOS",
@@ -32,6 +47,91 @@ const osConfigs: OSConfig[] = [
     keywords: ["debian", "deb"],
   },
   {
+    name: "Fedora",
+    image: "/assets/os-fedora.svg",
+    keywords: ["fedora"],
+  },
+  {
+    name: "FreeBSD",
+    image: "/assets/os-freebsd.svg",
+    keywords: ["freebsd", "bsd"],
+  },
+  {
+    name: "Gentoo",
+    image: "/assets/os-gentoo.svg",
+    keywords: ["gentoo"],
+  },
+  {
+    name: "ImmortalWrt",
+    image: "/assets/os-openwrt.svg",
+    keywords: ["immortalwrt", "immortal", "emmortal"],
+  },
+  {
+    name: "iStoreOS",
+    image: "/assets/os-istore.png",
+    keywords: ["istore", "istoreos", "istore os"],
+  },
+  {
+    name: "Kali Linux",
+    image: "/assets/os-kail.svg",
+    keywords: ["kail", "kali", "kali linux"],
+  },
+  {
+    name: "Linux Mint",
+    image: "/assets/os-mint.svg",
+    keywords: ["mint", "linux mint"],
+  },
+  {
+    name: "macOS",
+    image: "/assets/os-macos.svg",
+    keywords: ["macos"],
+  },
+  {
+    name: "Manjaro",
+    image: "/assets/os-manjaro-.svg",
+    keywords: ["manjaro"],
+  },
+  {
+    name: "NixOS",
+    image: "/assets/os-nix.svg",
+    keywords: ["nixos", "nix os", "nix"],
+  },
+  {
+    name: "OpenCloudOS",
+    image: "/assets/os-opencloud.svg",
+    keywords: ["opencloud"],
+  },
+  {
+    name: "openSUSE",
+    image: "/assets/os-openSUSE.svg",
+    keywords: ["opensuse", "suse"],
+  },
+  {
+    name: "OpenWrt",
+    image: "/assets/os-openwrt.svg",
+    keywords: ["openwrt", "open wrt", "open-wrt", "qwrt"],
+  },
+  {
+    name: "Proxmox VE",
+    image: "/assets/os-proxmox.ico",
+    keywords: ["proxmox", "proxmox ve"],
+  },
+  {
+    name: "Red Hat",
+    image: "/assets/os-redhat.svg",
+    keywords: ["redhat", "rhel", "red hat"],
+  },
+  {
+    name: "Rocky Linux",
+    image: "/assets/os-rocky.svg",
+    keywords: ["rocky", "rocky linux"],
+  },
+  {
+    name: "Synology DSM",
+    image: "/assets/os-synology.ico",
+    keywords: ["synology", "dsm", "synology dsm"],
+  },
+  {
     name: "Ubuntu",
     image: "/assets/os-ubuntu.svg",
     keywords: ["ubuntu", "elementary"],
@@ -40,86 +140,6 @@ const osConfigs: OSConfig[] = [
     name: "Windows",
     image: "/assets/os-windows.svg",
     keywords: ["windows", "win", "microsoft", "ms"],
-  },
-  {
-    name: "Arch Linux",
-    image: "/assets/os-arch.svg",
-    keywords: ["arch", "archlinux", "arch linux"],
-  },
-  {
-    name: "Kali Linux",
-    image: "/assets/os-kail.svg",
-    keywords: ["kail", "kali", "kali linux"],
-  },
-  {
-    name: "iStoreOS",
-    image: "/assets/os-istore.png",
-    keywords: ["istore", "istoreos", "istore os"],
-  },
-  {
-    name: "OpenWrt",
-    image: "/assets/os-openwrt.svg",
-    keywords: ["openwrt", "open wrt", "open-wrt", "qwrt"],
-  },
-  {
-    name: "ImmortalWrt",
-    image: "/assets/os-openwrt.svg",
-    keywords: ["immortalwrt", "immortal", "emmortal"],
-  },
-  {
-    name: "NixOS",
-    image: "/assets/os-nix.svg",
-    keywords: ["nixos", "nix os", "nix"],
-  },
-  {
-    name: "Rocky Linux",
-    image: "/assets/os-rocky.svg",
-    keywords: ["rocky", "rocky linux"],
-  },
-  {
-    name: "Fedora",
-    image: "/assets/os-fedora.svg",
-    keywords: ["fedora"],
-  },
-  {
-    name: "openSUSE",
-    image: "/assets/os-openSUSE.svg",
-    keywords: ["opensuse", "suse"],
-  },
-  {
-    name: "Gentoo",
-    image: "/assets/os-gentoo.svg",
-    keywords: ["gentoo"],
-  },
-  {
-    name: "Red Hat",
-    image: "/assets/os-redhat.svg",
-    keywords: ["redhat", "rhel", "red hat"],
-  },
-  {
-    name: "Linux Mint",
-    image: "/assets/os-mint.svg",
-    keywords: ["mint", "linux mint"],
-  },
-  {
-    name: "Manjaro",
-    image: "/assets/os-manjaro-.svg",
-    keywords: ["manjaro"],
-  },
-  {
-    name: "Synology DSM",
-    image: "/assets/os-synology.ico",
-    keywords: ["synology", "dsm", "synology dsm"],
-  },
-  {
-    name: "Proxmox VE",
-    image: "/assets/os-proxmox.ico",
-    keywords: ["proxmox", "proxmox ve"],
-  },
-  {
-    name: "macOS",
-    image: "/assets/os-macos.svg",
-    keywords: ["macos"],
   },
 ];
 
