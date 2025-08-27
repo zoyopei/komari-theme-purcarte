@@ -16,6 +16,7 @@ export interface ConfigOptions {
   enableGroupedBar?: boolean; // 是否启用分组栏
   enableInstanceDetail?: boolean; // 是否启用实例详情
   enablePingChart?: boolean; // 是否启用延迟图表
+  enableConnectBreaks?: boolean; // 是否启用连接断点
   pingChartMaxPoints?: number; // 延迟图表最大点数
   enableSwap?: boolean; // 是否启用SWAP显示
 }
@@ -39,6 +40,7 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   enableGroupedBar: true,
   enableInstanceDetail: true,
   enablePingChart: true,
+  enableConnectBreaks: false,
   pingChartMaxPoints: 0,
   enableSwap: true,
 };

@@ -97,6 +97,8 @@ export function ConfigProvider({
       enableInstanceDetail:
         theme.enableInstanceDetail ?? DEFAULT_CONFIG.enableInstanceDetail,
       enablePingChart: theme.enablePingChart ?? DEFAULT_CONFIG.enablePingChart,
+      enableConnectBreaks:
+        theme.enableConnectBreaks ?? DEFAULT_CONFIG.enableConnectBreaks,
       pingChartMaxPoints:
         theme.pingChartMaxPoints || DEFAULT_CONFIG.pingChartMaxPoints,
       backgroundImage,

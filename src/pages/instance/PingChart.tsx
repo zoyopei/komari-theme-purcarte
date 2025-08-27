@@ -31,7 +31,9 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   const [visiblePingTasks, setVisiblePingTasks] = useState<number[]>([]);
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
   const [cutPeak, setCutPeak] = useState(false);
-  const [connectBreaks, setConnectBreaks] = useState(false);
+  const [connectBreaks, setConnectBreaks] = useState(
+    useConfigItem("enableConnectBreaks")
+  );
   const maxPointsToRender = useConfigItem("pingChartMaxPoints") || 0; // 0表示不限制
 
   useEffect(() => {
@@ -147,12 +149,27 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   }, [pingHistory?.tasks]);
 
   const generateColor = useCallback(
-    (taskName: string, total: number, isBreakPoints?: boolean) => {
+    (taskName: string, total: number) => {
       const index = sortedTasks.findIndex((t) => t.name === taskName);
       if (index === -1) return "#000000"; // Fallback color
 
       const hue = (index * (360 / total)) % 360;
-      return `hsla(${hue}, 50%, 60%, ${isBreakPoints ? 0.7 : 1})`;
+
+      // 使用OKLCH色彩空间，优化折线图的颜色区分度
+      // L=0.7 (较高亮度，便于在图表背景上清晰显示)
+      // C=0.2 (较高饱和度，增强颜色区分度)
+      const oklchColor = `oklch(0.6 0.2 ${hue} / .8)`;
+
+      // 为不支持OKLCH的浏览器提供HSL备用色
+      // 使用更高的饱和度和适中的亮度来匹配OKLCH的视觉效果
+      const hslFallback = `hsl(${hue}, 50%, 60%)`;
+
+      // 检查浏览器是否支持OKLCH
+      if (CSS.supports("color", oklchColor)) {
+        return oklchColor;
+      } else {
+        return hslFallback;
+      }
     },
     [sortedTasks]
   );
@@ -180,7 +197,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
         if (isBreak) {
           points.push({
             x: currentPoint.time,
-            color: generateColor(task.name, sortedTasks.length, true),
+            color: generateColor(task.name, sortedTasks.length),
           });
         }
       }
@@ -271,7 +288,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   <span
                     dangerouslySetInnerHTML={{
                       __html:
-                        '<h2 class="text-lg font-bold">关于连接断点的提示</h2><p>当您开启"连接断点"功能后，图表中的曲线将会跨过那些由于网络问题或其他原因导致的丢包点，形成一条连续的线条。同时，系统会在丢包位置显示<strong>半透明的垂直参考线</strong>来标记断点位置。</p>',
+                        '<h2 class="text-lg font-bold">关于连接断点的提示</h2><p><strong>默认关闭，可在后台配置</strong></p><p>当您开启"连接断点"功能后，图表中的曲线将会跨过那些由于网络问题或其他原因导致的丢包点，形成一条连续的线条。同时，系统会在丢包位置显示<strong>半透明的垂直参考线</strong>来标记断点位置。</p>',
                     }}
                   />
                 </Tips>
@@ -322,14 +339,14 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                       key={`break-${index}`}
                       x={point.x}
                       stroke={point.color}
-                      strokeWidth={1}
+                      strokeWidth={1.5}
                       strokeOpacity={0.5}
                     />
                   ))}
                 {sortedTasks.map((task) => (
                   <Line
                     key={task.id}
-                    type={"basis"}
+                    type={"monotone"}
                     dataKey={String(task.id)}
                     name={task.name}
                     stroke={generateColor(task.name, sortedTasks.length)}

@@ -148,6 +148,13 @@
                 "help": "启用后默认显示延迟图表"
             },
             {
+                "key": "enableConnectBreaks",
+                "name": "启用连接断点",
+                "type": "switch",
+                "default": false,
+                "help": "启用后图表中的曲线将会跨过断点形成连续的线条，并使用半透明的垂直参考线来标记断点位置"
+            },
+            {
                 "key": "pingChatrtMaxPoints",
                 "name": "延迟图表最大渲染点数",
                 "type": "number",

@@ -117,11 +117,13 @@ const Instance = memo(({ node }: InstanceProps) => {
         <div>
           <p className="text-muted-foreground text-sm">总流量</p>
           <div className="flex items-center gap-2">
-            {node.traffic_limit && isOnline && (
+            {node.traffic_limit !== 0 && isOnline && stats && (
               <CircleProgress
                 value={trafficPercentage}
                 maxValue={100}
-                size={36}
+                size={32}
+                strokeWidth={4}
+                showPercentage={true}
               />
             )}
             <div>
