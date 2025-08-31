@@ -27,7 +27,6 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
     traffic: true,
     speed: true,
   });
-  const [currentTime] = useState(new Date());
 
   const combinedNodes = useMemo<NodeWithStatus[]>(() => {
     if (!staticNodes) return [];
@@ -88,7 +87,6 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
           setDisplayOptions={setDisplayOptions}
           stats={stats}
           loading={loading}
-          currentTime={currentTime}
         />
       )}
 

@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Settings2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { formatBytes } from "@/utils";
@@ -31,7 +32,6 @@ interface StatsBarProps {
     currentSpeedDown: number;
   };
   loading: boolean;
-  currentTime: Date;
 }
 
 export const StatsBar = ({
@@ -39,9 +39,16 @@ export const StatsBar = ({
   setDisplayOptions,
   stats,
   loading,
-  currentTime,
 }: StatsBarProps) => {
   const isMobile = useIsMobile();
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // 获取已启用的统计项列表
   const enabledStats = Object.keys(displayOptions).filter(
@@ -60,7 +67,7 @@ export const StatsBar = ({
                   当前时间
                 </label>
                 <label className="font-medium -mt-2 text-md">
-                  {currentTime.toLocaleTimeString()}
+                  {time.toLocaleTimeString()}
                 </label>
               </div>
             </div>

@@ -53,7 +53,7 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
             <img
               src={getOSImage(node.os)}
               alt={node.os}
-              className="w-6 h-6 rounded-full"
+              className="w-6 h-6 object-contain"
               loading="lazy"
             />
             <CardTitle className="text-base font-bold">{node.name}</CardTitle>
