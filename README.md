@@ -52,6 +52,52 @@
 
 </details>
 
+## ⚙️ 主题配置
+
+<img width="80%" src="./public/examples/PurCarte-Theme-Config.png" alt="PurCarte Theme Config">
+
+本主题支持通过 Komari 后台进行详细配置，所有可用选项如下：
+
+#### 样式调整
+
+| 名称 | 配置项 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- | :--- |
+| 背景图片链接 | `backgroundImage` | `string` | `/assets/Moonlit-Scenery.webp` | 目前仅支持单张背景图片（eg: https://test.com/1.png） |
+| 磨砂玻璃模糊值 | `blurValue` | `number` | `10` | 调整模糊值大小，数值越大模糊效果越明显，建议值为 5-20，为 0 则表示不启用模糊效果 |
+| 磨砂玻璃背景色 | `blurBackgroundColor` | `string` | `rgba(255, 255, 255, 0.5) \| rgba(0, 0, 0, 0.5)` | 调整模糊背景色，推荐 rgba 颜色值，使用“\|”分隔亮色模式和暗色模式的颜色值（eg: `rgba(255, 255, 255, 0.5)\|rgba(0, 0, 0, 0.5)`） |
+| 标签默认颜色列表 | `tagDefaultColorList` | `string` | `ruby,gray,gold,bronze,brown,yellow,amber,orange,tomato,red,crimson,pink,plum,purple,violet,iris,indigo,blue,cyan,teal,jade,green,grass,lime,mint,sky` | 标签默认颜色列表，用于修改默认解析颜色顺序以及使用的颜色池，逗号分隔（可用的颜色列表请参考：[radix-ui color](https://www.radix-ui.com/themes/docs/theme/color)，改完没有生效则说明填写有误） |
+
+#### 标题栏设置
+
+| 名称 | 配置项 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- | :--- |
+| 启用标题栏左侧 Logo | `enableLogo` | `switch` | `false` | 启用后默认在标题栏左侧显示 Logo |
+| Logo 图片链接 | `logoUrl` | `string` | `/assets/logo.png` | Logo 图片链接（eg: https://test.com/logo.png） |
+| 启用标题栏标题 | `enableTitle` | `switch` | `true` | 启用后默认在顶栏左侧显示标题 |
+| 标题栏标题文本 | `titleText` | `string` | | 标题栏左侧显示的文本（留空则使用站点标题） |
+| 启用搜索按钮 | `enableSearchButton` | `switch` | `true` | 启用后默认在标题栏右侧显示搜索按钮 |
+| 默认展示视图 | `selectedDefaultView` | `select` | `grid` | 设置默认展示视图为网格或表格（优先使用 localStorage） |
+| 默认外观 | `selectedDefaultAppearance` | `select` | `system` | 设置默认外观为浅色、深色或系统主题（优先使用 localStorage） |
+| 启用管理按钮 | `enableAdminButton` | `switch` | `true` | 启用后默认在标题栏右侧显示管理按钮 |
+
+#### 内容设置
+
+| 名称 | 配置项 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- | :--- |
+| 启用统计栏 | `enableStatsBar` | `switch` | `true` | 启用后默认显示统计栏 |
+| 启用分组栏 | `enableGroupedBar` | `switch` | `true` | 启用后默认显示分组栏 |
+| 启用 SWAP 显示 | `enableSwap` | `switch` | `true` | 启用后默认显示 SWAP 信息 |
+| 启用列表视图进度条 | `enableListItemProgressBar` | `switch` | `true` | 启用后列表视图中将会显示进度条来表示使用率 |
+
+#### Instance 设置
+
+| 名称 | 配置项 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- | :--- |
+| 启用 Instance 详情信息 | `enableInstanceDetail` | `switch` | `true` | 启用后默认显示 Instance 详情 |
+| 启用延迟图表 | `enablePingChart` | `switch` | `true` | 启用后默认显示延迟图表 |
+| 启用连接断点 | `enableConnectBreaks` | `switch` | `false` | 启用后图表中的曲线将会跨过断点形成连续的线条，并使用半透明的垂直参考线来标记断点位置 |
+| 延迟图表最大渲染点数 | `pingChartMaxPoints` | `number` | `0` | 设置延迟图表的最大渲染点数来优化图表渲染，0 表示不限制，推荐值为 2000 或更小的值 |
+
 ## 🛠️ 本地开发
 
 1.  **克隆仓库**
