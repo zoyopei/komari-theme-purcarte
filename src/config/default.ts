@@ -19,6 +19,7 @@ export interface ConfigOptions {
   enableConnectBreaks?: boolean; // 是否启用连接断点
   pingChartMaxPoints?: number; // 延迟图表最大点数
   enableSwap?: boolean; // 是否启用SWAP显示
+  enableListItemProgressBar?: boolean; // 是否启用列表视图进度条
 }
 
 // 默认配置值
@@ -43,4 +44,5 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   enableConnectBreaks: false,
   pingChartMaxPoints: 0,
   enableSwap: true,
+  enableListItemProgressBar: true,
 };

@@ -33,12 +33,6 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
     trafficPercentage,
   } = useNodeCommons(node);
 
-  const getProgressBarClass = (percentage: number) => {
-    if (percentage > 90) return "bg-red-600";
-    if (percentage > 50) return "bg-yellow-400";
-    return "bg-green-500";
-  };
-
   return (
     <Card
       className={`flex flex-col mx-auto purcarte-blur w-full min-w-[280px] max-w-sm ${
@@ -88,20 +82,14 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
         <div className="flex items-center justify-between">
           <span className="text-secondary-foreground">CPU</span>
           <div className="w-3/4 flex items-center gap-2">
-            <ProgressBar
-              value={cpuUsage}
-              className={getProgressBarClass(cpuUsage)}
-            />
+            <ProgressBar value={cpuUsage} />
             <span className="w-12 text-right">{cpuUsage.toFixed(0)}%</span>
           </div>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-secondary-foreground">内存</span>
           <div className="w-3/4 flex items-center gap-2">
-            <ProgressBar
-              value={memUsage}
-              className={getProgressBarClass(memUsage)}
-            />
+            <ProgressBar value={memUsage} />
             <span className="w-12 text-right">{memUsage.toFixed(0)}%</span>
           </div>
         </div>
@@ -109,10 +97,7 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
           <div className="flex items-center justify-between">
             <span className="text-secondary-foreground">SWAP</span>
             <div className="w-3/4 flex items-center gap-2">
-              <ProgressBar
-                value={swapUsage}
-                className={getProgressBarClass(swapUsage)}
-              />
+              <ProgressBar value={swapUsage} />
               {node.swap_total > 0 ? (
                 <span className="w-12 text-right">{swapUsage.toFixed(0)}%</span>
               ) : (
@@ -124,10 +109,7 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
         <div className="flex items-center justify-between">
           <span className="text-secondary-foreground">硬盘</span>
           <div className="w-3/4 flex items-center gap-2">
-            <ProgressBar
-              value={diskUsage}
-              className={getProgressBarClass(diskUsage)}
-            />
+            <ProgressBar value={diskUsage} />
             <span className="w-12 text-right">{diskUsage.toFixed(0)}%</span>
           </div>
         </div>

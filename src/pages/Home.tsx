@@ -26,7 +26,12 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
   const [selectedGroup, setSelectedGroup] = useState(
     homeStateCache.selectedGroup
   );
-  const { enableGroupedBar, enableStatsBar, enableSwap } = useAppConfig();
+  const {
+    enableGroupedBar,
+    enableStatsBar,
+    enableSwap,
+    enableListItemProgressBar,
+  } = useAppConfig();
   const [displayOptions, setDisplayOptions] = useState({
     time: true,
     online: true,
@@ -173,6 +178,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
                       key={node.uuid}
                       node={node}
                       enableSwap={enableSwap}
+                      enableListItemProgressBar={enableListItemProgressBar}
                     />
                   )
                 )}

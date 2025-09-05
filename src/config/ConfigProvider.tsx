@@ -105,6 +105,9 @@ export function ConfigProvider({
       blurValue,
       blurBackgroundColor,
       enableSwap: theme.enableSwap ?? DEFAULT_CONFIG.enableSwap,
+      enableListItemProgressBar:
+        theme.enableListItemProgressBar ??
+        DEFAULT_CONFIG.enableListItemProgressBar,
     }),
     [
       theme,
