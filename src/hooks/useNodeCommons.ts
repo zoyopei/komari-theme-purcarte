@@ -42,11 +42,15 @@ export const useNodeCommons = (node: NodeWithStatus) => {
   let daysLeftTag = null;
   if (daysLeft !== null) {
     if (daysLeft < 0) {
-      daysLeftTag = "已过期";
+      daysLeftTag = "已过期<red>";
+    } else if (daysLeft <= 7) {
+      daysLeftTag = `余 ${daysLeft} 天<red>`;
+    } else if (daysLeft <= 15) {
+      daysLeftTag = `余 ${daysLeft} 天<orange>`;
     } else if (daysLeft < 36500) {
-      daysLeftTag = `余 ${daysLeft} 天`;
+      daysLeftTag = `余 ${daysLeft} 天<green>`;
     } else {
-      daysLeftTag = "长期";
+      daysLeftTag = "长期<green>";
     }
   }
 
@@ -59,7 +63,7 @@ export const useNodeCommons = (node: NodeWithStatus) => {
 
   const tagList = [
     ...(price ? [price] : []),
-    ...(daysLeftTag && price ? [daysLeftTag] : []),
+    ...(daysLeftTag ? [daysLeftTag] : []),
     ...(typeof node.tags === "string"
       ? node.tags
           .split(";")
