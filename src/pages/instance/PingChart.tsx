@@ -1,4 +1,7 @@
 import { memo, useState, useMemo, useCallback, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/useMobile";
+import { Eye, EyeOff } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -35,6 +38,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     useConfigItem("enableConnectBreaks")
   );
   const maxPointsToRender = useConfigItem("pingChartMaxPoints") || 0; // 0表示不限制
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (pingHistory?.tasks) {
@@ -141,6 +145,15 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
         ? prev.filter((id) => id !== taskId)
         : [...prev, taskId]
     );
+  };
+
+  const handleToggleAll = () => {
+    if (!pingHistory?.tasks) return;
+    if (visiblePingTasks.length === pingHistory.tasks.length) {
+      setVisiblePingTasks([]);
+    } else {
+      setVisiblePingTasks(pingHistory.tasks.map((t) => t.id));
+    }
   };
 
   const sortedTasks = useMemo(() => {
@@ -259,8 +272,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
 
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-4">
+          <div className="flex justify-between items-center flex-wrap">
+            <div className="flex gap-4 flex-wrap">
               <div className="flex items-center space-x-2">
                 <Switch
                   id="peak-shaving"
@@ -293,6 +306,22 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   />
                 </Tips>
               </div>
+            </div>
+            <div className={isMobile ? "w-full mt-2" : ""}>
+              <Button variant="secondary" onClick={handleToggleAll} size="sm">
+                {pingHistory?.tasks &&
+                visiblePingTasks.length === pingHistory.tasks.length ? (
+                  <>
+                    <EyeOff size={16} />
+                    隐藏全部
+                  </>
+                ) : (
+                  <>
+                    <Eye size={16} />
+                    显示全部
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </CardHeader>

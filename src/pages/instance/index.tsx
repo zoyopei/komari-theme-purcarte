@@ -39,7 +39,7 @@ const InstancePage = () => {
     return [
       { label: "实时", hours: 0 },
       { label: "1小时", hours: 1 },
-      { label: "6小时", hours: 6 },
+      { label: "4小时", hours: 4 },
       { label: "1天", hours: 24 },
       { label: "7天", hours: 168 },
       { label: "30天", hours: 720 },

@@ -118,7 +118,7 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
     }));
 
     let filledData;
-    if (hours === 1) {
+    if (hours <= 4) {
       filledData = fillMissingTimePoints(
         stringifiedData,
         minute,
