@@ -48,7 +48,7 @@ export const CustomTooltip = ({
             if (series?.tooltipFormatter) {
               value = series.tooltipFormatter(value, item.payload);
             } else if (typeof value === "number") {
-              value = `${value.toFixed(0)}ms`;
+              value = `${value.toFixed(0)}`;
             } else {
               value = value?.toString() || "-";
             }
