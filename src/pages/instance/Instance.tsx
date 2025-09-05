@@ -50,28 +50,28 @@ const Instance = memo(({ node }: InstanceProps) => {
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
         <div className="md:col-span-2">
-          <p className="text-muted-foreground text-sm">CPU</p>
-          <p className="text-sm">{`${node.cpu_name} (x${node.cpu_cores})`}</p>
+          <p className="text-muted-foreground">CPU</p>
+          <p>{`${node.cpu_name} (x${node.cpu_cores})`}</p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">架构</p>
-          <p className="text-sm">{node.arch}</p>
+          <p className="text-muted-foreground">架构</p>
+          <p>{node.arch}</p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">虚拟化</p>
-          <p className="text-sm">{node.virtualization}</p>
+          <p className="text-muted-foreground">虚拟化</p>
+          <p>{node.virtualization}</p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">GPU</p>
-          <p className="text-sm">{node.gpu_name || "N/A"}</p>
+          <p className="text-muted-foreground">GPU</p>
+          <p>{node.gpu_name || "N/A"}</p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">操作系统</p>
-          <p className="text-sm">{node.os}</p>
+          <p className="text-muted-foreground">操作系统</p>
+          <p>{node.os}</p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">内存</p>
-          <p className="text-sm">
+          <p className="text-muted-foreground">内存</p>
+          <p>
             {stats && isOnline
               ? `${formatBytes(stats.ram.used)} / ${formatBytes(
                   node.mem_total
@@ -80,8 +80,8 @@ const Instance = memo(({ node }: InstanceProps) => {
           </p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">交换</p>
-          <p className="text-sm">
+          <p className="text-muted-foreground">交换</p>
+          <p>
             {stats && isOnline
               ? `${formatBytes(stats.swap.used)} / ${formatBytes(
                   node.swap_total
@@ -90,8 +90,8 @@ const Instance = memo(({ node }: InstanceProps) => {
           </p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">磁盘</p>
-          <p className="text-sm">
+          <p className="text-muted-foreground">磁盘</p>
+          <p>
             {stats && isOnline
               ? `${formatBytes(stats.disk.used)} / ${formatBytes(
                   node.disk_total
@@ -100,12 +100,12 @@ const Instance = memo(({ node }: InstanceProps) => {
           </p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">运行时间</p>
-          <p className="text-sm">{formatUptime(stats?.uptime || 0)}</p>
+          <p className="text-muted-foreground">运行时间</p>
+          <p>{formatUptime(stats?.uptime || 0)}</p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">实时网络</p>
-          <p className="text-sm">
+          <p className="text-muted-foreground">实时网络</p>
+          <p>
             {stats && isOnline
               ? `↑ ${formatBytes(stats.network.up, true)} ↓ ${formatBytes(
                   stats.network.down,
@@ -115,7 +115,7 @@ const Instance = memo(({ node }: InstanceProps) => {
           </p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">总流量</p>
+          <p className="text-muted-foreground">总流量</p>
           <div className="flex items-center gap-2">
             {node.traffic_limit !== 0 && isOnline && stats && (
               <CircleProgress
@@ -127,14 +127,14 @@ const Instance = memo(({ node }: InstanceProps) => {
               />
             )}
             <div>
-              <p className="text-sm">
+              <p>
                 {stats && isOnline
                   ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
                       stats.network.totalDown
                     )}`
                   : "N/A"}
               </p>
-              <p className="text-sm">
+              <p>
                 {formatTrafficLimit(
                   node.traffic_limit,
                   node.traffic_limit_type
@@ -144,8 +144,8 @@ const Instance = memo(({ node }: InstanceProps) => {
           </div>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">负载</p>
-          <p className="text-sm">
+          <p className="text-muted-foreground">负载</p>
+          <p>
             {stats && isOnline
               ? `${stats.load.load1.toFixed(2)} | ${stats.load.load5.toFixed(
                   2
@@ -154,8 +154,8 @@ const Instance = memo(({ node }: InstanceProps) => {
           </p>
         </div>
         <div>
-          <p className="text-muted-foreground text-sm">最后上报</p>
-          <p className="text-sm">
+          <p className="text-muted-foreground">最后上报</p>
+          <p>
             {stats && isOnline
               ? new Date(stats.updated_at).toLocaleString()
               : "N/A"}

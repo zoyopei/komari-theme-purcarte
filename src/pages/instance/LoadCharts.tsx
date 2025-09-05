@@ -91,7 +91,7 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
       title: "内存",
       type: "area",
       value: (
-        <Flex gap="0" direction="column" align="end" className="text-sm">
+        <Flex gap="0" direction="column" align="end">
           <label>
             {liveData?.ram?.used
               ? `${formatBytes(liveData.ram.used)} / ${formatBytes(
@@ -153,7 +153,7 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
       type: "line",
       value: (
         <>
-          <Flex gap="0" align="end" direction="column" className="text-sm">
+          <Flex gap="0" align="end" direction="column">
             <span>↑ {formatBytes(liveData?.network.up || 0)}/s</span>
             <span>↓ {formatBytes(liveData?.network.down || 0)}/s</span>
           </Flex>
@@ -182,7 +182,7 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
       title: "连接数",
       type: "line",
       value: (
-        <Flex gap="0" align="end" direction="column" className="text-sm">
+        <Flex gap="0" align="end" direction="column">
           <span>TCP: {liveData?.connections.tcp}</span>
           <span>UDP: {liveData?.connections.udp}</span>
         </Flex>

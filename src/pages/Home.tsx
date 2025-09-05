@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { StatsBar } from "@/components/sections/StatsBar";
 import { NodeCard } from "@/components/sections/NodeCard";
@@ -15,10 +15,17 @@ interface HomePageProps {
   searchTerm: string;
 }
 
+const homeStateCache = {
+  selectedGroup: "所有",
+  scrollPosition: 0,
+};
+
 const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
   const { nodes: staticNodes, loading, getGroups } = useNodeData();
   const { liveData } = useLiveData();
-  const [selectedGroup, setSelectedGroup] = useState("所有");
+  const [selectedGroup, setSelectedGroup] = useState(
+    homeStateCache.selectedGroup
+  );
   const { enableGroupedBar, enableStatsBar, enableSwap } = useAppConfig();
   const [displayOptions, setDisplayOptions] = useState({
     time: true,
@@ -79,8 +86,37 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
     };
   }, [filteredNodes]);
 
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (mainContentRef.current) {
+        homeStateCache.scrollPosition = mainContentRef.current.scrollTop;
+      }
+    };
+
+    const mainContentElement = mainContentRef.current;
+    mainContentElement?.addEventListener("scroll", handleScroll);
+
+    return () => {
+      mainContentElement?.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = homeStateCache.scrollPosition;
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    homeStateCache.selectedGroup = selectedGroup;
+  }, [selectedGroup]);
+
   return (
-    <div className="w-[90%] max-w-screen-2xl mx-auto flex-1 flex flex-col pb-10">
+    <div
+      ref={mainContentRef}
+      className="w-[90%] max-w-screen-2xl mx-auto flex-1 flex flex-col pb-10 overflow-y-auto">
       {enableStatsBar && (
         <StatsBar
           displayOptions={displayOptions}
@@ -145,9 +181,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
           ) : (
             <div className="text-center py-12">
               <p className="text-lg font-bold">没有结果</p>
-              <p className="text-sm text-muted-foreground">
-                请尝试更改筛选条件
-              </p>
+              <p className="text-muted-foreground">请尝试更改筛选条件</p>
             </div>
           )}
         </div>

@@ -84,10 +84,9 @@ const Flag = React.memo(({ flag, size }: FlagProps) => {
   return (
     <Box
       as="span"
-      className={`self-center flex-shrink-0 ${
+      className={`self-center flex-shrink-0 inline-flex items-center ${
         size ? `w-${size} h-${size}` : "w-6 h-6"
       }`}
-      style={{ display: "inline-flex", alignItems: "center" }}
       aria-label={altText}>
       <img
         src={imgSrc}

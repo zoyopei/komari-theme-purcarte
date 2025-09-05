@@ -62,7 +62,7 @@ export const StatsBar = ({
         return (
           displayOptions.time && (
             <div className="w-full py-1" key="time">
-              <div className="rt-Flex rt-r-fd-column rt-r-gap-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   当前时间
                 </label>
@@ -77,7 +77,7 @@ export const StatsBar = ({
         return (
           displayOptions.online && (
             <div className="w-full py-1" key="online">
-              <div className="rt-Flex rt-r-fd-column rt-r-gap-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   当前在线
                 </label>
@@ -94,7 +94,7 @@ export const StatsBar = ({
         return (
           displayOptions.regions && (
             <div className="w-full py-1" key="regions">
-              <div className="rt-Flex rt-r-fd-column rt-r-gap-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   点亮地区
                 </label>
@@ -109,7 +109,7 @@ export const StatsBar = ({
         return (
           displayOptions.traffic && (
             <div className="w-full py-1" key="traffic">
-              <div className="rt-Flex rt-r-fd-column rt-r-gap-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   流量概览
                 </label>
@@ -131,7 +131,7 @@ export const StatsBar = ({
         return (
           displayOptions.speed && (
             <div className="w-full py-1" key="speed">
-              <div className="rt-Flex rt-r-fd-column rt-r-gap-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   网络速率
                 </label>
