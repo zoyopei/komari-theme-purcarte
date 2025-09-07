@@ -1,5 +1,7 @@
 import * as React from "react";
+import "./dropdown-menu.css";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { Theme } from "@radix-ui/themes";
 import { DotFilledIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/utils";
@@ -43,7 +45,7 @@ const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-50 min-w-[8rem] purcarte-blur overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-50 min-w-[8rem] purcarte-blur overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md",
       className
     )}
     {...props}
@@ -57,15 +59,17 @@ const DropdownMenuContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
   <DropdownMenuPrimitive.Portal>
-    <DropdownMenuPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-50 min-w-[8rem] purcarte-blur overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className
-      )}
-      {...props}
-    />
+    <Theme>
+      <DropdownMenuPrimitive.Content
+        ref={ref}
+        sideOffset={sideOffset}
+        className={cn(
+          "z-50 min-w-[8rem] purcarte-blur overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md",
+          className
+        )}
+        {...props}
+      />
+    </Theme>
   </DropdownMenuPrimitive.Portal>
 ));
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;

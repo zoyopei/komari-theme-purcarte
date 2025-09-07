@@ -70,43 +70,49 @@ export const Header = ({
             <>
               {isMobile ? (
                 <>
-                  <div
-                    className={`absolute top-full left-0 w-full purcarte-blur p-2 border-b border-border shadow-sm z-10 transform transition-all duration-300 ease-in-out ${
-                      isSearchOpen
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 -translate-y-4 pointer-events-none"
-                    }`}>
-                    <Input
-                      type="search"
-                      placeholder="搜索服务器..."
-                      className="w-full"
-                      value={searchTerm}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setSearchTerm(e.target.value)
-                      }
-                    />
-                  </div>
                   {enableSearchButton && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsSearchOpen(!isSearchOpen)}>
-                      <Search className="size-5 text-primary" />
-                    </Button>
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="relative group">
+                          <Search className="size-5 text-primary" />
+                          {searchTerm && (
+                            <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2"></span>
+                          )}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="purcarte-blur border-border rounded-xl w-48">
+                        <div className="p-2">
+                          <Input
+                            type="search"
+                            placeholder="搜索服务器..."
+                            className="w-full"
+                            value={searchTerm}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => setSearchTerm(e.target.value)}
+                          />
+                        </div>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   )}
-                  <DropdownMenu>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="relative group">
                         <Menu className="size-5 text-primary transition-transform duration-300 group-data-[state=open]:rotate-180" />
-                        <span className="absolute -bottom-1 left-1/2 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2 scale-0 transition-transform duration-300 group-data-[state=open]:scale-100"></span>
+                        <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2 scale-0 transition-transform duration-300 group-data-[state=open]:scale-100"></span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="animate-in slide-in-from-top-5 duration-300 purcarte-blur border-border rounded-xl">
+                      className="purcarte-blur border-border rounded-xl">
                       <DropdownMenuItem
                         onClick={() =>
                           setViewMode(viewMode === "grid" ? "table" : "grid")
@@ -167,8 +173,12 @@ export const Header = ({
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="relative group"
                       onClick={() => setIsSearchOpen(!isSearchOpen)}>
                       <Search className="size-5 text-primary" />
+                      {searchTerm && (
+                        <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2"></span>
+                      )}
                     </Button>
                   )}
                   <Button
