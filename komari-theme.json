@@ -21,14 +21,14 @@
                 "help": "目前仅支持单张背景图片（eg: https://test.com/1.png）"
             },
             {
-                "key": "enableVedioBackground",
+                "key": "enableVideoBackground",
                 "name": "启用视频背景",
                 "type": "switch",
                 "default": false,
                 "help": "启用后将使用视频作为背景"
             },
             {
-                "key": "vedioBackgroundUrl",
+                "key": "videoBackgroundUrl",
                 "name": "视频背景链接",
                 "type": "string",
                 "default": "/assets/Mortis_1080p30fps2Mbps.mp4",
