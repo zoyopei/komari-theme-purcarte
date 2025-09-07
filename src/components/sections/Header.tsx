@@ -91,7 +91,7 @@ export const Header = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="purcarte-blur border-(--accent-a4) rounded-xl w-48">
+                        className="purcarte-blur border-(--accent-a4) rounded-xl w-[90vw] translate-x-[5vw] mt-[.5rem] max-w-screen-2xl">
                         <div className="p-2">
                           <Input
                             type="search"
@@ -118,7 +118,7 @@ export const Header = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="purcarte-blur border-(--accent-a4) rounded-xl">
+                      className="purcarte-blur mt-[.5rem] border-(--accent-a4) rounded-xl">
                       <DropdownMenuItem
                         onClick={() =>
                           setViewMode(viewMode === "grid" ? "table" : "grid")

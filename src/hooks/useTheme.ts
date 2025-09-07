@@ -59,12 +59,6 @@ export const useTheme = () => {
   const defaultAppearance = useConfigItem("selectedDefaultAppearance");
   const defaultColor = useConfigItem("selectThemeColor");
 
-  console.log("Config in useTheme:", {
-    enableLocalStorage,
-    defaultAppearance,
-    defaultColor,
-  });
-
   const [appearance, setAppearance] = useState<Appearance>(() => {
     if (enableLocalStorage) {
       const storedAppearance = localStorage.getItem("appearance");
@@ -88,7 +82,6 @@ export const useTheme = () => {
         return cleanedColor as Colors;
       }
     }
-    console.log("defaultColor in useState:", defaultColor);
 
     return (defaultColor as Colors) || THEME_DEFAULTS.color;
   });
