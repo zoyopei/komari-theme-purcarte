@@ -156,7 +156,7 @@ export const StatsBar = ({
     }
   };
   return (
-    <div className="purcarte-blur min-w-[300px] rounded-lg text-secondary-foreground my-6 mx-4 px-4 box-border border border-border text-sm relative flex items-center min-h-[5rem]">
+    <div className="purcarte-blur min-w-[300px] rounded-lg text-secondary-foreground my-6 mx-4 px-4 box-border border border-(--accent-a4) text-sm relative flex items-center min-h-[5rem]">
       <div className="absolute top-2 right-2">
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>

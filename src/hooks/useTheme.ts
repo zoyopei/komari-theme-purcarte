@@ -1,43 +1,121 @@
-import { useState, useEffect } from "react";
-import { useConfigItem } from "@/config/hooks";
+import { useState, useEffect, createContext } from "react";
+import { useConfigItem } from "@/config";
 
-type Theme = "light" | "dark" | "system";
+export const allowedColors = [
+  "gray",
+  "gold",
+  "bronze",
+  "brown",
+  "yellow",
+  "amber",
+  "orange",
+  "tomato",
+  "red",
+  "ruby",
+  "crimson",
+  "pink",
+  "plum",
+  "purple",
+  "violet",
+  "iris",
+  "indigo",
+  "blue",
+  "cyan",
+  "teal",
+  "jade",
+  "green",
+  "grass",
+  "lime",
+  "mint",
+  "sky",
+] as const;
+
+export type Colors = (typeof allowedColors)[number];
+
+export const allowedAppearances = ["light", "dark", "system"] as const;
+export type Appearance = (typeof allowedAppearances)[number];
+
+export const THEME_DEFAULTS = {
+  appearance: "system" as Appearance,
+  color: "gray" as Colors,
+} as const;
+
+export interface ThemeContextType {
+  appearance: Appearance;
+  setAppearance: (appearance: Appearance) => void;
+  color: Colors;
+  setColor: (color: Colors) => void;
+}
+
+export const ThemeContext = createContext<ThemeContextType>({
+  appearance: THEME_DEFAULTS.appearance,
+  setAppearance: () => {},
+  color: THEME_DEFAULTS.color,
+  setColor: () => {},
+});
 
 export const useTheme = () => {
+  const enableLocalStorage = useConfigItem("enableLocalStorage");
   const defaultAppearance = useConfigItem("selectedDefaultAppearance");
+  const defaultColor = useConfigItem("selectThemeColor");
 
-  const [theme, setTheme] = useState<Theme>(() => {
-    const storedTheme = localStorage.getItem("appearance");
-    if (
-      storedTheme === "light" ||
-      storedTheme === "dark" ||
-      storedTheme === "system"
-    ) {
-      return storedTheme;
+  console.log("Config in useTheme:", {
+    enableLocalStorage,
+    defaultAppearance,
+    defaultColor,
+  });
+
+  const [appearance, setAppearance] = useState<Appearance>(() => {
+    if (enableLocalStorage) {
+      const storedAppearance = localStorage.getItem("appearance");
+      const cleanedAppearance = storedAppearance
+        ? storedAppearance.replace(/^"|"$/g, "")
+        : null;
+      if (allowedAppearances.includes(cleanedAppearance as Appearance)) {
+        return cleanedAppearance as Appearance;
+      }
     }
-    return (defaultAppearance as Theme) || "system";
+    return (defaultAppearance as Appearance) || THEME_DEFAULTS.appearance;
+  });
+
+  const [color, setColor] = useState<Colors>(() => {
+    if (enableLocalStorage) {
+      const storedColor = localStorage.getItem("color");
+      const cleanedColor = storedColor
+        ? storedColor.replace(/^"|"$/g, "")
+        : null;
+      if (allowedColors.includes(cleanedColor as Colors)) {
+        return cleanedColor as Colors;
+      }
+    }
+    console.log("defaultColor in useState:", defaultColor);
+
+    return (defaultColor as Colors) || THEME_DEFAULTS.color;
   });
 
   useEffect(() => {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
 
-    if (theme === "system") {
+    if (appearance === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
         : "light";
       root.classList.add(systemTheme);
     } else {
-      root.classList.add(theme);
+      root.classList.add(appearance);
     }
-    localStorage.setItem("appearance", theme);
-  }, [theme]);
+    if (enableLocalStorage) {
+      localStorage.setItem("appearance", appearance);
+    }
+  }, [appearance, enableLocalStorage]);
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-  };
+  useEffect(() => {
+    if (enableLocalStorage) {
+      localStorage.setItem("color", color);
+    }
+  }, [color, enableLocalStorage]);
 
-  return { theme, toggleTheme };
+  return { appearance, setAppearance, color, setColor };
 };

@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useConfigItem } from "@/config";
+import type { Appearance } from "@/hooks/useTheme";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,8 +24,8 @@ import {
 interface HeaderProps {
   viewMode: "grid" | "table";
   setViewMode: (mode: "grid" | "table") => void;
-  theme: string;
-  toggleTheme: () => void;
+  appearance: Appearance;
+  setAppearance: (appearance: Appearance) => void;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
@@ -32,8 +33,8 @@ interface HeaderProps {
 export const Header = ({
   viewMode,
   setViewMode,
-  theme,
-  toggleTheme,
+  appearance,
+  setAppearance,
   searchTerm,
   setSearchTerm,
 }: HeaderProps) => {
@@ -54,10 +55,15 @@ export const Header = ({
     }
   }, [sitename]);
 
+  const toggleAppearance = () => {
+    const newAppearance = appearance === "light" ? "dark" : "light";
+    setAppearance(newAppearance);
+  };
+
   return (
-    <header className="purcarte-blur border-b border-border sticky top-0 flex items-center justify-center shadow-sm z-10">
+    <header className="purcarte-blur border-b border-(--accent-a4) sticky top-0 flex items-center justify-center shadow-sm shadow-(color:--accent-a4) z-10">
       <div className="w-[90%] max-w-screen-2xl px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center text-shadow-lg text-accent-foreground">
+        <div className="flex items-center text-shadow-lg text-shadow-(color:--accent-a4) text-accent-foreground">
           <a href="/" className="flex items-center gap-2 text-2xl font-bold">
             {enableLogo && logoUrl && (
               <img src={logoUrl} alt="logo" className="h-8" />
@@ -79,13 +85,13 @@ export const Header = ({
                           className="relative group">
                           <Search className="size-5 text-primary" />
                           {searchTerm && (
-                            <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2"></span>
+                            <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-(--accent-indicator) transform -translate-x-1/2"></span>
                           )}
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="purcarte-blur border-border rounded-xl w-48">
+                        className="purcarte-blur border-(--accent-a4) rounded-xl w-48">
                         <div className="p-2">
                           <Input
                             type="search"
@@ -107,12 +113,12 @@ export const Header = ({
                         size="icon"
                         className="relative group">
                         <Menu className="size-5 text-primary transition-transform duration-300 group-data-[state=open]:rotate-180" />
-                        <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2 scale-0 transition-transform duration-300 group-data-[state=open]:scale-100"></span>
+                        <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-(--accent-indicator) transform -translate-x-1/2 scale-0 transition-transform duration-300 group-data-[state=open]:scale-100"></span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="purcarte-blur border-border rounded-xl">
+                      className="purcarte-blur border-(--accent-a4) rounded-xl">
                       <DropdownMenuItem
                         onClick={() =>
                           setViewMode(viewMode === "grid" ? "table" : "grid")
@@ -126,14 +132,14 @@ export const Header = ({
                           {viewMode === "grid" ? "表格视图" : "网格视图"}
                         </span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={toggleTheme}>
-                        {theme === "dark" ? (
+                      <DropdownMenuItem onClick={toggleAppearance}>
+                        {appearance === "dark" ? (
                           <Sun className="size-4 mr-2 text-primary" />
                         ) : (
                           <Moon className="size-4 mr-2 text-primary" />
                         )}
                         <span>
-                          {theme === "dark" ? "浅色模式" : "深色模式"}
+                          {appearance === "dark" ? "浅色模式" : "深色模式"}
                         </span>
                       </DropdownMenuItem>
                       {enableAdminButton && (
@@ -177,7 +183,7 @@ export const Header = ({
                       onClick={() => setIsSearchOpen(!isSearchOpen)}>
                       <Search className="size-5 text-primary" />
                       {searchTerm && (
-                        <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-primary transform -translate-x-1/2"></span>
+                        <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-(--accent-indicator) transform -translate-x-1/2"></span>
                       )}
                     </Button>
                   )}
@@ -193,8 +199,11 @@ export const Header = ({
                       <Grid3X3 className="size-5 text-primary" />
                     )}
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={toggleTheme}>
-                    {theme === "dark" ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleAppearance}>
+                    {appearance === "dark" ? (
                       <Sun className="size-5 text-primary" />
                     ) : (
                       <Moon className="size-5 text-primary" />
@@ -226,14 +235,16 @@ export const Header = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="animate-in slide-in-from-top-5 duration-300 purcarte-blur border-border rounded-xl">
-                    <DropdownMenuItem onClick={toggleTheme}>
-                      {theme === "dark" ? (
+                    className="animate-in slide-in-from-top-5 duration-300 purcarte-blur border-(--accent-a4) rounded-xl">
+                    <DropdownMenuItem onClick={toggleAppearance}>
+                      {appearance === "dark" ? (
                         <Sun className="size-4 mr-2 text-primary" />
                       ) : (
                         <Moon className="size-4 mr-2 text-primary" />
                       )}
-                      <span>{theme === "dark" ? "浅色模式" : "深色模式"}</span>
+                      <span>
+                        {appearance === "dark" ? "浅色模式" : "深色模式"}
+                      </span>
                     </DropdownMenuItem>
                     {enableAdminButton && (
                       <DropdownMenuItem asChild>
@@ -251,8 +262,11 @@ export const Header = ({
                 </DropdownMenu>
               ) : (
                 <>
-                  <Button variant="ghost" size="icon" onClick={toggleTheme}>
-                    {theme === "dark" ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleAppearance}>
+                    {appearance === "dark" ? (
                       <Sun className="size-5 text-primary" />
                     ) : (
                       <Moon className="size-5 text-primary" />

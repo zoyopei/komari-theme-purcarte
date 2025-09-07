@@ -108,11 +108,11 @@ const InstancePage = () => {
 
   return (
     <div className="w-[90%] max-w-screen-2xl mx-auto flex-1 flex flex-col pb-15 p-4 space-y-4">
-      <div className="flex items-center justify-between purcarte-blur box-border border border-border rounded-lg p-4 mb-4 text-secondary-foreground">
+      <div className="flex items-center justify-between purcarte-blur box-border border border-(--accent-a4) rounded-lg p-4 mb-4 text-secondary-foreground">
         <div className="flex items-center gap-2 min-w-0">
           <Button
             className="flex-shrink-0"
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={() => navigate(-1)}>
             <ArrowLeft />
@@ -130,7 +130,7 @@ const InstancePage = () => {
       {enableInstanceDetail && <Instance node={node as NodeWithStatus} />}
 
       <div className="flex flex-col items-center w-full space-y-4">
-        <div className="purcarte-blur box-border border border-border rounded-lg p-2">
+        <div className="purcarte-blur box-border border border-(--accent-a4) rounded-lg p-2">
           <div className="flex justify-center space-x-2">
             <Button
               variant={chartType === "load" ? "secondary" : "ghost"}
@@ -149,7 +149,7 @@ const InstancePage = () => {
           </div>
         </div>
         <div
-          className={`purcarte-blur box-border border border-border justify-center rounded-lg p-2 ${
+          className={`purcarte-blur box-border border border-(--accent-a4) justify-center rounded-lg p-2 ${
             isMobile ? "w-full" : ""
           }`}>
           {chartType === "load" ? (

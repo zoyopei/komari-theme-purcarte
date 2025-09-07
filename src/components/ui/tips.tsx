@@ -68,7 +68,7 @@ const Tips: React.FC<TipsProps & React.HTMLAttributes<HTMLDivElement>> = ({
             sideOffset={5}
             onMouseEnter={!isMobile ? () => setIsOpen(true) : undefined}
             onMouseLeave={!isMobile ? () => setIsOpen(false) : undefined}
-            className="purcarte-blur border border-border shadow-md rounded-md z-50 text-muted-foreground"
+            className="purcarte-blur border border-(--accent-a4) shadow-md rounded-md z-50 text-muted-foreground"
             style={{
               minWidth: isMobile ? "12rem" : "16rem",
               maxWidth: isMobile ? "80vw" : "16rem",

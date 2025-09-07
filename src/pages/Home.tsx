@@ -133,7 +133,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
 
       <main className="flex-1 px-4 pb-4">
         {enableGroupedBar && (
-          <div className="flex overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground box-border border border-border space-x-4 px-4 rounded-lg mb-4 purcarte-blur">
+          <div className="flex overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground box-border border border-(--accent-a4) space-x-4 px-4 rounded-lg mb-4 purcarte-blur">
             <span>分组</span>
             {groups.map((group: string) => (
               <Button
@@ -155,7 +155,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
               className={
                 viewMode === "grid"
                   ? ""
-                  : "space-y-2 overflow-auto box-border border border-border purcarte-blur rounded-lg p-2"
+                  : "space-y-2 overflow-auto box-border border border-(--accent-a4) purcarte-blur rounded-lg p-2"
               }>
               <div
                 className={

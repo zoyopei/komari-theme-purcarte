@@ -36,7 +36,7 @@ export const NodeListItem = ({
 
   return (
     <div
-      className={`grid ${gridCols} text-center shadow-md gap-4 p-2 text-nowrap items-center rounded-lg ${
+      className={`grid ${gridCols} text-center shadow-sm shadow-(color:--accent-a4) gap-4 p-2 text-nowrap items-center rounded-lg ${
         isOnline
           ? ""
           : "striped-bg-red-translucent-diagonal ring-2 ring-red-500/50"

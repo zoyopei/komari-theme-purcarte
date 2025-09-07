@@ -19,54 +19,71 @@ const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 
 import { useConfigItem } from "@/config";
 
-// eslint-disable-next-line react-refresh/only-export-components
-const App = () => {
-  const { theme, toggleTheme } = useTheme();
-  const { publicSettings } = useNodeData();
+// 内部应用组件，在 ConfigProvider 内部使用配置
+export const AppContent = () => {
+  const { appearance, setAppearance, color } = useTheme();
   const defaultView = useConfigItem("selectedDefaultView");
+  const enableLocalStorage = useConfigItem("enableLocalStorage");
 
   const [viewMode, setViewMode] = useState<"grid" | "table">(() => {
-    const savedMode = localStorage.getItem("nodeViewMode");
-    return savedMode === "grid" || savedMode === "table"
-      ? savedMode
-      : defaultView || "grid";
+    if (enableLocalStorage) {
+      const savedMode = localStorage.getItem("nodeViewMode");
+      const cleanedMode = savedMode ? savedMode.replace(/^"|"$/g, "") : null;
+      if (cleanedMode === "grid" || cleanedMode === "table") {
+        return cleanedMode;
+      }
+    }
+    return defaultView || "grid";
   });
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    localStorage.setItem("nodeViewMode", viewMode);
-  }, [viewMode]);
+    if (enableLocalStorage) {
+      localStorage.setItem("nodeViewMode", viewMode);
+    }
+  }, [enableLocalStorage, viewMode]);
+
+  return (
+    <Theme
+      appearance={appearance === "system" ? "inherit" : appearance}
+      accentColor={color}
+      scaling="110%"
+      style={{ backgroundColor: "transparent" }}>
+      <div className="min-h-screen flex flex-col text-sm">
+        <Header
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          appearance={appearance}
+          setAppearance={setAppearance}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+        <Suspense fallback={<Loading />}>
+          <Routes>
+            <Route
+              path="/"
+              element={<HomePage viewMode={viewMode} searchTerm={searchTerm} />}
+            />
+            <Route path="/instance/:uuid" element={<InstancePage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+        <Footer />
+      </div>
+    </Theme>
+  );
+};
+
+const App = () => {
+  const { publicSettings, loading } = useNodeData();
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <ConfigProvider publicSettings={publicSettings}>
-      <Theme
-        appearance="inherit"
-        scaling="110%"
-        style={{ backgroundColor: "transparent" }}>
-        <div className="min-h-screen flex flex-col text-sm">
-          <Header
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            theme={theme}
-            toggleTheme={toggleTheme}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-          />
-          <Suspense fallback={<Loading />}>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <HomePage viewMode={viewMode} searchTerm={searchTerm} />
-                }
-              />
-              <Route path="/instance/:uuid" element={<InstancePage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-          <Footer />
-        </div>
-      </Theme>
+      <AppContent />
     </ConfigProvider>
   );
 };

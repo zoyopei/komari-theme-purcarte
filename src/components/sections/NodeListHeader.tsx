@@ -6,7 +6,7 @@ export const NodeListHeader = ({ enableSwap }: NodeListHeaderProps) => {
   const gridCols = enableSwap ? "grid-cols-10" : "grid-cols-9";
   return (
     <div
-      className={`text-primary font-bold grid ${gridCols} text-center shadow-md gap-4 p-2 items-center rounded-lg bg-card transition-colors duration-200`}>
+      className={`text-primary font-bold grid ${gridCols} text-center shadow-sm shadow-(color:--accent-a4) gap-4 p-2 items-center rounded-lg bg-card transition-colors duration-200`}>
       <div className="col-span-2">节点名称</div>
       <div className="col-span-1">CPU</div>
       <div className="col-span-1">内存</div>

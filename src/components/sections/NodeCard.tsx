@@ -58,7 +58,7 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
         <div className="flex flex-wrap gap-1">
           <Tag tags={tagList} />
         </div>
-        <div className="border-t border-border/60 my-2"></div>
+        <div className="border-t border-(--accent-a4) my-2"></div>
         <div className="flex items-center justify-around whitespace-nowrap">
           <div className="flex items-center gap-1">
             <CpuIcon className="size-4 text-blue-600 flex-shrink-0" />
@@ -113,7 +113,7 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
             <span className="w-12 text-right">{diskUsage.toFixed(0)}%</span>
           </div>
         </div>
-        <div className="border-t border-border/60 my-2"></div>
+        <div className="border-t border-(--accent-a4) my-2"></div>
         <div className="flex justify-between text-xs">
           <span className="text-secondary-foreground">网络：</span>
           <div>
@@ -167,7 +167,7 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
               到期：{expired_at}
             </span>
           </div>
-          <div className="border-l border-border/60 mx-2"></div>
+          <div className="border-l border-(--accent-a4) mx-2"></div>
           <div className="flex justify-end w-full">
             <span className="text-secondary-foreground">
               {isOnline && stats

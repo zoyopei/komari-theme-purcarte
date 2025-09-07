@@ -28,7 +28,7 @@ export const CustomTooltip = ({
 
   if (active && payload && payload.length) {
     return (
-      <div className="bg-background/80 p-3 border border-border rounded-lg shadow-lg max-w-xs">
+      <div className="bg-background/80 p-3 border border-(--accent-a4) rounded-lg shadow-lg max-w-xs">
         <p className="text-xs font-medium text-muted-foreground mb-2">
           {labelFormatter
             ? labelFormatter(label)

@@ -394,7 +394,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                 <Brush
                   dataKey="time"
                   height={30}
-                  stroke="#8884d8"
+                  stroke="var(--accent-track)"
+                  fill="transparent"
                   alwaysShowText
                   tickFormatter={(time) => {
                     const date = new Date(time);
