@@ -1,6 +1,8 @@
 // 配置类型定义
 export interface ConfigOptions {
   backgroundImage?: string; // 背景图片URL
+  enableVideoBackground?: boolean; // 是否启用视频背景
+  videoBackgroundUrl?: string; // 视频背景URL
   blurValue?: number; // 磨砂玻璃模糊值
   blurBackgroundColor?: string; // 磨砂玻璃背景颜色
   tagDefaultColorList?: string; // 标签默认颜色列表
@@ -27,6 +29,8 @@ export interface ConfigOptions {
 // 默认配置值
 export const DEFAULT_CONFIG: ConfigOptions = {
   backgroundImage: "/assets/Moonlit-Scenery.webp",
+  enableVideoBackground: false,
+  videoBackgroundUrl: "/assets/Mortis_1080p30fps2Mbps.mp4",
   blurValue: 10,
   blurBackgroundColor: "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
   tagDefaultColorList:

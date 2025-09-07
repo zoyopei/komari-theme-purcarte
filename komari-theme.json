@@ -21,6 +21,27 @@
                 "help": "目前仅支持单张背景图片（eg: https://test.com/1.png）"
             },
             {
+                "key": "enableVedioBackground",
+                "name": "启用视频背景",
+                "type": "switch",
+                "default": false,
+                "help": "启用后将使用视频作为背景"
+            },
+            {
+                "key": "vedioBackgroundUrl",
+                "name": "视频背景链接",
+                "type": "string",
+                "default": "/assets/Mortis_1080p30fps2Mbps.mp4",
+                "help": "视频背景链接（eg: https://test.com/1.mp4），建议使用无声视频，且视频文件较大时可能会影响加载速度"
+            },
+            {
+                "key": "enableBlur",
+                "name": "启用磨砂玻璃效果",
+                "type": "switch",
+                "default": true,
+                "help": "启用后将使主要容器拥有磨砂玻璃效果"
+            },
+            {
                 "key": "blurValue",
                 "name": "磨砂玻璃模糊值",
                 "type": "number",

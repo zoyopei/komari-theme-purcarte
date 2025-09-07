@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useConfigItem } from "@/config";
-import type { Appearance } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks/useTheme";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,8 +24,6 @@ import {
 interface HeaderProps {
   viewMode: "grid" | "table";
   setViewMode: (mode: "grid" | "table") => void;
-  appearance: Appearance;
-  setAppearance: (appearance: Appearance) => void;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
@@ -33,11 +31,10 @@ interface HeaderProps {
 export const Header = ({
   viewMode,
   setViewMode,
-  appearance,
-  setAppearance,
   searchTerm,
   setSearchTerm,
 }: HeaderProps) => {
+  const { appearance, setAppearance } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
   const isInstancePage = location.pathname.startsWith("/instance");
@@ -56,8 +53,7 @@ export const Header = ({
   }, [sitename]);
 
   const toggleAppearance = () => {
-    const newAppearance = appearance === "light" ? "dark" : "light";
-    setAppearance(newAppearance);
+    setAppearance(appearance === "light" ? "dark" : "light");
   };
 
   return (

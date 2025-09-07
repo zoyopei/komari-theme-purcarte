@@ -87,6 +87,16 @@ export const useTheme = () => {
   });
 
   useEffect(() => {
+    if (appearance === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      setAppearance(systemTheme);
+    }
+  }, [appearance]);
+
+  useEffect(() => {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
 

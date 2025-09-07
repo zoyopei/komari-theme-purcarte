@@ -62,9 +62,12 @@
 
 | 名称 | 配置项 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- | :--- |
-| 背景图片链接 | `backgroundImage` | `string` | `/assets/Moonlit-Scenery.webp` | 目前仅支持单张背景图片（eg: https://test.com/1.png） |
+| 背景图片链接 | `backgroundImage` | `string` | `/assets/Moonlit-Scenery.webp` | 目前仅支持单张背景图片（eg: https://test.com/1.png ） |
+| 启用视频背景 | `enableVedioBackground` | `switch` | `false` | 启用后将使用视频作为背景 |
+| 视频背景链接 | `vedioBackgroundUrl` | `string` | `/assets/Mortis_1080p30fps2Mbps.mp4` | 视频背景链接（eg: https://test.com/1.mp4 ），建议使用无声视频，且视频文件较大时可能会影响加载速度 |
+| 启用磨砂玻璃效果 | `enableBlur` | `switch` | `true` | 启用后将使主要容器拥有磨砂玻璃效果 |
 | 磨砂玻璃模糊值 | `blurValue` | `number` | `10` | 调整模糊值大小，数值越大模糊效果越明显，建议值为 5-20，为 0 则表示不启用模糊效果 |
-| 磨砂玻璃背景色 | `blurBackgroundColor` | `string` | `rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)` | 调整模糊背景色，推荐 rgba 颜色值，使用“|”分隔亮色模式和暗色模式的颜色值（eg: rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)） |
+| 磨砂玻璃背景色 | `blurBackgroundColor` | `string` | `rgba(255, 255, 255, 0.5)\|rgba(0, 0, 0, 0.5)` | 调整模糊背景色，推荐 rgba 颜色值，使用“\|”分隔亮色模式和暗色模式的颜色值（eg: rgba(255, 255, 255, 0.5)\|rgba(0, 0, 0, 0.5)） |
 | 标签默认颜色列表 | `tagDefaultColorList` | `string` | `ruby,gray,gold,bronze,brown,yellow,amber,orange,tomato,red` | 标签默认颜色列表，展示的标签将按顺序调用该颜色池，逗号分隔（可用的颜色列表请参考：https://www.radix-ui.com/themes/docs/theme/color ，改完没有生效则说明填写有误） |
 | 启用 localStorage 配置 | `enableLocalStorage` | `switch` | `true` | 启用后将优先使用用户浏览器本地配置的视图和外观设置。关闭后将强制使用下方的主题配置，本地可调整但刷新即恢复 |
 | 默认展示视图 | `selectedDefaultView` | `select` | `grid` | 设置默认展示视图为网格或表格 |
@@ -78,7 +81,7 @@
 | 启用标题栏左侧 Logo | `enableLogo` | `switch` | `false` | 启用后默认在标题栏左侧显示 Logo |
 | Logo 图片链接 | `logoUrl` | `string` | `/assets/logo.png` | Logo 图片链接（eg: https://test.com/logo.png） |
 | 启用标题栏标题 | `enableTitle` | `switch` | `true` | 启用后默认在顶栏左侧显示标题 |
-| 标题栏标题文本 | `titleText` | `string` |  | 标题栏左侧显示的文本（留空则使用站点标题） |
+| 标题栏标题文本 | `titleText` | `string` | &nbsp; | 标题栏左侧显示的文本（留空则使用站点标题） |
 | 启用搜索按钮 | `enableSearchButton` | `switch` | `true` | 启用后默认在标题栏右侧显示搜索按钮 |
 | 启用管理按钮 | `enableAdminButton` | `switch` | `true` | 启用后默认在标题栏右侧显示管理按钮 |
 

@@ -21,7 +21,7 @@ import { useConfigItem } from "@/config";
 
 // 内部应用组件，在 ConfigProvider 内部使用配置
 export const AppContent = () => {
-  const { appearance, setAppearance, color } = useTheme();
+  const { appearance, color } = useTheme();
   const defaultView = useConfigItem("selectedDefaultView");
   const enableLocalStorage = useConfigItem("enableLocalStorage");
 
@@ -36,6 +36,8 @@ export const AppContent = () => {
     return defaultView || "grid";
   });
   const [searchTerm, setSearchTerm] = useState("");
+  const enableVideoBackground = useConfigItem("enableVideoBackground");
+  const videoBackgroundUrl = useConfigItem("videoBackgroundUrl");
 
   useEffect(() => {
     if (enableLocalStorage) {
@@ -44,33 +46,44 @@ export const AppContent = () => {
   }, [enableLocalStorage, viewMode]);
 
   return (
-    <Theme
-      appearance={appearance === "system" ? "inherit" : appearance}
-      accentColor={color}
-      scaling="110%"
-      style={{ backgroundColor: "transparent" }}>
-      <div className="min-h-screen flex flex-col text-sm">
-        <Header
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          appearance={appearance}
-          setAppearance={setAppearance}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
-        <Suspense fallback={<Loading />}>
-          <Routes>
-            <Route
-              path="/"
-              element={<HomePage viewMode={viewMode} searchTerm={searchTerm} />}
-            />
-            <Route path="/instance/:uuid" element={<InstancePage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Suspense>
-        <Footer />
-      </div>
-    </Theme>
+    <>
+      {enableVideoBackground && videoBackgroundUrl && (
+        <video
+          src={videoBackgroundUrl as string}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="fixed right-0 bottom-0 min-w-full min-h-full w-auto h-auto -z-1 object-cover"></video>
+      )}
+      <Theme
+        appearance={appearance === "system" ? "inherit" : appearance}
+        accentColor={color}
+        scaling="110%"
+        style={{ backgroundColor: "transparent" }}>
+        <div className="min-h-screen flex flex-col text-sm">
+          <Header
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+          <Suspense fallback={<Loading />}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <HomePage viewMode={viewMode} searchTerm={searchTerm} />
+                }
+              />
+              <Route path="/instance/:uuid" element={<InstancePage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
+          <Footer />
+        </div>
+      </Theme>
+    </>
   );
 };
 
