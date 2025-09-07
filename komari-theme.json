@@ -31,7 +31,7 @@
                 "key": "videoBackgroundUrl",
                 "name": "视频背景链接",
                 "type": "string",
-                "default": "/assets/Mortis_1080p30fps2Mbps.mp4",
+                "default": "/assets/LanternRivers_1080p15fps2Mbps3s.mp4",
                 "help": "视频背景链接（eg: https://test.com/1.mp4），建议使用无声视频，且视频文件较大时可能会影响加载速度"
             },
             {

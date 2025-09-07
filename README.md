@@ -64,7 +64,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | 背景图片链接 | `backgroundImage` | `string` | `/assets/Moonlit-Scenery.webp` | 目前仅支持单张背景图片（eg: https://test.com/1.png ） |
 | 启用视频背景 | `enableVedioBackground` | `switch` | `false` | 启用后将使用视频作为背景 |
-| 视频背景链接 | `vedioBackgroundUrl` | `string` | `/assets/Mortis_1080p30fps2Mbps.mp4` | 视频背景链接（eg: https://test.com/1.mp4 ），建议使用无声视频，且视频文件较大时可能会影响加载速度 |
+| 视频背景链接 | `vedioBackgroundUrl` | `string` | `/assets/LanternRivers_1080p15fps2Mbps3s.mp4` | 视频背景链接（eg: https://test.com/1.mp4 ），建议使用无声视频，且视频文件较大时可能会影响加载速度 |
 | 启用磨砂玻璃效果 | `enableBlur` | `switch` | `true` | 启用后将使主要容器拥有磨砂玻璃效果 |
 | 磨砂玻璃模糊值 | `blurValue` | `number` | `10` | 调整模糊值大小，数值越大模糊效果越明显，建议值为 5-20，为 0 则表示不启用模糊效果 |
 | 磨砂玻璃背景色 | `blurBackgroundColor` | `string` | `rgba(255, 255, 255, 0.5)\|rgba(0, 0, 0, 0.5)` | 调整模糊背景色，推荐 rgba 颜色值，使用“\|”分隔亮色模式和暗色模式的颜色值（eg: rgba(255, 255, 255, 0.5)\|rgba(0, 0, 0, 0.5)） |

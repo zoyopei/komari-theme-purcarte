@@ -30,7 +30,7 @@ export interface ConfigOptions {
 export const DEFAULT_CONFIG: ConfigOptions = {
   backgroundImage: "/assets/Moonlit-Scenery.webp",
   enableVideoBackground: false,
-  videoBackgroundUrl: "/assets/Mortis_1080p30fps2Mbps.mp4",
+  videoBackgroundUrl: "/assets/LanternRivers_1080p15fps2Mbps3s.mp4",
   blurValue: 10,
   blurBackgroundColor: "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
   tagDefaultColorList:
