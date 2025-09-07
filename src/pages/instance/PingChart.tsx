@@ -42,9 +42,15 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
 
   useEffect(() => {
     if (pingHistory?.tasks) {
-      setVisiblePingTasks(pingHistory.tasks.map((t) => t.id));
+      const taskIds = pingHistory.tasks.map((t) => t.id);
+      setVisiblePingTasks((prevVisibleTasks) => {
+        const newVisibleTasks = taskIds.filter(
+          (id) => prevVisibleTasks.length === 0 || prevVisibleTasks.includes(id)
+        );
+        return newVisibleTasks.length > 0 ? newVisibleTasks : taskIds;
+      });
     }
-  }, [pingHistory]);
+  }, [pingHistory?.tasks]);
 
   const lableFormatter = useCallback(
     (value: any) => {
