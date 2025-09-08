@@ -8,12 +8,19 @@ export const ProgressBar = ({
   value: number;
   h?: string;
   className?: string;
-}) => (
-  <div className={`w-full bg-(--accent-4)/50 rounded-full ${h}`}>
+}) => {
+  const clampedValue = Math.max(0, Math.min(100, value));
+  const progressRoundedClass =
+    clampedValue < 10 ? "rounded-sm" : "rounded-full";
+
+  return (
     <div
-      className={`${h} rounded-full transition-all duration-500 ${getProgressBarClass(
-        value
-      )} ${className}`}
-      style={{ width: `${value}%` }}></div>
-  </div>
-);
+      className={`w-full bg-(--accent-4)/50 rounded-full ${h} overflow-hidden`}>
+      <div
+        className={`${h} ${progressRoundedClass} transition-all duration-500 ${getProgressBarClass(
+          clampedValue
+        )} ${className}`}
+        style={{ width: `${clampedValue}%` }}></div>
+    </div>
+  );
+};
