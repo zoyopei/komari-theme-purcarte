@@ -36,25 +36,44 @@ type ColorType =
   | "mint"
   | "sky";
 
-// 默认颜色列表，将在组件内部使用
-const defaultColorList: ColorType[] = [
-  "blue",
-  "red",
-  "green",
+// 完整的颜色列表，用于标签颜色匹配
+const allColors: ColorType[] = [
+  "ruby",
+  "gray",
+  "gold",
+  "bronze",
+  "brown",
   "yellow",
-  "purple",
-  "cyan",
+  "amber",
   "orange",
+  "tomato",
+  "red",
+  "crimson",
   "pink",
+  "plum",
+  "purple",
+  "violet",
+  "iris",
+  "indigo",
+  "blue",
+  "cyan",
+  "teal",
+  "jade",
+  "green",
+  "grass",
+  "lime",
+  "mint",
+  "sky",
 ];
+
 // 解析带颜色的标签
-const parseTagWithColor = (tag: string, availableColors: ColorType[]) => {
+const parseTagWithColor = (tag: string) => {
   const colorMatch = tag.match(/<(\w+)>$/);
   if (colorMatch) {
     const color = colorMatch[1].toLowerCase();
     const text = tag.replace(/<\w+>$/, "");
-    // 检查颜色是否在支持的颜色列表中
-    if (availableColors.includes(color as ColorType)) {
+    // 检查颜色是否在完整的颜色列表中
+    if (allColors.includes(color as ColorType)) {
       return { text, color: color as ColorType };
     }
   }
@@ -66,11 +85,8 @@ const Tag = React.forwardRef<HTMLDivElement, TagProps>(
     // 在组件内部使用 useConfigItem 钩子
     const tagDefaultColorList = useConfigItem("tagDefaultColorList");
 
-    // 解析配置的颜色列表
+    // 解析配置的颜色列表，仅用于循环排序
     const colorList = React.useMemo(() => {
-      if (!tagDefaultColorList) {
-        return defaultColorList;
-      }
       return tagDefaultColorList
         .split(",")
         .map((color: string) => color.trim()) as ColorType[];
@@ -82,7 +98,7 @@ const Tag = React.forwardRef<HTMLDivElement, TagProps>(
         className={cn("flex flex-wrap gap-1", className)}
         {...props}>
         {tags.map((tag, index) => {
-          const { text, color } = parseTagWithColor(tag, colorList);
+          const { text, color } = parseTagWithColor(tag);
           const badgeColor = color || colorList[index % colorList.length];
 
           return (
