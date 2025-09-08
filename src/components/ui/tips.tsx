@@ -14,7 +14,7 @@ interface TipsProps {
 
 const Tips: React.FC<TipsProps & React.HTMLAttributes<HTMLDivElement>> = ({
   size = "16",
-  color = "gray",
+  color = "var(--theme-text-muted-color)",
   trigger,
   children,
   side = "bottom",
@@ -68,13 +68,15 @@ const Tips: React.FC<TipsProps & React.HTMLAttributes<HTMLDivElement>> = ({
             sideOffset={5}
             onMouseEnter={!isMobile ? () => setIsOpen(true) : undefined}
             onMouseLeave={!isMobile ? () => setIsOpen(false) : undefined}
-            className="purcarte-blur theme-card-style z-50 text-muted-foreground"
+            className="purcarte-blur theme-card-style z-50"
             style={{
               minWidth: isMobile ? "12rem" : "16rem",
               maxWidth: isMobile ? "80vw" : "16rem",
               backgroundColor: "var(--card)",
             }}>
-            <div className="relative text-sm">{children}</div>
+            <div className="relative text-sm text-secondary-foreground">
+              {children}
+            </div>
           </Popover.Content>
         </Popover.Root>
       )}

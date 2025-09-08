@@ -335,7 +335,11 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
           {pingHistory?.tasks && pingHistory.tasks.length > 0 ? (
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={chartData} margin={chartMargin}>
-                <CartesianGrid strokeDasharray="2 4" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="2 4"
+                  stroke="var(--muted-foreground)"
+                  vertical={false}
+                />
                 <XAxis
                   type="number"
                   dataKey="time"

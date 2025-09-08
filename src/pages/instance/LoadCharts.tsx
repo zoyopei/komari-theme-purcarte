@@ -260,15 +260,19 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
               data={config.data}
               margin={chartMargin}
               {...chartProps}>
-              <CartesianGrid strokeDasharray="2 4" vertical={false} />
+              <CartesianGrid
+                strokeDasharray="2 4"
+                stroke="var(--muted-foreground)"
+                vertical={false}
+              />
               <XAxis
                 dataKey="time"
                 tickLine={false}
                 axisLine={{
-                  stroke: "var(--theme-text-muted-color) !important",
+                  stroke: "var(--theme-text-muted-color)",
                 }}
                 tick={{
-                  fill: "var(--theme-text-muted-color) !important",
+                  fill: "var(--theme-text-muted-color)",
                 }}
                 tickFormatter={timeFormatter}
                 interval={0}
@@ -283,7 +287,7 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
                 type="number"
                 tick={{
                   dx: -8,
-                  fill: "var(--theme-text-muted-color) !important",
+                  fill: "var(--theme-text-muted-color)",
                 }}
                 width={200}
                 mirror={true}

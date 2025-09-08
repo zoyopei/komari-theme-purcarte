@@ -130,8 +130,12 @@
 }
 
 @layer utilities {
+  .dark .radix-themes {
+    --theme-text-muted-color: rgb(from var(--accent-4) r g b / 0.8);
+  }
+
   .radix-themes {
-    --theme-text-muted-color: rgb(from var(--accent-4) r g b / 0.7);
+    --theme-text-muted-color: rgb(from var(--accent-12) r g b / 0.8);
   }
 
   .theme-text-shadow {
@@ -143,7 +147,7 @@
   }
 
   .theme-text-muted {
-    @apply text-(--theme-text-muted-color) text-shadow-sm text-shadow-(color:--accent-foreground)/20;
+    @apply text-(--theme-text-muted-color);
   }
 }
 
