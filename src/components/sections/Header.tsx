@@ -57,9 +57,9 @@ export const Header = ({
   };
 
   return (
-    <header className="purcarte-blur border-b border-(--accent-a4) sticky top-0 flex items-center justify-center shadow-sm shadow-(color:--accent-a4) z-10">
+    <header className="purcarte-blur border-b border-(--accent-4)/50 sticky top-0 flex items-center justify-center shadow-sm shadow-(color:--accent-4)/50 z-10">
       <div className="w-[90%] max-w-screen-2xl px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center text-shadow-lg text-shadow-(color:--accent-a4) text-accent-foreground">
+        <div className="flex items-center theme-text-shadow text-accent-foreground">
           <a href="/" className="flex items-center gap-2 text-2xl font-bold">
             {enableLogo && logoUrl && (
               <img src={logoUrl} alt="logo" className="h-8" />
@@ -87,7 +87,7 @@ export const Header = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="purcarte-blur border-(--accent-a4) rounded-xl w-[90vw] translate-x-[5vw] mt-[.5rem] max-w-screen-2xl">
+                        className="purcarte-blur border-(--accent-4)/50 rounded-xl w-[90vw] translate-x-[5vw] mt-[.5rem] max-w-screen-2xl">
                         <div className="p-2">
                           <Input
                             type="search"
@@ -114,7 +114,7 @@ export const Header = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="purcarte-blur mt-[.5rem] border-(--accent-a4) rounded-xl">
+                      className="purcarte-blur mt-[.5rem] border-(--accent-4)/50 rounded-xl">
                       <DropdownMenuItem
                         onClick={() =>
                           setViewMode(viewMode === "grid" ? "table" : "grid")
@@ -231,7 +231,7 @@ export const Header = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="animate-in slide-in-from-top-5 duration-300 purcarte-blur border-(--accent-a4) rounded-xl">
+                    className="animate-in slide-in-from-top-5 duration-300 purcarte-blur border-(--accent-4)/50 rounded-xl">
                     <DropdownMenuItem onClick={toggleAppearance}>
                       {appearance === "dark" ? (
                         <Sun className="size-4 mr-2 text-primary" />

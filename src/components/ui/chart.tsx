@@ -177,7 +177,7 @@ function ChartTooltipContent({
   return (
     <div
       className={cn(
-        "border-(--accent-a4) bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
+        "border-(--accent-4)/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
         className
       )}>
       {!nestLabel ? tooltipLabel : null}

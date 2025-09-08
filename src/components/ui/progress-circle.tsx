@@ -39,7 +39,7 @@ export const CircleProgress: React.FC<CircleProgressProps> = ({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          className="stroke-gray-200 dark:stroke-gray-700"
+          className="stroke-(--accent-4)/50"
           strokeWidth={strokeWidth}
           fill="none"
         />

@@ -356,13 +356,13 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                       minute: "2-digit",
                     });
                   }}
-                  tick={{ fill: "var(--muted-foreground)" }}
+                  tick={{ fill: "var(--theme-text-muted-color)" }}
                   scale="time"
                 />
                 <YAxis
                   mirror={true}
                   width={30}
-                  tick={{ fill: "var(--muted-foreground)" }}
+                  tick={{ fill: "var(--theme-text-muted-color)" }}
                 />
                 <Tooltip
                   cursor={false}
@@ -395,7 +395,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   dataKey="time"
                   height={30}
                   stroke="var(--accent-track)"
-                  fill="transparent"
+                  fill="var(--accent-4)"
                   alwaysShowText
                   tickFormatter={(time) => {
                     const date = new Date(time);

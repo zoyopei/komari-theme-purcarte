@@ -73,7 +73,11 @@ export const AppContent = () => {
               <Route
                 path="/"
                 element={
-                  <HomePage viewMode={viewMode} searchTerm={searchTerm} />
+                  <HomePage
+                    viewMode={viewMode}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                  />
                 }
               />
               <Route path="/instance/:uuid" element={<InstancePage />} />

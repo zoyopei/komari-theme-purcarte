@@ -9,7 +9,7 @@ export const ProgressBar = ({
   h?: string;
   className?: string;
 }) => (
-  <div className={`w-full bg-gray-200 rounded-full ${h} dark:bg-gray-700`}>
+  <div className={`w-full bg-(--accent-4)/50 rounded-full ${h}`}>
     <div
       className={`${h} rounded-full transition-all duration-500 ${getProgressBarClass(
         value

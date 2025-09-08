@@ -9,10 +9,18 @@ import type { NodeWithStatus } from "@/types/node";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import { useLiveData } from "@/contexts/LiveDataContext";
 import { useAppConfig } from "@/config";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface HomePageProps {
   viewMode: "grid" | "table";
   searchTerm: string;
+  setSearchTerm: (term: string) => void;
 }
 
 const homeStateCache = {
@@ -20,7 +28,11 @@ const homeStateCache = {
   scrollPosition: 0,
 };
 
-const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
+const HomePage: React.FC<HomePageProps> = ({
+  viewMode,
+  searchTerm,
+  setSearchTerm,
+}) => {
   const { nodes: staticNodes, loading, getGroups } = useNodeData();
   const { liveData } = useLiveData();
   const [selectedGroup, setSelectedGroup] = useState(
@@ -133,7 +145,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
 
       <main className="flex-1 px-4 pb-4">
         {enableGroupedBar && (
-          <div className="flex overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground box-border border border-(--accent-a4) space-x-4 px-4 rounded-lg mb-4 purcarte-blur">
+          <div className="flex purcarte-blur theme-card-style overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground space-x-4 px-4 mb-4">
             <span>分组</span>
             {groups.map((group: string) => (
               <Button
@@ -155,7 +167,7 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
               className={
                 viewMode === "grid"
                   ? ""
-                  : "space-y-2 overflow-auto box-border border border-(--accent-a4) purcarte-blur rounded-lg p-2"
+                  : "space-y-2 overflow-auto purcarte-blur theme-card-style p-2"
               }>
               <div
                 className={
@@ -185,9 +197,20 @@ const HomePage: React.FC<HomePageProps> = ({ viewMode, searchTerm }) => {
               </div>
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-lg font-bold">没有结果</p>
-              <p className="text-muted-foreground">请尝试更改筛选条件</p>
+            <div className="flex flex-grow items-center justify-center">
+              <Card className="w-full max-w-md">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold">
+                    Not Found
+                  </CardTitle>
+                  <CardDescription>请尝试更改筛选条件</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button onClick={() => setSearchTerm("")} className="w-full">
+                    清空搜索
+                  </Button>
+                </CardFooter>
+              </Card>
             </div>
           )}
         </div>

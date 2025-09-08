@@ -79,9 +79,7 @@
   --sidebar-ring: #a1a1a1;
 
   --purcarte-blur: 10px;
-
   --body-background-url: url("");
-  /* --body-background-transition: background-image 0.8s ease-in-out; */
 }
 
 .dark {
@@ -121,13 +119,31 @@
 
 @layer base {
   * {
-    @apply border-(--accent-a4) outline-ring/50;
+    @apply border-(--accent-4)/50 outline-ring/50;
   }
   body {
     @apply bg-background;
   }
   button {
     cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .radix-themes {
+    --theme-text-muted-color: rgb(from var(--accent-4) r g b / 0.7);
+  }
+
+  .theme-text-shadow {
+    @apply text-shadow-sm text-shadow-(color:--accent-8)/50;
+  }
+
+  .theme-card-style {
+    @apply rounded-lg shadow-sm shadow-(color:--accent-4)/50 box-border border border-(--accent-4)/50;
+  }
+
+  .theme-text-muted {
+    @apply text-(--theme-text-muted-color) text-shadow-sm text-shadow-(color:--accent-foreground)/20;
   }
 }
 

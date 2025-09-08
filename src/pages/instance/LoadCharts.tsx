@@ -264,8 +264,12 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
               <XAxis
                 dataKey="time"
                 tickLine={false}
-                axisLine={{ stroke: "var(--muted-foreground)" }}
-                tick={{ fill: "var(--muted-foreground)" }}
+                axisLine={{
+                  stroke: "var(--theme-text-muted-color) !important",
+                }}
+                tick={{
+                  fill: "var(--theme-text-muted-color) !important",
+                }}
                 tickFormatter={timeFormatter}
                 interval={0}
                 height={20}
@@ -279,7 +283,7 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
                 type="number"
                 tick={{
                   dx: -8,
-                  fill: "var(--muted-foreground)",
+                  fill: "var(--theme-text-muted-color) !important",
                 }}
                 width={200}
                 mirror={true}

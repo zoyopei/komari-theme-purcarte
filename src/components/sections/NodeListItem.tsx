@@ -5,7 +5,7 @@ import { CpuIcon, MemoryStickIcon, HardDriveIcon } from "lucide-react";
 import Flag from "./Flag";
 import { Tag } from "../ui/tag";
 import { useNodeCommons } from "@/hooks/useNodeCommons";
-import { CircleProgress } from "../ui/circle-progress";
+import { CircleProgress } from "../ui/progress-circle";
 import { ProgressBar } from "../ui/progress-bar";
 
 interface NodeListItemProps {
@@ -36,7 +36,7 @@ export const NodeListItem = ({
 
   return (
     <div
-      className={`grid ${gridCols} text-center shadow-sm shadow-(color:--accent-a4) gap-4 p-2 text-nowrap items-center rounded-lg ${
+      className={`grid ${gridCols} text-center shadow-sm shadow-(color:--accent-4)/50 gap-4 p-2 text-nowrap items-center rounded-lg ${
         isOnline
           ? ""
           : "striped-bg-red-translucent-diagonal ring-2 ring-red-500/50"

@@ -89,7 +89,7 @@ const Tag = React.forwardRef<HTMLDivElement, TagProps>(
             <Badge
               key={index}
               color={badgeColor as ColorType}
-              variant="soft"
+              variant="surface"
               className="text-sm">
               <label className="text-xs">{text}</label>
             </Badge>
