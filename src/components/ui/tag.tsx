@@ -84,6 +84,7 @@ const Tag = React.forwardRef<HTMLDivElement, TagProps>(
   ({ className, tags, ...props }, ref) => {
     // 在组件内部使用 useConfigItem 钩子
     const tagDefaultColorList = useConfigItem("tagDefaultColorList");
+    const enableTransparentTags = useConfigItem("enableTransparentTags");
 
     // 解析配置的颜色列表，仅用于循环排序
     const colorList = React.useMemo(() => {
@@ -100,16 +101,28 @@ const Tag = React.forwardRef<HTMLDivElement, TagProps>(
         {tags.map((tag, index) => {
           const { text, color } = parseTagWithColor(tag);
           const badgeColor = color || colorList[index % colorList.length];
-
-          return (
-            <Badge
-              key={index}
-              color={badgeColor as ColorType}
-              variant="surface"
-              className="text-sm">
-              <label className="text-xs">{text}</label>
-            </Badge>
-          );
+          if (!enableTransparentTags) {
+            return (
+              <Badge
+                key={index}
+                color={badgeColor as ColorType}
+                variant="surface"
+                className="text-sm">
+                <label className="text-xs">{text}</label>
+              </Badge>
+            );
+          } else {
+            return (
+              <div
+                key={index}
+                data-accent-color={badgeColor}
+                className={cn(
+                  "rt-reset rt-Badge rt-r-size-1 transition-colors rt-Badge-tag-transparent"
+                )}>
+                {text}
+              </div>
+            );
+          }
         })}
       </div>
     );

@@ -56,6 +56,13 @@
                 "help": "调整模糊背景色，推荐 rgba 颜色值，使用“|”分隔亮色模式和暗色模式的颜色值（eg: rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)）"
             },
             {
+                "key": "enableTransparentTags",
+                "name": "启用标签透明背景",
+                "type": "switch",
+                "default": true,
+                "help": "启用后标签将使用较为透明的背景色，当背景情况复杂导致标签难以辨识时建议关闭"
+            },
+            {
                 "key": "tagDefaultColorList",
                 "name": "标签默认颜色列表",
                 "type": "string",

@@ -138,6 +138,18 @@
     --theme-text-muted-color: rgb(from var(--accent-12) r g b / 0.8);
   }
 
+  .dark .rt-Badge-tag-transparent {
+    --tag-transparent-bg: rgb(from var(--accent-11) r g b / 0.4);
+    --tag-transparent-color: rgb(from var(--accent-4) r g b / 0.8);
+    @apply bg-(--tag-transparent-bg) text-(--tag-transparent-color);
+  }
+
+  .rt-Badge-tag-transparent {
+    --tag-transparent-bg: rgb(from var(--accent-4) r g b / 0.4);
+    --tag-transparent-color: rgb(from var(--accent-11) r g b / 0.8);
+    @apply bg-(--tag-transparent-bg) text-(--tag-transparent-color);
+  }
+
   .theme-text-shadow {
     @apply text-shadow-sm text-shadow-(color:--accent-8)/50;
   }

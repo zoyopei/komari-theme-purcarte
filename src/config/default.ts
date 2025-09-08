@@ -5,6 +5,7 @@ export interface ConfigOptions {
   videoBackgroundUrl?: string; // 视频背景URL
   blurValue?: number; // 磨砂玻璃模糊值
   blurBackgroundColor?: string; // 磨砂玻璃背景颜色
+  enableTransparentTags?: boolean; // 是否启用标签透明背景
   tagDefaultColorList?: string; // 标签默认颜色列表
   enableLocalStorage?: boolean; // 是否启用本地存储
   selectedDefaultView?: "grid" | "table"; // 默认视图模式
@@ -33,6 +34,7 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   videoBackgroundUrl: "/assets/LanternRivers_1080p15fps2Mbps3s.mp4",
   blurValue: 10,
   blurBackgroundColor: "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
+  enableTransparentTags: true,
   tagDefaultColorList:
     "ruby,gray,gold,bronze,brown,yellow,amber,orange,tomato,red",
   enableLocalStorage: true,
