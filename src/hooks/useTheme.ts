@@ -118,28 +118,21 @@ export const useThemeManager = () => {
     return (defaultAppearance as Appearance) || THEME_DEFAULTS.appearance;
   });
 
-  const [color, setColor] = useState<Colors>(() => {
-    if (enableLocalStorage) {
-      const storedColor = localStorage.getItem("color");
-      const cleanedColor = storedColor
-        ? storedColor.replace(/^"|"$/g, "")
-        : null;
-      if (allowedColors.includes(cleanedColor as Colors)) {
-        return cleanedColor as Colors;
-      }
-    }
+  const [color, setColor] = useState<Colors>(
+    (defaultColor as Colors) || THEME_DEFAULTS.color
+  );
 
-    return (defaultColor as Colors) || THEME_DEFAULTS.color;
-  });
+  useEffect(() => {
+    setColor((defaultColor as Colors) || THEME_DEFAULTS.color);
+  }, [defaultColor]);
 
   const resolvedAppearance = useSystemTheme(appearance);
 
   useEffect(() => {
     if (enableLocalStorage) {
       localStorage.setItem("appearance", appearance);
-      localStorage.setItem("color", color);
     }
-  }, [appearance, color, enableLocalStorage]);
+  }, [appearance, enableLocalStorage]);
 
   return {
     appearance: resolvedAppearance,
@@ -149,7 +142,6 @@ export const useThemeManager = () => {
     setColor,
   };
 };
-
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {

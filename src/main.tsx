@@ -92,9 +92,17 @@ export const AppContent = () => {
   );
 };
 
+const ThemedApp = () => {
+  const themeManager = useThemeManager();
+  return (
+    <ThemeProvider value={themeManager}>
+      <AppContent />
+    </ThemeProvider>
+  );
+};
+
 const App = () => {
   const { publicSettings, loading } = useNodeData();
-  const themeManager = useThemeManager();
 
   if (loading) {
     return <Loading />;
@@ -102,9 +110,7 @@ const App = () => {
 
   return (
     <ConfigProvider publicSettings={publicSettings}>
-      <ThemeProvider value={themeManager}>
-        <AppContent />
-      </ThemeProvider>
+      <ThemedApp />
     </ConfigProvider>
   );
 };
