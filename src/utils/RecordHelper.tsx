@@ -356,3 +356,50 @@ export function sampleDataByRetention(
 
   return result;
 }
+
+/**
+ * 根据 ping 历史记录计算丢包率。
+ * @param records - ping 历史记录数组。
+ * @param taskId - 要计算丢包率的任务 ID。
+ * @param timeRange - 用于筛选记录的可选时间范围 [开始, 结束]。
+ * @returns 以百分比表示的丢包率。
+ */
+/**
+ * 根据 ping 历史记录计算任务的统计数据（丢包率和最新值）。
+ * @param records - ping 历史记录数组。
+ * @param taskId - 要计算的任务 ID。
+ * @param timeRange - 用于筛选记录的可选时间范围 [开始, 结束]。
+ * @returns 包含丢包率和最新值的对象。
+ */
+export function calculateTaskStats(
+  records: { time: string; task_id: number; value: number }[],
+  taskId: number,
+  timeRange: [number, number] | null
+): { loss: number; latestValue: number | null; latestTime: string | null } {
+  const relevantRecords = timeRange
+    ? records.filter((rec) => {
+        const t = new Date(rec.time).getTime();
+        return t >= timeRange[0] && t <= timeRange[1];
+      })
+    : records;
+
+  const taskRecords =
+    relevantRecords?.filter((rec) => rec.task_id === taskId) || [];
+
+  const totalPings = taskRecords.length;
+  const successfulPings = taskRecords.filter((rec) => rec.value >= 0);
+  const loss =
+    totalPings > 0 ? (1 - successfulPings.length / totalPings) * 100 : 0;
+
+  let latestValue: number | null = null;
+  let latestTime: string | null = null;
+  if (successfulPings.length > 0) {
+    const latestRecord = successfulPings.reduce((latest, current) => {
+      return new Date(current.time) > new Date(latest.time) ? current : latest;
+    });
+    latestValue = latestRecord.value;
+    latestTime = latestRecord.time;
+  }
+
+  return { loss, latestValue, latestTime };
+}

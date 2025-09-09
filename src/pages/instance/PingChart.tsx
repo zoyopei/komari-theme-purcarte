@@ -19,7 +19,10 @@ import { Label } from "@radix-ui/react-label";
 import type { NodeData } from "@/types/node";
 import Loading from "@/components/loading";
 import { usePingChart } from "@/hooks/usePingChart";
-import fillMissingTimePoints, { cutPeakValues } from "@/utils/RecordHelper";
+import fillMissingTimePoints, {
+  cutPeakValues,
+  calculateTaskStats,
+} from "@/utils/RecordHelper";
 import { useConfigItem } from "@/config";
 import { CustomTooltip } from "@/components/ui/tooltip";
 import Tips from "@/components/ui/tips";
@@ -164,7 +167,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
 
   const sortedTasks = useMemo(() => {
     if (!pingHistory?.tasks) return [];
-    return [...pingHistory.tasks].sort((a, b) => a.name.localeCompare(b.name));
+    return [...pingHistory.tasks].sort((a, b) => a.id - b.id);
   }, [pingHistory?.tasks]);
 
   const generateColor = useCallback(
@@ -224,6 +227,25 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     return points;
   }, [chartData, sortedTasks, visiblePingTasks, generateColor, connectBreaks]);
 
+  const taskStats = useMemo(() => {
+    if (!pingHistory?.records || !sortedTasks.length) return [];
+
+    return sortedTasks.map((task) => {
+      const { loss, latestValue, latestTime } = calculateTaskStats(
+        pingHistory.records,
+        task.id,
+        timeRange
+      );
+      return {
+        ...task,
+        value: latestValue,
+        time: latestTime,
+        loss: loss,
+        color: generateColor(task.name, sortedTasks.length),
+      };
+    });
+  }, [pingHistory?.records, sortedTasks, generateColor, timeRange]);
+
   return (
     <div className="relative space-y-4">
       {loading && (
@@ -238,20 +260,19 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       )}
 
       {pingHistory?.tasks && pingHistory.tasks.length > 0 && (
-        <Card>
+        <Card className="relative">
+          <div className="absolute top-2 right-2">
+            <Tips>
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: "<p>丢包率计算算法并不准确，谨慎参考</p>",
+                }}></span>
+            </Tips>
+          </div>
           <CardContent className="p-2">
             <div className="flex flex-wrap gap-2 items-center justify-center">
-              {sortedTasks.map((task) => {
-                const values = chartData
-                  .map((d) => d[task.id])
-                  .filter((v) => v !== null && v !== undefined) as number[];
-                const loss =
-                  chartData.length > 0
-                    ? (1 - values.length / chartData.length) * 100
-                    : 0;
-                const min = values.length > 0 ? Math.min(...values) : 0;
+              {taskStats.map((task) => {
                 const isVisible = visiblePingTasks.includes(task.id);
-                const color = generateColor(task.name, sortedTasks.length);
 
                 return (
                   <div
@@ -261,13 +282,21 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                     }`}
                     onClick={() => handleTaskVisibilityToggle(task.id)}
                     style={{
-                      outlineColor: isVisible ? color : undefined,
-                      boxShadow: isVisible ? `0 0 8px ${color}` : undefined,
+                      outlineColor: isVisible ? task.color : undefined,
+                      boxShadow: isVisible
+                        ? `0 0 8px ${task.color}`
+                        : undefined,
                     }}>
                     <div className="font-semibold">{task.name}</div>
-                    <span className="text-xs font-normal">
-                      {loss.toFixed(1)}% | {min.toFixed(0)}ms
-                    </span>
+                    <div className="flex text-xs font-normal">
+                      <span>
+                        {task.value !== null
+                          ? `${task.value.toFixed(1)} ms | ${task.loss.toFixed(
+                              1
+                            )}%`
+                          : "N/A"}
+                      </span>
+                    </div>
                   </div>
                 );
               })}

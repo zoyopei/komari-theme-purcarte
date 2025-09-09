@@ -95,6 +95,7 @@ export interface PingTask {
   id: number;
   interval: number;
   name: string;
+  loss: number;
 }
 
 export interface PingHistoryResponse {
