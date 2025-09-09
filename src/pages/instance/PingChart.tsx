@@ -99,7 +99,6 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     }
 
     let full = Object.values(grouped).sort((a: any, b: any) => a.time - b.time);
-    console.log("Full :", full);
 
     if (hours !== 0) {
       const task = pingHistory.tasks;
@@ -227,8 +226,6 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       };
     });
   }, [pingHistory?.records, sortedTasks, timeRange]);
-
-  console.log("chartData:", chartData);
 
   return (
     <div className="relative space-y-4">
@@ -456,7 +453,6 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   height={30}
                   stroke="var(--theme-text-muted-color)"
                   fill="var(--accent-a4)"
-                  alwaysShowText
                   tickFormatter={(time) => {
                     const date = new Date(time);
                     if (hours === 0) {
