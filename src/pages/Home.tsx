@@ -43,6 +43,7 @@ const HomePage: React.FC<HomePageProps> = ({
     enableStatsBar,
     enableSwap,
     enableListItemProgressBar,
+    selectTrafficProgressStyle,
   } = useAppConfig();
   const [displayOptions, setDisplayOptions] = useState({
     time: true,
@@ -184,6 +185,7 @@ const HomePage: React.FC<HomePageProps> = ({
                       key={node.uuid}
                       node={node}
                       enableSwap={enableSwap}
+                      selectTrafficProgressStyle={selectTrafficProgressStyle}
                     />
                   ) : (
                     <NodeListItem
@@ -191,6 +193,7 @@ const HomePage: React.FC<HomePageProps> = ({
                       node={node}
                       enableSwap={enableSwap}
                       enableListItemProgressBar={enableListItemProgressBar}
+                      selectTrafficProgressStyle={selectTrafficProgressStyle}
                     />
                   )
                 )}

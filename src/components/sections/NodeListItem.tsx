@@ -10,14 +10,16 @@ import { ProgressBar } from "../ui/progress-bar";
 
 interface NodeListItemProps {
   node: NodeWithStatus;
-  enableSwap: boolean | undefined;
-  enableListItemProgressBar: boolean | undefined;
+  enableSwap: boolean;
+  enableListItemProgressBar: boolean;
+  selectTrafficProgressStyle: "circular" | "linear";
 }
 
 export const NodeListItem = ({
   node,
   enableSwap,
   enableListItemProgressBar,
+  selectTrafficProgressStyle,
 }: NodeListItemProps) => {
   const {
     stats,
@@ -137,36 +139,72 @@ export const NodeListItem = ({
         <div>↓ {stats ? formatBytes(stats.network.down, true) : "N/A"}</div>
       </div>
       <div className="col-span-2">
-        <div className="flex items-center justify-around">
-          {node.traffic_limit !== 0 && isOnline && stats && (
-            <div className="flex items-center justify-center w-1/3">
-              <CircleProgress
-                value={trafficPercentage}
-                maxValue={100}
-                size={32}
-                strokeWidth={4}
-                showPercentage={true}
-              />
-            </div>
-          )}
-          <div
-            className={node.traffic_limit !== 0 ? "w-2/3 text-left" : "w-full"}>
-            <div>
-              <div>↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}</div>
-              <div>
-                ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
-              </div>
+        {selectTrafficProgressStyle === "linear" && isOnline && stats ? (
+          <div className="flex flex-col items-center">
+            <div className="w-full flex justify-center items-center">
+              <span>
+                {stats
+                  ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
+                      stats.network.totalDown
+                    )}`
+                  : "N/A"}
+              </span>
             </div>
             {node.traffic_limit !== 0 && isOnline && stats && (
-              <div>
-                {formatTrafficLimit(
-                  node.traffic_limit,
-                  node.traffic_limit_type
-                )}
-              </div>
+              <>
+                <div className="w-[80%] flex items-center gap-1 mt-1">
+                  <ProgressBar value={trafficPercentage} h="h-2" />
+                  <span className="text-right text-xs">
+                    {node.traffic_limit !== 0
+                      ? `${trafficPercentage.toFixed(0)}%`
+                      : "OFF"}
+                  </span>
+                </div>
+                <div className="text-xs text-secondary-foreground mt-1">
+                  {formatTrafficLimit(
+                    node.traffic_limit,
+                    node.traffic_limit_type
+                  )}
+                </div>
+              </>
             )}
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center justify-around">
+            {node.traffic_limit !== 0 && isOnline && stats && (
+              <div className="flex items-center justify-center w-1/3">
+                <CircleProgress
+                  value={trafficPercentage}
+                  maxValue={100}
+                  size={32}
+                  strokeWidth={4}
+                  showPercentage={true}
+                />
+              </div>
+            )}
+            <div
+              className={
+                node.traffic_limit !== 0 ? "w-2/3 text-left" : "w-full"
+              }>
+              <div>
+                <div>
+                  ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}
+                </div>
+                <div>
+                  ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
+                </div>
+              </div>
+              {node.traffic_limit !== 0 && isOnline && stats && (
+                <div>
+                  {formatTrafficLimit(
+                    node.traffic_limit,
+                    node.traffic_limit_type
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
       <div className="col-span-1">
         {load.split("|").map((item, index) => (

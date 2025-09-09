@@ -173,6 +173,14 @@
                 "help": "启用后默认显示 SWAP 信息"
             },
             {
+                "key": "selectTrafficProgressStyle",
+                "name": "流量进度条样式",
+                "type": "select",
+                "options": "circular,linear",
+                "default": "circular",
+                "help": "设置流量进度条样式为 circular（环形）或 linear（线形）"
+            },
+            {
                 "key": "enableListItemProgressBar",
                 "name": "启用列表视图进度条",
                 "type": "switch",

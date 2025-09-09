@@ -1,5 +1,5 @@
 interface NodeListHeaderProps {
-  enableSwap: boolean | undefined;
+  enableSwap: boolean;
 }
 
 export const NodeListHeader = ({ enableSwap }: NodeListHeaderProps) => {

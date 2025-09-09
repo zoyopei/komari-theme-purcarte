@@ -10,7 +10,7 @@ const LoadCharts = lazy(() => import("./LoadCharts"));
 const PingChart = lazy(() => import("./PingChart"));
 import Loading from "@/components/loading";
 import Flag from "@/components/sections/Flag";
-import { useConfigItem } from "@/config";
+import { useAppConfig } from "@/config";
 import { useIsMobile } from "@/hooks/useMobile";
 
 const InstancePage = () => {
@@ -27,8 +27,7 @@ const InstancePage = () => {
   const [chartType, setChartType] = useState<"load" | "ping">("load");
   const [loadHours, setLoadHours] = useState<number>(0);
   const [pingHours, setPingHours] = useState<number>(1); // 默认1小时
-  const enableInstanceDetail = useConfigItem("enableInstanceDetail");
-  const enablePingChart = useConfigItem("enablePingChart");
+  const { enableInstanceDetail, enablePingChart } = useAppConfig();
   const isMobile = useIsMobile();
 
   const maxRecordPreserveTime = publicSettings?.record_preserve_time || 0; // 默认0表示关闭

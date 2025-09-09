@@ -16,10 +16,15 @@ import { CircleProgress } from "../ui/progress-circle";
 
 interface NodeCardProps {
   node: NodeWithStatus;
-  enableSwap: boolean | undefined;
+  enableSwap: boolean;
+  selectTrafficProgressStyle: "circular" | "linear";
 }
 
-export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
+export const NodeCard = ({
+  node,
+  enableSwap,
+  selectTrafficProgressStyle,
+}: NodeCardProps) => {
   const {
     stats,
     isOnline,
@@ -113,6 +118,36 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
             <span className="w-12 text-right">{diskUsage.toFixed(0)}%</span>
           </div>
         </div>
+        {selectTrafficProgressStyle === "linear" && isOnline && stats && (
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-secondary-foreground">流量</span>
+              <div className="w-3/4 flex items-center gap-2">
+                <ProgressBar value={trafficPercentage} />
+                <span className="w-12 text-right">
+                  {node.traffic_limit !== 0
+                    ? `${trafficPercentage.toFixed(0)}%`
+                    : "OFF"}
+                </span>
+              </div>
+            </div>
+            <div className="flex text-xs items-center justify-between text-secondary-foreground">
+              <span>
+                {formatTrafficLimit(
+                  node.traffic_limit,
+                  node.traffic_limit_type
+                )}
+              </span>
+              <span>
+                {stats
+                  ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
+                      stats.network.totalDown
+                    )}`
+                  : "N/A"}
+              </span>
+            </div>
+          </div>
+        )}
         <div className="border-t border-(--accent-4)/50 my-2"></div>
         <div className="flex justify-between text-xs">
           <span className="text-secondary-foreground">网络：</span>
@@ -123,40 +158,42 @@ export const NodeCard = ({ node, enableSwap }: NodeCardProps) => {
             </span>
           </div>
         </div>
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-secondary-foreground w-1/5">流量</span>
-          <div className="flex items-center justify-between w-4/5">
-            <div className="flex items-center w-1/4">
-              {node.traffic_limit !== 0 && isOnline && stats && (
-                <CircleProgress
-                  value={trafficPercentage}
-                  maxValue={100}
-                  size={32}
-                  strokeWidth={4}
-                  showPercentage={true}
-                />
-              )}
-            </div>
-            <div className="w-3/4 text-right">
-              <div>
-                <span>
-                  ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}
-                </span>
-                <span className="ml-2">
-                  ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
-                </span>
+        {selectTrafficProgressStyle === "circular" && isOnline && stats && (
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-secondary-foreground w-1/5">流量</span>
+            <div className="flex items-center justify-between w-4/5">
+              <div className="flex items-center w-1/4">
+                {node.traffic_limit !== 0 && (
+                  <CircleProgress
+                    value={trafficPercentage}
+                    maxValue={100}
+                    size={32}
+                    strokeWidth={4}
+                    showPercentage={true}
+                  />
+                )}
               </div>
-              {node.traffic_limit !== 0 && isOnline && stats && (
-                <div className="text-right">
-                  {formatTrafficLimit(
-                    node.traffic_limit,
-                    node.traffic_limit_type
-                  )}
+              <div className="w-3/4 text-right">
+                <div>
+                  <span>
+                    ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}
+                  </span>
+                  <span className="ml-2">
+                    ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
+                  </span>
                 </div>
-              )}
+                {node.traffic_limit !== 0 && isOnline && stats && (
+                  <div className="text-right">
+                    {formatTrafficLimit(
+                      node.traffic_limit,
+                      node.traffic_limit_type
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="flex justify-between text-xs">
           <span className="text-secondary-foreground">负载</span>
           <span>{load}</span>

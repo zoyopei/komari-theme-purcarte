@@ -5,10 +5,11 @@ import { DEFAULT_CONFIG } from "./default";
 
 /**
  * 使用全局配置 Hook，用于获取当前应用配置
- * @returns 配置对象
+ * @returns 配置对象（合并了默认配置，确保所有属性都有值）
  */
-export function useAppConfig(): ConfigOptions {
-  return useContext(ConfigContext);
+export function useAppConfig(): Required<ConfigOptions> {
+  const config = useContext(ConfigContext);
+  return { ...DEFAULT_CONFIG, ...config } as Required<ConfigOptions>;
 }
 
 /**
@@ -26,3 +27,8 @@ export function useConfigItem<K extends keyof ConfigOptions>(
 
 // 导出配置类型
 export type { ConfigOptions } from "./default";
+
+/**
+ * 应用配置类型
+ */
+export type AppConfig = Required<ConfigOptions>;
