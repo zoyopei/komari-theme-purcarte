@@ -57,7 +57,7 @@ export const Header = ({
   };
 
   return (
-    <header className="purcarte-blur border-b border-(--accent-4)/50 sticky top-0 flex items-center justify-center shadow-sm shadow-(color:--accent-4)/50 z-10">
+    <header className="purcarte-blur border-b border-(--accent-a4) shadow-sm shadow-(color:--accent-a4) sticky top-0 flex items-center justify-center z-10">
       <div className="w-[90%] max-w-screen-2xl px-4 py-2 flex items-center justify-between">
         <div className="flex items-center theme-text-shadow text-accent-foreground">
           <a href="/" className="flex items-center gap-2 text-2xl font-bold">

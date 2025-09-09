@@ -78,7 +78,6 @@
   --sidebar-border: #e5e5e5;
   --sidebar-ring: #a1a1a1;
 
-  --purcarte-blur: 10px;
   --body-background-url: url("");
 }
 
@@ -130,20 +129,19 @@
 }
 
 @layer utilities {
-  .dark .radix-themes {
-    --theme-text-muted-color: rgb(from var(--accent-4) r g b / 0.8);
-    --theme-line-muted-color: rgb(from var(--accent-2) r g b / 0.5);
-  }
-
   .radix-themes {
+    --purcarte-blur: 10px;
+    --purcarte-card-color: var(--card-light);
     --theme-text-muted-color: rgb(from var(--accent-12) r g b / 0.8);
     --theme-line-muted-color: rgb(from var(--accent-10) r g b / 0.5);
   }
 
-  .dark .rt-Badge-tag-transparent {
-    --tag-transparent-bg: rgb(from var(--accent-11) r g b / 0.4);
-    --tag-transparent-color: rgb(from var(--accent-4) r g b / 0.8);
-    @apply bg-(--tag-transparent-bg) text-(--tag-transparent-color);
+  .radix-themes.dark {
+    --purcarte-card-color: var(--card-dark);
+  }
+
+  .purcarte-blur {
+    @apply bg-(--purcarte-card-color)! backdrop-blur-(--purcarte-blur)!;
   }
 
   .rt-Badge-tag-transparent {
@@ -152,12 +150,20 @@
     @apply bg-(--tag-transparent-bg) text-(--tag-transparent-color);
   }
 
+  .theme-button {
+    @apply bg-(--accent-a6)! hover:bg-(--accent-a5)!;
+  }
+
+  .theme-button-ghost {
+    @apply hover:bg-(--accent-a6)! hover:bg-(--accent-a5)!;
+  }
+
   .theme-text-shadow {
-    @apply text-shadow-sm text-shadow-(color:--accent-8)/50;
+    @apply text-shadow-sm text-shadow-(color:--accent-a4);
   }
 
   .theme-card-style {
-    @apply rounded-lg shadow-sm shadow-(color:--accent-4)/50 box-border border border-(--accent-4)/50;
+    @apply rounded-lg shadow-sm shadow-(color:--accent-a4) box-border border border-(--accent-a4);
   }
 
   .theme-text-muted {
@@ -176,11 +182,6 @@ body::before {
   z-index: -1;
   background: var(--body-background-url) center/cover no-repeat;
   /* transition: var(--body-background-transition); */
-}
-
-.purcarte-blur {
-  background: var(--color-card);
-  backdrop-filter: blur(var(--purcarte-blur));
 }
 
 .striped-bg-red-translucent-diagonal {

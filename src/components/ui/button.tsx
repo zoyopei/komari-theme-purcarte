@@ -10,14 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-(--accent-5)/50 text-primary shadow-sm shadow-(color:--accent-4)/50 hover:bg-(--accent-6)/50",
+          "theme-button text-primary inset-shadow-xs inset-shadow-(color:--accent-a4) ",
         destructive:
-          "bg-(--accent-5)/50 text-white shadow-sm shadow-(color:--accent-4)/50 hover:bg-(--accent-6)/50 focus-visible:ring-destructive/20",
-        outline:
-          "bg-(--accent-5)/50 theme-card-style hover:bg-(--accent-6)/50 hover:text-accent-foreground",
+          "theme-button text-white inset-shadow-xs inset-shadow-(color:--accent-a4) focus-visible:ring-destructive/20",
+        outline: "theme-button theme-card-style",
         secondary:
-          "bg-(--accent-5)/50 text-secondary-foreground shadow-sm shadow-(color:--accent-4)/50 hover:bg-(--accent-6)/50",
-        ghost: "hover:bg-(--accent-5)/50 hover:bg-(--accent-6)/50",
+          "theme-button text-secondary-foreground inset-shadow-xs inset-shadow-(color:--accent-a4)",
+        ghost: "theme-button-ghost",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

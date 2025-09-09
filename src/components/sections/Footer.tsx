@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="fixed inset-shadow-sm inset-shadow-(color:--accent-4)/50 bottom-0 left-0 right-0 p-2 text-center purcarte-blur z-50">
+    <footer className="fixed inset-shadow-sm inset-shadow-(color:--accent-a4) bottom-0 left-0 right-0 p-2 text-center purcarte-blur z-50">
       <p className="flex justify-center text-sm text-secondary-foreground theme-text-shadow whitespace-pre">
         Powered by{" "}
         <a

@@ -82,7 +82,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       let foundKey = null;
       // 查找是否可以合并到现有时间点
       for (const key of timeKeys) {
-        if (Math.abs(key - t) <= 1500) {
+        if (Math.abs(key - t) <= 5000) {
           foundKey = key;
           break;
         }
@@ -95,10 +95,11 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
           timeKeys.push(useKey);
         }
       }
-      grouped[useKey][rec.task_id] = rec.value;
+      grouped[useKey][rec.task_id] = rec.value === -1 ? null : rec.value;
     }
 
     let full = Object.values(grouped).sort((a: any, b: any) => a.time - b.time);
+    console.log("Full :", full);
 
     if (hours !== 0) {
       const task = pingHistory.tasks;
@@ -226,6 +227,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       };
     });
   }, [pingHistory?.records, sortedTasks, timeRange]);
+
+  console.log("chartData:", chartData);
 
   return (
     <div className="relative space-y-4">
@@ -451,8 +454,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   {...brushIndices}
                   dataKey="time"
                   height={30}
-                  stroke="var(--accent-track)"
-                  fill="var(--accent-4)"
+                  stroke="var(--theme-text-muted-color)"
+                  fill="var(--accent-a4)"
                   alwaysShowText
                   tickFormatter={(time) => {
                     const date = new Date(time);

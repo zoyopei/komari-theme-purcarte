@@ -6,7 +6,8 @@ import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { Header } from "@/components/sections/Header";
 import { ConfigProvider } from "@/config";
-import { useTheme } from "@/hooks/useTheme";
+import { useThemeManager, useTheme } from "@/hooks/useTheme";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { NodeDataProvider } from "@/contexts/NodeDataContext";
 import { LiveDataProvider } from "@/contexts/LiveDataContext";
 import { useNodeData } from "@/contexts/NodeDataContext";
@@ -57,7 +58,7 @@ export const AppContent = () => {
           className="fixed right-0 bottom-0 min-w-full min-h-full w-auto h-auto -z-1 object-cover"></video>
       )}
       <Theme
-        appearance={appearance === "system" ? "inherit" : appearance}
+        appearance={appearance}
         accentColor={color}
         scaling="110%"
         style={{ backgroundColor: "transparent" }}>
@@ -93,6 +94,7 @@ export const AppContent = () => {
 
 const App = () => {
   const { publicSettings, loading } = useNodeData();
+  const themeManager = useThemeManager();
 
   if (loading) {
     return <Loading />;
@@ -100,7 +102,9 @@ const App = () => {
 
   return (
     <ConfigProvider publicSettings={publicSettings}>
-      <AppContent />
+      <ThemeProvider value={themeManager}>
+        <AppContent />
+      </ThemeProvider>
     </ConfigProvider>
   );
 };

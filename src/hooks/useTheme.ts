@@ -41,20 +41,66 @@ export const THEME_DEFAULTS = {
 } as const;
 
 export interface ThemeContextType {
-  appearance: Appearance;
+  appearance: "light" | "dark";
+  rawAppearance: Appearance;
   setAppearance: (appearance: Appearance) => void;
   color: Colors;
   setColor: (color: Colors) => void;
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
-  appearance: THEME_DEFAULTS.appearance,
+  appearance: "light",
+  rawAppearance: THEME_DEFAULTS.appearance,
   setAppearance: () => {},
   color: THEME_DEFAULTS.color,
   setColor: () => {},
 });
 
-export const useTheme = () => {
+/**
+ * Custom hook to convert "system" appearance to actual "light" or "dark" for Radix UI
+ * @param appearance - The appearance setting from context ("light", "dark", or "system")
+ * @returns The resolved appearance for Radix UI ("light" or "dark")
+ */
+export const useSystemTheme = (appearance: Appearance): "light" | "dark" => {
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(() => {
+    // Initial system theme detection
+    if (typeof window !== "undefined" && window.matchMedia) {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return "light";
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setSystemTheme(e.matches ? "dark" : "light");
+    };
+
+    // Add listener for system theme changes
+    mediaQuery.addEventListener("change", handleChange);
+
+    // Cleanup
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  // Return the resolved theme
+  if (appearance === "system") {
+    return systemTheme;
+  }
+
+  return appearance as "light" | "dark";
+};
+
+import { useContext } from "react";
+
+export const useThemeManager = () => {
   const enableLocalStorage = useConfigItem("enableLocalStorage");
   const defaultAppearance = useConfigItem("selectedDefaultAppearance");
   const defaultColor = useConfigItem("selectThemeColor");
@@ -86,39 +132,28 @@ export const useTheme = () => {
     return (defaultColor as Colors) || THEME_DEFAULTS.color;
   });
 
-  useEffect(() => {
-    if (appearance === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      setAppearance(systemTheme);
-    }
-  }, [appearance]);
+  const resolvedAppearance = useSystemTheme(appearance);
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-
-    if (appearance === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.add(appearance);
-    }
     if (enableLocalStorage) {
       localStorage.setItem("appearance", appearance);
-    }
-  }, [appearance, enableLocalStorage]);
-
-  useEffect(() => {
-    if (enableLocalStorage) {
       localStorage.setItem("color", color);
     }
-  }, [color, enableLocalStorage]);
+  }, [appearance, color, enableLocalStorage]);
 
-  return { appearance, setAppearance, color, setColor };
+  return {
+    appearance: resolvedAppearance,
+    rawAppearance: appearance,
+    setAppearance,
+    color,
+    setColor,
+  };
+};
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
 };
