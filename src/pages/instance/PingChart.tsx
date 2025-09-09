@@ -75,14 +75,27 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     if (!pingHistory || !pingHistory.records || !pingHistory.tasks) return [];
 
     const grouped: Record<string, any> = {};
-    // 优化：将2秒窗口内的点分组，以合并几乎同时的记录
+    const timeKeys: number[] = [];
+
     for (const rec of pingHistory.records) {
       const t = new Date(rec.time).getTime();
-      const useKey = Math.round(t / 2000) * 2000;
+      let foundKey = null;
+      // 查找是否可以合并到现有时间点
+      for (const key of timeKeys) {
+        if (Math.abs(key - t) <= 1500) {
+          foundKey = key;
+          break;
+        }
+      }
+      const useKey = foundKey !== null ? foundKey : t;
       if (!grouped[useKey]) {
         grouped[useKey] = { time: useKey };
+        // 如果是新的时间点，则添加到 timeKeys 中
+        if (foundKey === null) {
+          timeKeys.push(useKey);
+        }
       }
-      grouped[useKey][rec.task_id] = rec.value === -1 ? null : rec.value;
+      grouped[useKey][rec.task_id] = rec.value;
     }
 
     let full = Object.values(grouped).sort((a: any, b: any) => a.time - b.time);
