@@ -1,7 +1,7 @@
-import { memo, useState, useMemo, useCallback, useEffect } from "react";
+import { memo, useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowRightToLine, RefreshCw } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -26,6 +26,7 @@ import fillMissingTimePoints, {
 import { useConfigItem } from "@/config";
 import { CustomTooltip } from "@/components/ui/tooltip";
 import Tips from "@/components/ui/tips";
+import { generateColor, lableFormatter } from "@/utils/chartHelper";
 
 interface PingChartProps {
   node: NodeData;
@@ -36,10 +37,15 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   const { loading, error, pingHistory } = usePingChart(node, hours);
   const [visiblePingTasks, setVisiblePingTasks] = useState<number[]>([]);
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
+  const [brushIndices, setBrushIndices] = useState<{
+    startIndex?: number;
+    endIndex?: number;
+  }>({});
   const [cutPeak, setCutPeak] = useState(false);
   const [connectBreaks, setConnectBreaks] = useState(
     useConfigItem("enableConnectBreaks")
   );
+  const [isResetting, setIsResetting] = useState(false);
   const maxPointsToRender = useConfigItem("pingChartMaxPoints") || 0; // 0表示不限制
   const isMobile = useIsMobile();
 
@@ -55,25 +61,13 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     }
   }, [pingHistory?.tasks]);
 
-  const lableFormatter = useCallback(
-    (value: any) => {
-      const date = new Date(value);
-      if (hours === 0) {
-        return date.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
-      }
-      return date.toLocaleString([], {
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    },
-    [hours]
-  );
+  useEffect(() => {
+    if (isResetting) {
+      setTimeRange(null);
+      setBrushIndices({});
+      setIsResetting(false);
+    }
+  }, [isResetting]);
 
   const chartMargin = { top: 8, right: 16, bottom: 8, left: 16 };
 
@@ -170,32 +164,6 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     return [...pingHistory.tasks].sort((a, b) => a.id - b.id);
   }, [pingHistory?.tasks]);
 
-  const generateColor = useCallback(
-    (taskName: string, total: number) => {
-      const index = sortedTasks.findIndex((t) => t.name === taskName);
-      if (index === -1) return "#000000"; // Fallback color
-
-      const hue = (index * (360 / total)) % 360;
-
-      // 使用OKLCH色彩空间，优化折线图的颜色区分度
-      // L=0.7 (较高亮度，便于在图表背景上清晰显示)
-      // C=0.2 (较高饱和度，增强颜色区分度)
-      const oklchColor = `oklch(0.6 0.2 ${hue} / .8)`;
-
-      // 为不支持OKLCH的浏览器提供HSL备用色
-      // 使用更高的饱和度和适中的亮度来匹配OKLCH的视觉效果
-      const hslFallback = `hsl(${hue}, 50%, 60%)`;
-
-      // 检查浏览器是否支持OKLCH
-      if (CSS.supports("color", oklchColor)) {
-        return oklchColor;
-      } else {
-        return hslFallback;
-      }
-    },
-    [sortedTasks]
-  );
-
   const breakPoints = useMemo(() => {
     if (!connectBreaks || !chartData || chartData.length < 2) {
       return [];
@@ -219,13 +187,13 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
         if (isBreak) {
           points.push({
             x: currentPoint.time,
-            color: generateColor(task.name, sortedTasks.length),
+            color: generateColor(task.name, sortedTasks),
           });
         }
       }
     }
     return points;
-  }, [chartData, sortedTasks, visiblePingTasks, generateColor, connectBreaks]);
+  }, [chartData, sortedTasks, visiblePingTasks, connectBreaks]);
 
   const taskStats = useMemo(() => {
     if (!pingHistory?.records || !sortedTasks.length) return [];
@@ -241,10 +209,10 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
         value: latestValue,
         time: latestTime,
         loss: loss,
-        color: generateColor(task.name, sortedTasks.length),
+        color: generateColor(task.name, sortedTasks),
       };
     });
-  }, [pingHistory?.records, sortedTasks, generateColor, timeRange]);
+  }, [pingHistory?.records, sortedTasks, timeRange]);
 
   return (
     <div className="relative space-y-4">
@@ -342,7 +310,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                 </Tips>
               </div>
             </div>
-            <div className={isMobile ? "w-full mt-2" : ""}>
+            <div className={`flex gap-2 ${isMobile ? "w-full mt-2" : ""}`}>
               <Button variant="secondary" onClick={handleToggleAll} size="sm">
                 {pingHistory?.tasks &&
                 visiblePingTasks.length === pingHistory.tasks.length ? (
@@ -357,6 +325,38 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   </>
                 )}
               </Button>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  if (timeRange) {
+                    if (chartData.length > 1) {
+                      const endIndex = chartData.length - 1;
+                      const startIndex = 0;
+                      setTimeRange([
+                        chartData[startIndex].time,
+                        chartData[endIndex].time,
+                      ]);
+                      setBrushIndices({ startIndex, endIndex });
+                      setIsResetting(true);
+                    }
+                  } else if (chartData.length > 1) {
+                    const endIndex = chartData.length - 1;
+                    const startIndex = Math.floor(endIndex * 0.75);
+                    setTimeRange([
+                      chartData[startIndex].time,
+                      chartData[endIndex].time,
+                    ]);
+                    setBrushIndices({ startIndex, endIndex });
+                  }
+                }}
+                size="sm">
+                {timeRange ? (
+                  <RefreshCw size={16} />
+                ) : (
+                  <ArrowRightToLine size={16} />
+                )}
+                {timeRange ? "重置范围" : "四分之一"}
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -366,7 +366,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
               <LineChart data={chartData} margin={chartMargin}>
                 <CartesianGrid
                   strokeDasharray="2 4"
-                  stroke="var(--muted-foreground)"
+                  stroke="var(--theme-line-muted-color)"
                   vertical={false}
                 />
                 <XAxis
@@ -390,16 +390,26 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                     });
                   }}
                   tick={{ fill: "var(--theme-text-muted-color)" }}
+                  axisLine={{
+                    stroke: "var(--theme-line-muted-color)",
+                  }}
                   scale="time"
                 />
                 <YAxis
                   mirror={true}
                   width={30}
                   tick={{ fill: "var(--theme-text-muted-color)" }}
+                  axisLine={{
+                    stroke: "var(--theme-line-muted-color)",
+                  }}
                 />
                 <Tooltip
                   cursor={false}
-                  content={<CustomTooltip labelFormatter={lableFormatter} />}
+                  content={
+                    <CustomTooltip
+                      labelFormatter={(value) => lableFormatter(value, hours)}
+                    />
+                  }
                 />
                 {connectBreaks &&
                   breakPoints.map((point, index) => (
@@ -417,7 +427,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                     type={"monotone"}
                     dataKey={String(task.id)}
                     name={task.name}
-                    stroke={generateColor(task.name, sortedTasks.length)}
+                    stroke={generateColor(task.name, sortedTasks)}
                     strokeWidth={2}
                     hide={!visiblePingTasks.includes(task.id)}
                     dot={false}
@@ -425,6 +435,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                   />
                 ))}
                 <Brush
+                  {...brushIndices}
                   dataKey="time"
                   height={30}
                   stroke="var(--accent-track)"
@@ -457,8 +468,13 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                         chartData[e.startIndex].time,
                         chartData[e.endIndex].time,
                       ]);
+                      setBrushIndices({
+                        startIndex: e.startIndex,
+                        endIndex: e.endIndex,
+                      });
                     } else {
                       setTimeRange(null);
+                      setBrushIndices({});
                     }
                   }}
                 />

@@ -132,10 +132,12 @@
 @layer utilities {
   .dark .radix-themes {
     --theme-text-muted-color: rgb(from var(--accent-4) r g b / 0.8);
+    --theme-line-muted-color: rgb(from var(--accent-2) r g b / 0.5);
   }
 
   .radix-themes {
     --theme-text-muted-color: rgb(from var(--accent-12) r g b / 0.8);
+    --theme-line-muted-color: rgb(from var(--accent-10) r g b / 0.5);
   }
 
   .dark .rt-Badge-tag-transparent {

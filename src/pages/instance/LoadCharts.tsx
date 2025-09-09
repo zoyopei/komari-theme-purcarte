@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef } from "react";
+import { memo, useRef } from "react";
 import {
   AreaChart,
   Area,
@@ -17,6 +17,7 @@ import { Flex } from "@radix-ui/themes";
 import Loading from "@/components/loading";
 import { useLoadCharts } from "@/hooks/useLoadCharts";
 import { CustomTooltip } from "@/components/ui/tooltip";
+import { lableFormatter, loadChartTimeFormatter } from "@/utils/chartHelper";
 
 interface LoadChartsProps {
   node: NodeData;
@@ -32,38 +33,6 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
 
   const chartDataLengthRef = useRef(0);
   chartDataLengthRef.current = chartData.length;
-
-  // 格式化函数
-  const timeFormatter = useCallback((value: any, index: number) => {
-    if (chartDataLengthRef.current === 0) return "";
-    if (index === 0 || index === chartDataLengthRef.current - 1) {
-      return new Date(value).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    }
-    return "";
-  }, []);
-
-  const labelFormatter = useCallback(
-    (value: any) => {
-      const date = new Date(value);
-      if (hours === 0) {
-        return date.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
-      }
-      return date.toLocaleString([], {
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    },
-    [hours]
-  );
 
   // 样式和颜色
   const cn = "flex flex-col w-full overflow-hidden";
@@ -262,7 +231,7 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
               {...chartProps}>
               <CartesianGrid
                 strokeDasharray="2 4"
-                stroke="var(--muted-foreground)"
+                stroke="var(--theme-line-muted-color)"
                 vertical={false}
               />
               <XAxis
@@ -274,7 +243,13 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
                 tick={{
                   fill: "var(--theme-text-muted-color)",
                 }}
-                tickFormatter={timeFormatter}
+                tickFormatter={(value, index) =>
+                  loadChartTimeFormatter(
+                    value,
+                    index,
+                    chartDataLengthRef.current
+                  )
+                }
                 interval={0}
                 height={20}
               />
@@ -298,7 +273,7 @@ const LoadCharts = memo(({ node, hours, liveData }: LoadChartsProps) => {
                   <CustomTooltip
                     {...props}
                     chartConfig={config}
-                    labelFormatter={labelFormatter}
+                    labelFormatter={(value) => lableFormatter(value, hours)}
                   />
                 )}
               />
