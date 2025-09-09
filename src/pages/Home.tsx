@@ -29,7 +29,8 @@ const homeStateCache = {
 };
 
 const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
-  const { viewMode } = useTheme();
+  const { viewMode, statusCardsVisibility, setStatusCardsVisibility } =
+    useTheme();
   const { nodes: staticNodes, loading, getGroups } = useNodeData();
   const { liveData } = useLiveData();
   const [selectedGroup, setSelectedGroup] = useState(
@@ -42,14 +43,6 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
     enableListItemProgressBar,
     selectTrafficProgressStyle,
   } = useAppConfig();
-  const [displayOptions, setDisplayOptions] = useState({
-    time: true,
-    online: true,
-    regions: true,
-    traffic: true,
-    speed: true,
-  });
-
   const combinedNodes = useMemo<NodeWithStatus[]>(() => {
     if (!staticNodes) return [];
     return staticNodes.map((node) => {
@@ -134,8 +127,8 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
       className="w-[90%] max-w-screen-2xl mx-auto flex-1 flex flex-col pb-10 overflow-y-auto">
       {enableStatsBar && (
         <StatsBar
-          displayOptions={displayOptions}
-          setDisplayOptions={setDisplayOptions}
+          displayOptions={statusCardsVisibility}
+          setDisplayOptions={setStatusCardsVisibility}
           stats={stats}
           loading={loading}
         />

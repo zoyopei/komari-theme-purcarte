@@ -70,6 +70,14 @@
                 "help": "标签默认颜色列表，展示的标签将按顺序调用该颜色池，逗号分隔（可用的颜色列表请参考：https://www.radix-ui.com/themes/docs/theme/color，改完没有生效则说明填写有误）"
             },
             {
+                "key": "selectThemeColor",
+                "name": "默认主题颜色",
+                "type": "select",
+                "options": "gray,gold,bronze,brown,yellow,amber,orange,tomato,red,ruby,crimson,pink,plum,purple,violet,iris,indigo,blue,cyan,teal,jade,green,grass,lime,mint,sky",
+                "default": "gray",
+                "help": "设置默认主题颜色，颜色对照请参考：https://www.radix-ui.com/themes/docs/theme/color"
+            },
+            {
                 "key": "enableLocalStorage",
                 "name": "启用 localStorage 配置",
                 "type": "switch",
@@ -93,12 +101,11 @@
                 "help": "设置默认外观为浅色、深色或系统主题"
             },
             {
-                "key": "selectThemeColor",
-                "name": "默认主题颜色",
-                "type": "select",
-                "options": "gray,gold,bronze,brown,yellow,amber,orange,tomato,red,ruby,crimson,pink,plum,purple,violet,iris,indigo,blue,cyan,teal,jade,green,grass,lime,mint,sky",
-                "default": "gray",
-                "help": "设置默认主题颜色，颜色对照请参考：https://www.radix-ui.com/themes/docs/theme/color"
+                "key": "statusCardsVisibility",
+                "name": "状态卡片显示控制",
+                "type": "string",
+                "default": "currentTime:true,currentOnline:true,regionOverview:true,trafficOverview:true,networkSpeed:true",
+                "help": "控制状态卡片的显示与隐藏，格式为 卡片名称:显示状态（true/false），多个卡片使用逗号分隔，支持的卡片名称包括 currentTime（当前时间）, currentOnline（当前在线）, regionOverview（点亮地区）, trafficOverview（流量概览）, networkSpeed（网络速率）"
             },
             {
                 "name": "标题栏设置",

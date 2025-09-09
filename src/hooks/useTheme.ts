@@ -44,6 +44,16 @@ export interface ThemeContextType {
   setColor: (color: Colors) => void;
   viewMode: "grid" | "table";
   setViewMode: (mode: "grid" | "table") => void;
+  statusCardsVisibility: {
+    currentTime: true;
+    currentOnline: true;
+    regionOverview: true;
+    trafficOverview: true;
+    networkSpeed: true;
+  };
+  setStatusCardsVisibility: (
+    visibility: Partial<ThemeContextType["statusCardsVisibility"]>
+  ) => void;
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
@@ -54,6 +64,14 @@ export const ThemeContext = createContext<ThemeContextType>({
   setColor: () => {},
   viewMode: DEFAULT_CONFIG.selectedDefaultView as "grid" | "table",
   setViewMode: () => {},
+  statusCardsVisibility: {
+    currentTime: true,
+    currentOnline: true,
+    regionOverview: true,
+    trafficOverview: true,
+    networkSpeed: true,
+  },
+  setStatusCardsVisibility: () => {},
 });
 
 /**
@@ -107,12 +125,17 @@ const useStoredState = <T>(
 
   const [state, setState] = useState<T>(() => {
     if (enableLocalStorage) {
-      const storedValue = localStorage.getItem(key);
-      if (storedValue) {
-        const cleanedValue = storedValue.replace(/^"|"$/g, "");
-        if (!validator || validator(cleanedValue)) {
-          return cleanedValue as T;
+      try {
+        const storedValue = localStorage.getItem(key);
+        if (storedValue) {
+          const parsedValue = JSON.parse(storedValue);
+          if (!validator || validator(parsedValue)) {
+            return parsedValue as T;
+          }
         }
+      } catch (error) {
+        console.error("Error parsing stored state:", error);
+        // Fallback to default value if parsing fails
       }
     }
     return defaultValue;
@@ -120,7 +143,11 @@ const useStoredState = <T>(
 
   useEffect(() => {
     if (enableLocalStorage) {
-      localStorage.setItem(key, String(state));
+      try {
+        localStorage.setItem(key, JSON.stringify(state));
+      } catch (error) {
+        console.error("Error setting stored state:", error);
+      }
     }
   }, [key, state, enableLocalStorage]);
 
@@ -133,6 +160,9 @@ export const useThemeManager = () => {
   ) as Appearance;
   const defaultColor = useConfigItem("selectThemeColor") as Colors;
   const defaultView = useConfigItem("selectedDefaultView") as "grid" | "table";
+  const defaultStatusCardsVisibility = useConfigItem(
+    "statusCardsVisibility"
+  ) as string;
 
   const [appearance, setAppearance] = useStoredState<Appearance>(
     "appearance",
@@ -146,6 +176,24 @@ export const useThemeManager = () => {
     "nodeViewMode",
     defaultView
   );
+
+  const [statusCardsVisibility, setStatusCardsVisibility] = useStoredState(
+    "statusCardsVisibility",
+    (() => {
+      const visibility: { [key: string]: boolean } = {};
+      defaultStatusCardsVisibility.split(",").forEach((item) => {
+        const [key, value] = item.split(":");
+        visibility[key] = value === "true";
+      });
+      return visibility as ThemeContextType["statusCardsVisibility"];
+    })()
+  );
+
+  const handleSetStatusCardsVisibility = (
+    newVisibility: Partial<ThemeContextType["statusCardsVisibility"]>
+  ) => {
+    setStatusCardsVisibility((prev) => ({ ...prev, ...newVisibility }));
+  };
 
   useEffect(() => {
     setColor(defaultColor);
@@ -161,6 +209,8 @@ export const useThemeManager = () => {
     setColor,
     viewMode,
     setViewMode,
+    statusCardsVisibility,
+    setStatusCardsVisibility: handleSetStatusCardsVisibility,
   };
 };
 export const useTheme = () => {

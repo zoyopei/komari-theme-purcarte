@@ -15,11 +15,11 @@ import { useIsMobile } from "@/hooks/useMobile";
 
 interface StatsBarProps {
   displayOptions: {
-    time: boolean;
-    online: boolean;
-    regions: boolean;
-    traffic: boolean;
-    speed: boolean;
+    currentTime: boolean;
+    currentOnline: boolean;
+    regionOverview: boolean;
+    trafficOverview: boolean;
+    networkSpeed: boolean;
   };
   setDisplayOptions: (options: any) => void;
   stats: {
@@ -58,10 +58,10 @@ export const StatsBar = ({
   // 渲染统计项
   const renderStatItem = (key: string) => {
     switch (key) {
-      case "time":
+      case "currentTime":
         return (
-          displayOptions.time && (
-            <div className="w-full py-1" key="time">
+          displayOptions.currentTime && (
+            <div className="w-full py-1" key="currentTime">
               <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   当前时间
@@ -73,10 +73,10 @@ export const StatsBar = ({
             </div>
           )
         );
-      case "online":
+      case "currentOnline":
         return (
-          displayOptions.online && (
-            <div className="w-full py-1" key="online">
+          displayOptions.currentOnline && (
+            <div className="w-full py-1" key="currentOnline">
               <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   当前在线
@@ -90,10 +90,10 @@ export const StatsBar = ({
             </div>
           )
         );
-      case "regions":
+      case "regionOverview":
         return (
-          displayOptions.regions && (
-            <div className="w-full py-1" key="regions">
+          displayOptions.regionOverview && (
+            <div className="w-full py-1" key="regionOverview">
               <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   点亮地区
@@ -105,10 +105,10 @@ export const StatsBar = ({
             </div>
           )
         );
-      case "traffic":
+      case "trafficOverview":
         return (
-          displayOptions.traffic && (
-            <div className="w-full py-1" key="traffic">
+          displayOptions.trafficOverview && (
+            <div className="w-full py-1" key="trafficOverview">
               <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   流量概览
@@ -127,10 +127,10 @@ export const StatsBar = ({
             </div>
           )
         );
-      case "speed":
+      case "networkSpeed":
         return (
-          displayOptions.speed && (
-            <div className="w-full py-1" key="speed">
+          displayOptions.networkSpeed && (
+            <div className="w-full py-1" key="networkSpeed">
               <div className="flex flex-col gap-2">
                 <label className="text-secondary-foreground text-sm">
                   网络速率
@@ -170,45 +170,60 @@ export const StatsBar = ({
             <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
               <span>当前时间</span>
               <Switch
-                checked={displayOptions.time}
+                checked={displayOptions.currentTime}
                 onCheckedChange={(checked) =>
-                  setDisplayOptions({ ...displayOptions, time: checked })
+                  setDisplayOptions({
+                    ...displayOptions,
+                    currentTime: checked,
+                  })
                 }
               />
             </DropdownMenuItem>
             <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
               <span>当前在线</span>
               <Switch
-                checked={displayOptions.online}
+                checked={displayOptions.currentOnline}
                 onCheckedChange={(checked) =>
-                  setDisplayOptions({ ...displayOptions, online: checked })
+                  setDisplayOptions({
+                    ...displayOptions,
+                    currentOnline: checked,
+                  })
                 }
               />
             </DropdownMenuItem>
             <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
               <span>点亮地区</span>
               <Switch
-                checked={displayOptions.regions}
+                checked={displayOptions.regionOverview}
                 onCheckedChange={(checked) =>
-                  setDisplayOptions({ ...displayOptions, regions: checked })
+                  setDisplayOptions({
+                    ...displayOptions,
+                    regionOverview: checked,
+                  })
                 }
               />
             </DropdownMenuItem>
             <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
               <span>流量概览</span>
               <Switch
-                checked={displayOptions.traffic}
+                checked={displayOptions.trafficOverview}
                 onCheckedChange={(checked) =>
-                  setDisplayOptions({ ...displayOptions, traffic: checked })
+                  setDisplayOptions({
+                    ...displayOptions,
+                    trafficOverview: checked,
+                  })
                 }
               />
             </DropdownMenuItem>
             <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
               <span>网络速率</span>
               <Switch
-                checked={displayOptions.speed}
+                checked={displayOptions.networkSpeed}
                 onCheckedChange={(checked) =>
-                  setDisplayOptions({ ...displayOptions, speed: checked })
+                  setDisplayOptions({
+                    ...displayOptions,
+                    networkSpeed: checked,
+                  })
                 }
               />
             </DropdownMenuItem>
