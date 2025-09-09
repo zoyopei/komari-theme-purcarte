@@ -9,6 +9,7 @@ import type { NodeWithStatus } from "@/types/node";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import { useLiveData } from "@/contexts/LiveDataContext";
 import { useAppConfig } from "@/config";
+import { useTheme } from "@/hooks/useTheme";
 import {
   Card,
   CardDescription,
@@ -18,7 +19,6 @@ import {
 } from "@/components/ui/card";
 
 interface HomePageProps {
-  viewMode: "grid" | "table";
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
@@ -28,11 +28,8 @@ const homeStateCache = {
   scrollPosition: 0,
 };
 
-const HomePage: React.FC<HomePageProps> = ({
-  viewMode,
-  searchTerm,
-  setSearchTerm,
-}) => {
+const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
+  const { viewMode } = useTheme();
   const { nodes: staticNodes, loading, getGroups } = useNodeData();
   const { liveData } = useLiveData();
   const [selectedGroup, setSelectedGroup] = useState(

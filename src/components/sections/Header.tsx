@@ -6,6 +6,7 @@ import {
   Table2,
   Moon,
   Sun,
+  SunMoon,
   CircleUserIcon,
   Menu,
 } from "lucide-react";
@@ -18,23 +19,19 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
-  viewMode: "grid" | "table";
-  setViewMode: (mode: "grid" | "table") => void;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
 
-export const Header = ({
-  viewMode,
-  setViewMode,
-  searchTerm,
-  setSearchTerm,
-}: HeaderProps) => {
-  const { appearance, setAppearance } = useTheme();
+export const Header = ({ searchTerm, setSearchTerm }: HeaderProps) => {
+  const { rawAppearance, setAppearance, viewMode, setViewMode } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
   const isInstancePage = location.pathname.startsWith("/instance");
@@ -51,10 +48,6 @@ export const Header = ({
       document.title = sitename;
     }
   }, [sitename]);
-
-  const toggleAppearance = () => {
-    setAppearance(appearance === "light" ? "dark" : "light");
-  };
 
   return (
     <header className="purcarte-blur border-b border-(--accent-a4) shadow-sm shadow-(color:--accent-a4) sticky top-0 flex items-center justify-center z-10">
@@ -128,16 +121,35 @@ export const Header = ({
                           {viewMode === "grid" ? "表格视图" : "网格视图"}
                         </span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={toggleAppearance}>
-                        {appearance === "dark" ? (
-                          <Sun className="size-4 mr-2 text-primary" />
-                        ) : (
-                          <Moon className="size-4 mr-2 text-primary" />
-                        )}
-                        <span>
-                          {appearance === "dark" ? "浅色模式" : "深色模式"}
-                        </span>
-                      </DropdownMenuItem>
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                          {rawAppearance === "light" ? (
+                            <Sun className="size-4 mr-2 text-primary" />
+                          ) : rawAppearance === "dark" ? (
+                            <Moon className="size-4 mr-2 text-primary" />
+                          ) : (
+                            <SunMoon className="size-4 mr-2 text-primary" />
+                          )}
+                          <span>切换主题</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent className="purcarte-blur border-(--accent-4)/50 rounded-xl">
+                          <DropdownMenuItem
+                            onClick={() => setAppearance("light")}>
+                            <Sun className="size-4 mr-2 text-primary" />
+                            <span>浅色模式</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setAppearance("dark")}>
+                            <Moon className="size-4 mr-2 text-primary" />
+                            <span>深色模式</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setAppearance("system")}>
+                            <SunMoon className="size-4 mr-2 text-primary" />
+                            <span>跟随系统</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
                       {enableAdminButton && (
                         <DropdownMenuItem asChild>
                           <a
@@ -195,16 +207,35 @@ export const Header = ({
                       <Grid3X3 className="size-5 text-primary" />
                     )}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleAppearance}>
-                    {appearance === "dark" ? (
-                      <Sun className="size-5 text-primary" />
-                    ) : (
-                      <Moon className="size-5 text-primary" />
-                    )}
-                  </Button>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        {rawAppearance === "light" ? (
+                          <Sun className="size-5 text-primary" />
+                        ) : rawAppearance === "dark" ? (
+                          <Moon className="size-5 text-primary" />
+                        ) : (
+                          <SunMoon className="size-5 text-primary" />
+                        )}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="purcarte-blur mt-[.5rem] border-(--accent-4)/50 rounded-xl">
+                      <DropdownMenuItem onClick={() => setAppearance("light")}>
+                        <Sun className="size-4 mr-2 text-primary" />
+                        <span>浅色模式</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setAppearance("dark")}>
+                        <Moon className="size-4 mr-2 text-primary" />
+                        <span>深色模式</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setAppearance("system")}>
+                        <SunMoon className="size-4 mr-2 text-primary" />
+                        <span>跟随系统</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   {enableAdminButton && (
                     <a href="/admin" target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon">
@@ -232,16 +263,34 @@ export const Header = ({
                   <DropdownMenuContent
                     align="end"
                     className="animate-in slide-in-from-top-5 duration-300 purcarte-blur border-(--accent-4)/50 rounded-xl">
-                    <DropdownMenuItem onClick={toggleAppearance}>
-                      {appearance === "dark" ? (
-                        <Sun className="size-4 mr-2 text-primary" />
-                      ) : (
-                        <Moon className="size-4 mr-2 text-primary" />
-                      )}
-                      <span>
-                        {appearance === "dark" ? "浅色模式" : "深色模式"}
-                      </span>
-                    </DropdownMenuItem>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        {rawAppearance === "light" ? (
+                          <Sun className="size-4 mr-2 text-primary" />
+                        ) : rawAppearance === "dark" ? (
+                          <Moon className="size-4 mr-2 text-primary" />
+                        ) : (
+                          <SunMoon className="size-4 mr-2 text-primary" />
+                        )}
+                        <span>切换主题</span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="purcarte-blur border-(--accent-4)/50 rounded-xl">
+                        <DropdownMenuItem
+                          onClick={() => setAppearance("light")}>
+                          <Sun className="size-4 mr-2 text-primary" />
+                          <span>浅色模式</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setAppearance("dark")}>
+                          <Moon className="size-4 mr-2 text-primary" />
+                          <span>深色模式</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setAppearance("system")}>
+                          <SunMoon className="size-4 mr-2 text-primary" />
+                          <span>跟随系统</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
                     {enableAdminButton && (
                       <DropdownMenuItem asChild>
                         <a
@@ -258,16 +307,35 @@ export const Header = ({
                 </DropdownMenu>
               ) : (
                 <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleAppearance}>
-                    {appearance === "dark" ? (
-                      <Sun className="size-5 text-primary" />
-                    ) : (
-                      <Moon className="size-5 text-primary" />
-                    )}
-                  </Button>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        {rawAppearance === "light" ? (
+                          <Sun className="size-5 text-primary" />
+                        ) : rawAppearance === "dark" ? (
+                          <Moon className="size-5 text-primary" />
+                        ) : (
+                          <SunMoon className="size-5 text-primary" />
+                        )}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="purcarte-blur mt-[.5rem] border-(--accent-4)/50 rounded-xl">
+                      <DropdownMenuItem onClick={() => setAppearance("light")}>
+                        <Sun className="size-4 mr-2 text-primary" />
+                        <span>浅色模式</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setAppearance("dark")}>
+                        <Moon className="size-4 mr-2 text-primary" />
+                        <span>深色模式</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setAppearance("system")}>
+                        <SunMoon className="size-4 mr-2 text-primary" />
+                        <span>跟随系统</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   {enableAdminButton && (
                     <a href="/admin" target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon">

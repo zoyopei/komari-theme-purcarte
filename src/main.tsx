@@ -1,4 +1,4 @@
-import { StrictMode, useState, useEffect, lazy, Suspense } from "react";
+import { StrictMode, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
@@ -23,28 +23,9 @@ import { useConfigItem } from "@/config";
 // 内部应用组件，在 ConfigProvider 内部使用配置
 export const AppContent = () => {
   const { appearance, color } = useTheme();
-  const defaultView = useConfigItem("selectedDefaultView");
-  const enableLocalStorage = useConfigItem("enableLocalStorage");
-
-  const [viewMode, setViewMode] = useState<"grid" | "table">(() => {
-    if (enableLocalStorage) {
-      const savedMode = localStorage.getItem("nodeViewMode");
-      const cleanedMode = savedMode ? savedMode.replace(/^"|"$/g, "") : null;
-      if (cleanedMode === "grid" || cleanedMode === "table") {
-        return cleanedMode;
-      }
-    }
-    return defaultView || "grid";
-  });
   const [searchTerm, setSearchTerm] = useState("");
   const enableVideoBackground = useConfigItem("enableVideoBackground");
   const videoBackgroundUrl = useConfigItem("videoBackgroundUrl");
-
-  useEffect(() => {
-    if (enableLocalStorage) {
-      localStorage.setItem("nodeViewMode", viewMode);
-    }
-  }, [enableLocalStorage, viewMode]);
 
   return (
     <>
@@ -63,19 +44,13 @@ export const AppContent = () => {
         scaling="110%"
         style={{ backgroundColor: "transparent" }}>
         <div className="min-h-screen flex flex-col text-sm">
-          <Header
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-          />
+          <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           <Suspense fallback={<Loading />}>
             <Routes>
               <Route
                 path="/"
                 element={
                   <HomePage
-                    viewMode={viewMode}
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
                   />
