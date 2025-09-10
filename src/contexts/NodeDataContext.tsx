@@ -13,7 +13,7 @@ import type { NodeData, PublicInfo, HistoryRecord } from "../types/node";
 function useNodesInternal() {
   const [staticNodes, setStaticNodes] = useState<NodeData[] | "private">([]);
   const [publicSettings, setPublicSettings] = useState<PublicInfo | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchNodes = useCallback(async () => {

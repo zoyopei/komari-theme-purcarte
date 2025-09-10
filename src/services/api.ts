@@ -231,5 +231,12 @@ export class WebSocketService {
   }
 }
 
-// 创建 WebSocket 服务实例
-export const wsService = new WebSocketService();
+// 延迟 WebSocket 服务实例的创建
+let wsServiceInstance: WebSocketService | null = null;
+
+export function getWsService(): WebSocketService {
+  if (!wsServiceInstance) {
+    wsServiceInstance = new WebSocketService();
+  }
+  return wsServiceInstance;
+}
