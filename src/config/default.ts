@@ -39,7 +39,7 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   enableTransparentTags: true,
   tagDefaultColorList:
     "ruby,gray,gold,bronze,brown,yellow,amber,orange,tomato,red",
-  selectThemeColor: "gray",
+  selectThemeColor: "violet",
   enableLocalStorage: true,
   selectedDefaultView: "grid",
   selectedDefaultAppearance: "system",

@@ -74,7 +74,7 @@
                 "name": "默认主题颜色",
                 "type": "select",
                 "options": "gray,gold,bronze,brown,yellow,amber,orange,tomato,red,ruby,crimson,pink,plum,purple,violet,iris,indigo,blue,cyan,teal,jade,green,grass,lime,mint,sky",
-                "default": "gray",
+                "default": "violet",
                 "help": "设置默认主题颜色，颜色对照请参考：https://www.radix-ui.com/themes/docs/theme/color"
             },
             {

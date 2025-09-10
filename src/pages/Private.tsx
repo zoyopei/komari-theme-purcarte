@@ -6,11 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-
 export default function Private() {
-  const navigate = useNavigate();
-
   return (
     <div className="fixed inset-0 flex items-center justify-center">
       <Card className="w-full max-w-md">
@@ -19,9 +15,13 @@ export default function Private() {
           <CardDescription>登录后才能获取数据</CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button onClick={() => navigate("/admin")} className="w-full">
-            前往登录
-          </Button>
+          <a
+            href="/admin"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full">
+            <Button className="w-full">前往登录</Button>
+          </a>
         </CardFooter>
       </Card>
     </div>
