@@ -78,6 +78,7 @@
   --sidebar-border: #e5e5e5;
   --sidebar-ring: #a1a1a1;
 
+  --purcarte-blur: 10px;
   --body-background-url: url("");
 }
 
@@ -130,7 +131,6 @@
 
 @layer utilities {
   .radix-themes {
-    --purcarte-blur: 10px;
     --purcarte-card-color: var(--card-light);
     --theme-text-muted-color: rgb(from var(--accent-12) r g b / 0.8);
     --theme-line-muted-color: rgb(from var(--accent-10) r g b / 0.5);
@@ -163,7 +163,7 @@
   }
 
   .theme-card-style {
-    @apply rounded-lg shadow-sm shadow-(color:--accent-a4) box-border border border-(--accent-a4);
+    @apply rounded-lg shadow-sm shadow-(color:--accent-12)/50 box-border border border-(--accent-12)/50;
   }
 
   .theme-text-muted {
