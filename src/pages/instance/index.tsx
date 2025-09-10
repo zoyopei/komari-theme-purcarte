@@ -75,8 +75,10 @@ const InstancePage = () => {
   }, [timeRanges, maxRecordPreserveTime]);
 
   useEffect(() => {
-    const foundNode = staticNodes.find((n) => n.uuid === uuid);
-    setStaticNode(foundNode || null);
+    if (Array.isArray(staticNodes)) {
+      const foundNode = staticNodes.find((n: NodeData) => n.uuid === uuid);
+      setStaticNode(foundNode || null);
+    }
   }, [staticNodes, uuid]);
 
   const node = useMemo(() => {

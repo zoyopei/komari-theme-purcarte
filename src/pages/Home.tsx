@@ -44,7 +44,7 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
     selectTrafficProgressStyle,
   } = useAppConfig();
   const combinedNodes = useMemo<NodeWithStatus[]>(() => {
-    if (!staticNodes) return [];
+    if (!staticNodes || staticNodes === "private") return [];
     return staticNodes.map((node) => {
       const isOnline = liveData?.online.includes(node.uuid) ?? false;
       const stats = isOnline ? liveData?.data[node.uuid] : undefined;

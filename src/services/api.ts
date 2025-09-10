@@ -16,28 +16,53 @@ class ApiService {
     this.baseUrl = "";
   }
 
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+  async get<T>(
+    endpoint: string
+  ): Promise<
+    | ApiResponse<T>
+    | { status: number }
+    | { status: string; message: string; data: any }
+  > {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.status === 401) {
+          return { status: 401 };
+        }
+        // 对于其他 HTTP 错误，直接返回错误对象，而不是抛出异常
+        return {
+          status: "error",
+          message: `HTTP error! status: ${response.status}`,
+          data: null as any,
+        };
       }
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("API request failed:", error);
+      // 这个 catch 块现在只处理网络层面的错误
+      console.error("API request failed (network error):", error);
       return {
         status: "error",
-        message: error instanceof Error ? error.message : "Unknown error",
+        message:
+          error instanceof Error ? error.message : "Unknown network error",
         data: null as any,
       };
     }
   }
 
   // 获取所有节点信息
-  async getNodes(): Promise<NodeData[]> {
+  async getNodes(): Promise<NodeData[] | "private"> {
     const response = await this.get<NodeData[]>("/api/nodes");
-    return response.status === "success" ? response.data : [];
+    // 检查是否为私有状态
+    if ("status" in response && response.status === 401) {
+      return "private";
+    }
+    // 检查是否为成功的 API 响应
+    if ("status" in response && response.status === "success") {
+      return (response as ApiResponse<NodeData[]>).data;
+    }
+    // 其他情况返回空数组
+    return [];
   }
 
   // 获取指定节点的最近状态

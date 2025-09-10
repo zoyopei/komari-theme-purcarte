@@ -11,7 +11,7 @@ import type { NodeData, PublicInfo, HistoryRecord } from "../types/node";
 
 // The core logic from the original useNodeData.ts, now kept internal to this file.
 function useNodesInternal() {
-  const [staticNodes, setStaticNodes] = useState<NodeData[]>([]);
+  const [staticNodes, setStaticNodes] = useState<NodeData[] | "private">([]);
   const [publicSettings, setPublicSettings] = useState<PublicInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,8 +25,14 @@ function useNodesInternal() {
         apiService.getNodes(),
         apiService.getPublicSettings(),
       ]);
-      const sortedNodes = nodeData.sort((a, b) => a.weight - b.weight);
-      setStaticNodes(sortedNodes);
+
+      if (nodeData === "private") {
+        setStaticNodes("private");
+      } else {
+        const sortedNodes = nodeData.sort((a, b) => a.weight - b.weight);
+        setStaticNodes(sortedNodes);
+      }
+
       setPublicSettings(publicSettings);
     } catch (err) {
       setError(err instanceof Error ? err.message : "获取节点数据失败");
@@ -115,15 +121,21 @@ function useNodesInternal() {
 
   const getNodesByGroup = useCallback(
     (group: string) => {
-      return staticNodes.filter((node) => node.group === group);
+      if (Array.isArray(staticNodes)) {
+        return staticNodes.filter((node) => node.group === group);
+      }
+      return [];
     },
     [staticNodes]
   );
 
   const getGroups = useCallback(() => {
-    return Array.from(
-      new Set(staticNodes.map((node) => node.group).filter(Boolean))
-    );
+    if (Array.isArray(staticNodes)) {
+      return Array.from(
+        new Set(staticNodes.map((node) => node.group).filter(Boolean))
+      );
+    }
+    return [];
   }, [staticNodes]);
 
   return {

@@ -17,11 +17,13 @@ import Loading from "./components/loading";
 const HomePage = lazy(() => import("@/pages/Home"));
 const InstancePage = lazy(() => import("@/pages/instance"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
+const PrivatePage = lazy(() => import("@/pages/Private"));
 
 import { useConfigItem } from "@/config";
 
 // 内部应用组件，在 ConfigProvider 内部使用配置
 export const AppContent = () => {
+  const { nodes } = useNodeData();
   const { appearance, color } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const enableVideoBackground = useConfigItem("enableVideoBackground");
@@ -46,19 +48,23 @@ export const AppContent = () => {
         <div className="min-h-screen flex flex-col text-sm">
           <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           <Suspense fallback={<Loading />}>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <HomePage
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                  />
-                }
-              />
-              <Route path="/instance/:uuid" element={<InstancePage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
+            {nodes === "private" ? (
+              <PrivatePage />
+            ) : (
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <HomePage
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                    />
+                  }
+                />
+                <Route path="/instance/:uuid" element={<InstancePage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            )}
           </Suspense>
           <Footer />
         </div>
