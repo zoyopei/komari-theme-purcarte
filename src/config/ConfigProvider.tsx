@@ -1,21 +1,37 @@
-import { type ReactNode, useEffect, useMemo } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import type { PublicInfo } from "@/types/node.d";
 import { ConfigContext } from "./ConfigContext";
 import { DEFAULT_CONFIG, type ConfigOptions } from "./default";
+import { apiService } from "@/services/api";
+import Loading from "@/components/loading";
 
 // 配置提供者属性类型
 interface ConfigProviderProps {
-  publicSettings: PublicInfo | null; // 公共设置，可能为 null
   children: ReactNode;
 }
 
 /**
  * 配置提供者组件，用于将配置传递给子组件
  */
-export function ConfigProvider({
-  publicSettings,
-  children,
-}: ConfigProviderProps) {
+export function ConfigProvider({ children }: ConfigProviderProps) {
+  const [publicSettings, setPublicSettings] = useState<PublicInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPublicSettings = async () => {
+      try {
+        const settings = await apiService.getPublicSettings();
+        setPublicSettings(settings);
+      } catch (error) {
+        console.error("Failed to fetch public settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPublicSettings();
+  }, []);
+
   const config: ConfigOptions = useMemo(() => {
     const themeSettings =
       (publicSettings?.theme_settings as ConfigOptions) || {};
@@ -61,6 +77,10 @@ export function ConfigProvider({
       }
     }
   }, [config]);
+
+  if (loading) {
+    return <Loading text="加载配置中..." />;
+  }
 
   return (
     <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>

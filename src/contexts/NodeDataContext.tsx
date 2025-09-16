@@ -7,12 +7,11 @@ import {
   type ReactNode,
 } from "react";
 import { apiService } from "../services/api";
-import type { NodeData, PublicInfo, HistoryRecord } from "../types/node";
+import type { NodeData, HistoryRecord } from "../types/node";
 
 // The core logic from the original useNodeData.ts, now kept internal to this file.
 function useNodesInternal() {
   const [staticNodes, setStaticNodes] = useState<NodeData[] | "private">([]);
-  const [publicSettings, setPublicSettings] = useState<PublicInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,10 +20,7 @@ function useNodesInternal() {
     setError(null);
 
     try {
-      const [nodeData, publicSettings] = await Promise.all([
-        apiService.getNodes(),
-        apiService.getPublicSettings(),
-      ]);
+      const nodeData = await apiService.getNodes();
 
       if (nodeData === "private") {
         setStaticNodes("private");
@@ -32,8 +28,6 @@ function useNodesInternal() {
         const sortedNodes = nodeData.sort((a, b) => a.weight - b.weight);
         setStaticNodes(sortedNodes);
       }
-
-      setPublicSettings(publicSettings);
     } catch (err) {
       setError(err instanceof Error ? err.message : "获取节点数据失败");
     } finally {
@@ -140,7 +134,6 @@ function useNodesInternal() {
 
   return {
     nodes: staticNodes,
-    publicSettings,
     loading,
     error,
     refreshNodes,

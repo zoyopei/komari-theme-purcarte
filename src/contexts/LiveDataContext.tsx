@@ -45,7 +45,6 @@ export const LiveDataProvider = ({
     // 只有在加载完成、站点非私有且启用了 WebSocket 时才连接
     if (!loading && nodes !== "private" && enableWebSocket) {
       const wsService = getWsService(); // 在需要时才获取实例
-      console.log("连接------", loading, nodes, enableWebSocket);
 
       const handleWebSocketData = (data: LiveData) => {
         if (data.online && data.data) {

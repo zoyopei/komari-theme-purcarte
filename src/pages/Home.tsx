@@ -121,22 +121,25 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
     homeStateCache.selectedGroup = selectedGroup;
   }, [selectedGroup]);
 
+  if (loading) {
+    return <Loading text="正在努力获取数据中..." />;
+  }
+
   return (
     <div
       ref={mainContentRef}
-      className="w-[90%] max-w-screen-2xl mx-auto flex-1 flex flex-col pb-10 overflow-y-auto">
-      {enableStatsBar && (
-        <StatsBar
-          displayOptions={statusCardsVisibility}
-          setDisplayOptions={setStatusCardsVisibility}
-          stats={stats}
-          loading={loading}
-        />
-      )}
-
+      className="w-[90%] max-w-screen-2xl mx-auto flex-1 flex flex-col pb-5 overflow-y-auto">
       <main className="flex-1 px-4 pb-4">
+        {enableStatsBar && (
+          <StatsBar
+            displayOptions={statusCardsVisibility}
+            setDisplayOptions={setStatusCardsVisibility}
+            stats={stats}
+            loading={loading}
+          />
+        )}
         {enableGroupedBar && (
-          <div className="flex purcarte-blur theme-card-style overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground space-x-4 px-4 mb-4">
+          <div className="flex purcarte-blur theme-card-style overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground space-x-4 px-4 my-4">
             <span>分组</span>
             {groups.map((group: string) => (
               <Button
@@ -150,10 +153,8 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
           </div>
         )}
 
-        <div className="space-y-4 mt-4">
-          {loading ? (
-            <Loading text="正在努力获取数据中..." />
-          ) : filteredNodes.length > 0 ? (
+        <div className="space-y-4 my-4">
+          {filteredNodes.length > 0 ? (
             <div
               className={
                 viewMode === "grid"

@@ -73,7 +73,7 @@ export const AppContent = () => {
   );
 };
 
-const ThemedApp = () => {
+const App = () => {
   const themeManager = useThemeManager();
   return (
     <ThemeProvider value={themeManager}>
@@ -82,28 +82,16 @@ const ThemedApp = () => {
   );
 };
 
-const App = () => {
-  const { publicSettings, loading } = useNodeData();
-
-  if (loading) {
-    return <Loading />;
-  }
-
-  return (
-    <ConfigProvider publicSettings={publicSettings}>
-      <ThemedApp />
-    </ConfigProvider>
-  );
-};
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <NodeDataProvider>
-      <LiveDataProvider>
-        <Router>
-          <App />
-        </Router>
-      </LiveDataProvider>
-    </NodeDataProvider>
+    <ConfigProvider>
+      <NodeDataProvider>
+        <LiveDataProvider>
+          <Router>
+            <App />
+          </Router>
+        </LiveDataProvider>
+      </NodeDataProvider>
+    </ConfigProvider>
   </StrictMode>
 );

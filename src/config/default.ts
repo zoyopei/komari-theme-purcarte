@@ -1,32 +1,32 @@
 // 配置类型定义
 export interface ConfigOptions {
-  backgroundImage?: string; // 背景图片URL
-  enableVideoBackground?: boolean; // 是否启用视频背景
-  videoBackgroundUrl?: string; // 视频背景URL
-  blurValue?: number; // 磨砂玻璃模糊值
-  blurBackgroundColor?: string; // 磨砂玻璃背景颜色
-  enableTransparentTags?: boolean; // 是否启用标签透明背景
-  tagDefaultColorList?: string; // 标签默认颜色列表
-  selectThemeColor?: string; // 默认主题颜色
-  enableLocalStorage?: boolean; // 是否启用本地存储
-  selectedDefaultView?: "grid" | "table"; // 默认视图模式
-  selectedDefaultAppearance?: "light" | "dark" | "system"; // 默认外观模式
-  statusCardsVisibility?: string; // 状态卡片显示控制
-  enableLogo?: boolean; // 是否启用Logo
-  logoUrl?: string; // Logo图片URL
-  enableTitle?: boolean; // 是否启用标题
-  titleText?: string; // 标题文本
-  enableSearchButton?: boolean; // 是否启用搜索按钮
-  enableAdminButton?: boolean; // 是否启用管理员按钮
-  enableStatsBar?: boolean; // 是否启用统计栏
-  enableGroupedBar?: boolean; // 是否启用分组栏
-  enableInstanceDetail?: boolean; // 是否启用实例详情
-  enablePingChart?: boolean; // 是否启用延迟图表
-  enableConnectBreaks?: boolean; // 是否启用连接断点
-  pingChartMaxPoints?: number; // 延迟图表最大点数
-  enableSwap?: boolean; // 是否启用SWAP显示
-  selectTrafficProgressStyle?: "circular" | "linear"; // 流量进度条样式
-  enableListItemProgressBar?: boolean; // 是否启用列表视图进度条
+  backgroundImage: string; // 背景图片URL
+  enableVideoBackground: boolean; // 是否启用视频背景
+  videoBackgroundUrl: string; // 视频背景URL
+  blurValue: number; // 磨砂玻璃模糊值
+  blurBackgroundColor: string; // 磨砂玻璃背景颜色
+  enableTransparentTags: boolean; // 是否启用标签透明背景
+  tagDefaultColorList: string; // 标签默认颜色列表
+  selectThemeColor: string; // 默认主题颜色
+  enableLocalStorage: boolean; // 是否启用本地存储
+  selectedDefaultView: "grid" | "table"; // 默认视图模式
+  selectedDefaultAppearance: "light" | "dark" | "system"; // 默认外观模式
+  statusCardsVisibility: string; // 状态卡片显示控制
+  enableLogo: boolean; // 是否启用Logo
+  logoUrl: string; // Logo图片URL
+  enableTitle: boolean; // 是否启用标题
+  titleText: string; // 标题文本
+  enableSearchButton: boolean; // 是否启用搜索按钮
+  enableAdminButton: boolean; // 是否启用管理员按钮
+  enableStatsBar: boolean; // 是否启用统计栏
+  enableGroupedBar: boolean; // 是否启用分组栏
+  enableInstanceDetail: boolean; // 是否启用实例详情
+  enablePingChart: boolean; // 是否启用延迟图表
+  enableConnectBreaks: boolean; // 是否启用连接断点
+  pingChartMaxPoints: number; // 延迟图表最大点数
+  enableSwap: boolean; // 是否启用SWAP显示
+  selectTrafficProgressStyle: "circular" | "linear"; // 流量进度条样式
+  enableListItemProgressBar: boolean; // 是否启用列表视图进度条
 }
 
 // 默认配置值
