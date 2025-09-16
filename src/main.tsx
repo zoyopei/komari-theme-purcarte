@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Header } from "@/components/sections/Header";
 import { ConfigProvider } from "@/config";
 import { useThemeManager, useTheme } from "@/hooks/useTheme";
@@ -45,27 +46,31 @@ export const AppContent = () => {
         accentColor={color}
         scaling="110%"
         style={{ backgroundColor: "transparent" }}>
-        <div className="min-h-screen flex flex-col text-sm">
+        <div className="h-screen flex flex-col text-sm">
           <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          <Suspense fallback={<Loading />}>
-            {nodes === "private" ? (
-              <PrivatePage />
-            ) : (
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <HomePage
-                      searchTerm={searchTerm}
-                      setSearchTerm={setSearchTerm}
+          <ScrollArea className="flex-1 min-h-0">
+            <main className="w-[90%] max-w-screen-2xl mx-auto flex-1">
+              <Suspense fallback={<Loading />}>
+                {nodes === "private" ? (
+                  <PrivatePage />
+                ) : (
+                  <Routes>
+                    <Route
+                      path="/"
+                      element={
+                        <HomePage
+                          searchTerm={searchTerm}
+                          setSearchTerm={setSearchTerm}
+                        />
+                      }
                     />
-                  }
-                />
-                <Route path="/instance/:uuid" element={<InstancePage />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            )}
-          </Suspense>
+                    <Route path="/instance/:uuid" element={<InstancePage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                )}
+              </Suspense>
+            </main>
+          </ScrollArea>
           <Footer />
         </div>
       </Theme>

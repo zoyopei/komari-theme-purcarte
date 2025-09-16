@@ -108,7 +108,7 @@ const InstancePage = () => {
   }
 
   return (
-    <div className="w-[90%] max-w-screen-2xl text-card-foreground mx-auto flex-1 flex flex-col pb-15 p-4 space-y-4">
+    <div className="text-card-foreground space-y-4 my-4">
       <div className="flex items-center justify-between purcarte-blur theme-card-style p-4 mb-4 text-secondary-foreground">
         <div className="flex items-center gap-2 min-w-0">
           <Button

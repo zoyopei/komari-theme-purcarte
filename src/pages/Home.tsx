@@ -126,89 +126,83 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
   }
 
   return (
-    <div
-      ref={mainContentRef}
-      className="w-[90%] max-w-screen-2xl mx-auto flex-1 flex flex-col pb-5 overflow-y-auto">
-      <main className="flex-1 px-4 pb-4">
-        {enableStatsBar && (
-          <StatsBar
-            displayOptions={statusCardsVisibility}
-            setDisplayOptions={setStatusCardsVisibility}
-            stats={stats}
-            loading={loading}
-          />
-        )}
-        {enableGroupedBar && (
-          <div className="flex purcarte-blur theme-card-style overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground space-x-4 px-4 my-4">
-            <span>分组</span>
-            {groups.map((group: string) => (
-              <Button
-                key={group}
-                variant={selectedGroup === group ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => setSelectedGroup(group)}>
-                {group}
-              </Button>
-            ))}
-          </div>
-        )}
+    <div ref={mainContentRef}>
+      {enableStatsBar && (
+        <StatsBar
+          displayOptions={statusCardsVisibility}
+          setDisplayOptions={setStatusCardsVisibility}
+          stats={stats}
+          loading={loading}
+        />
+      )}
+      {enableGroupedBar && (
+        <div className="flex purcarte-blur theme-card-style overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground space-x-4 px-4 my-4">
+          <span>分组</span>
+          {groups.map((group: string) => (
+            <Button
+              key={group}
+              variant={selectedGroup === group ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setSelectedGroup(group)}>
+              {group}
+            </Button>
+          ))}
+        </div>
+      )}
 
-        <div className="space-y-4 my-4">
-          {filteredNodes.length > 0 ? (
+      <div className="space-y-4 my-4">
+        {filteredNodes.length > 0 ? (
+          <div
+            className={
+              viewMode === "grid"
+                ? ""
+                : "space-y-2 overflow-auto purcarte-blur theme-card-style p-2"
+            }>
             <div
               className={
                 viewMode === "grid"
-                  ? ""
-                  : "space-y-2 overflow-auto purcarte-blur theme-card-style p-2"
+                  ? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4"
+                  : "min-w-[1080px]"
               }>
-              <div
-                className={
-                  viewMode === "grid"
-                    ? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4"
-                    : "min-w-[1080px]"
-                }>
-                {viewMode === "table" && (
-                  <NodeListHeader enableSwap={enableSwap} />
-                )}
-                {filteredNodes.map((node: NodeWithStatus) =>
-                  viewMode === "grid" ? (
-                    <NodeCard
-                      key={node.uuid}
-                      node={node}
-                      enableSwap={enableSwap}
-                      selectTrafficProgressStyle={selectTrafficProgressStyle}
-                    />
-                  ) : (
-                    <NodeListItem
-                      key={node.uuid}
-                      node={node}
-                      enableSwap={enableSwap}
-                      enableListItemProgressBar={enableListItemProgressBar}
-                      selectTrafficProgressStyle={selectTrafficProgressStyle}
-                    />
-                  )
-                )}
-              </div>
+              {viewMode === "table" && (
+                <NodeListHeader enableSwap={enableSwap} />
+              )}
+              {filteredNodes.map((node: NodeWithStatus) =>
+                viewMode === "grid" ? (
+                  <NodeCard
+                    key={node.uuid}
+                    node={node}
+                    enableSwap={enableSwap}
+                    selectTrafficProgressStyle={selectTrafficProgressStyle}
+                  />
+                ) : (
+                  <NodeListItem
+                    key={node.uuid}
+                    node={node}
+                    enableSwap={enableSwap}
+                    enableListItemProgressBar={enableListItemProgressBar}
+                    selectTrafficProgressStyle={selectTrafficProgressStyle}
+                  />
+                )
+              )}
             </div>
-          ) : (
-            <div className="flex flex-grow items-center justify-center">
-              <Card className="w-full max-w-md">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold">
-                    Not Found
-                  </CardTitle>
-                  <CardDescription>请尝试更改筛选条件</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                  <Button onClick={() => setSearchTerm("")} className="w-full">
-                    清空搜索
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
-          )}
-        </div>
-      </main>
+          </div>
+        ) : (
+          <div className="flex flex-grow items-center justify-center">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold">Not Found</CardTitle>
+                <CardDescription>请尝试更改筛选条件</CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Button onClick={() => setSearchTerm("")} className="w-full">
+                  清空搜索
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
