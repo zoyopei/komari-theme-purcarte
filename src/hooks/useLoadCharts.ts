@@ -11,6 +11,7 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
   const [realtimeData, setRealtimeData] = useState<HistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDataEmpty, setIsDataEmpty] = useState(false);
 
   const isRealtime = hours === 0;
 
@@ -23,7 +24,11 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
       setError(null);
       try {
         const data = await getLoadHistory(node.uuid, hours);
-        setHistoricalData(data?.records || []);
+        const records = data?.records || [];
+        setHistoricalData(records);
+        setIsDataEmpty(records.length === 0);
+        console.log(isDataEmpty);
+
         setRealtimeData([]); // Clear realtime data
       } catch (err: any) {
         setError(err.message || "Failed to fetch historical data");
@@ -33,7 +38,7 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
     };
 
     fetchHistoricalData();
-  }, [node?.uuid, hours, getLoadHistory, isRealtime]);
+  }, [node?.uuid, hours, getLoadHistory, isRealtime, isDataEmpty]);
 
   // Fetch initial real-time data and handle WebSocket updates
   useEffect(() => {
@@ -117,6 +122,27 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
       time: new Date(d.time).toISOString(),
     }));
 
+    // 确定与当前采样方案匹配的间隔，以便进行时间差比较
+    const intervalSeconds =
+      hours === 1
+        ? minute
+        : hours === 4
+        ? minute
+        : hours > 120
+        ? hour
+        : minute * 15;
+
+    // 如果最后一个数据点的时间与当前时间相差超过一个间隔，则在末尾添加一个当前时间的空点
+    const now = new Date();
+    if (stringifiedData.length > 0) {
+      const lastDataTime = new Date(
+        stringifiedData[stringifiedData.length - 1].time
+      ).getTime();
+      if (now.getTime() - lastDataTime > intervalSeconds * 1000) {
+        stringifiedData.push({ time: now.toISOString() } as HistoryRecord);
+      }
+    }
+
     let filledData;
     if (hours === 1) {
       filledData = fillMissingTimePoints(
@@ -160,5 +186,6 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
     error,
     chartData,
     memoryChartData,
+    isDataEmpty,
   };
 };

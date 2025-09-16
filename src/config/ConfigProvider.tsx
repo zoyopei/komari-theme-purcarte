@@ -83,6 +83,8 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
   }
 
   return (
-    <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>
+    <ConfigContext.Provider value={{ ...config, publicSettings }}>
+      {children}
+    </ConfigContext.Provider>
   );
 }

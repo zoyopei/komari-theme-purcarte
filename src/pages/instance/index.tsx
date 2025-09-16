@@ -16,18 +16,15 @@ import { useIsMobile } from "@/hooks/useMobile";
 const InstancePage = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
-  const {
-    nodes: staticNodes,
-    publicSettings,
-    loading: nodesLoading,
-  } = useNodeData();
+  const { nodes: staticNodes, loading: nodesLoading } = useNodeData();
   const { liveData } = useLiveData();
   useNodeData();
   const [staticNode, setStaticNode] = useState<NodeData | null>(null);
   const [chartType, setChartType] = useState<"load" | "ping">("load");
   const [loadHours, setLoadHours] = useState<number>(0);
   const [pingHours, setPingHours] = useState<number>(1); // 默认1小时
-  const { enableInstanceDetail, enablePingChart } = useAppConfig();
+  const { enableInstanceDetail, enablePingChart, publicSettings } =
+    useAppConfig();
   const isMobile = useIsMobile();
 
   const maxRecordPreserveTime = publicSettings?.record_preserve_time || 0; // 默认0表示关闭
@@ -192,6 +189,7 @@ const InstancePage = () => {
             node={staticNode}
             hours={loadHours}
             liveData={liveData?.data[staticNode.uuid]}
+            isOnline={node.status === "online"}
           />
         ) : chartType === "ping" && staticNode ? (
           <PingChart node={staticNode} hours={pingHours} />
