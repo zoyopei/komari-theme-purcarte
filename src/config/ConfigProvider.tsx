@@ -16,6 +16,7 @@ interface ConfigProviderProps {
 export function ConfigProvider({ children }: ConfigProviderProps) {
   const [publicSettings, setPublicSettings] = useState<PublicInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const fetchPublicSettings = async () => {
@@ -26,6 +27,7 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
         console.error("Failed to fetch public settings:", error);
       } finally {
         setLoading(false);
+        setTimeout(() => setIsLoaded(true), 300); // 动画过渡
       }
     };
 
@@ -78,13 +80,15 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
     }
   }, [config]);
 
-  if (loading) {
-    return <Loading text="加载配置中..." />;
+  if (!isLoaded) {
+    return (
+      <Loading text="加载配置中..." className={!loading ? "fade-out" : ""} />
+    );
   }
 
   return (
     <ConfigContext.Provider value={{ ...config, publicSettings }}>
-      {children}
+      <div className="fade-in">{children}</div>
     </ConfigContext.Provider>
   );
 }

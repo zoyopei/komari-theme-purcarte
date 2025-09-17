@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { StatsBar } from "@/components/sections/StatsBar";
 import { NodeCard } from "@/components/sections/NodeCard";
@@ -10,6 +10,7 @@ import { useNodeData } from "@/contexts/NodeDataContext";
 import { useLiveData } from "@/contexts/LiveDataContext";
 import { useAppConfig } from "@/config";
 import { useTheme } from "@/hooks/useTheme";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Card,
   CardDescription,
@@ -25,17 +26,24 @@ interface HomePageProps {
 
 const homeStateCache = {
   selectedGroup: "所有",
-  scrollPosition: 0,
+  hasLoaded: false,
 };
 
 const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
   const { viewMode, statusCardsVisibility, setStatusCardsVisibility } =
     useTheme();
-  const { nodes: staticNodes, loading, getGroups } = useNodeData();
+  const {
+    nodes: staticNodes,
+    loading,
+    getGroups,
+    error,
+    refreshNodes,
+  } = useNodeData();
   const { liveData } = useLiveData();
   const [selectedGroup, setSelectedGroup] = useState(
     homeStateCache.selectedGroup
   );
+  const [isLoaded, setIsLoaded] = useState(homeStateCache.hasLoaded);
   const {
     enableGroupedBar,
     enableStatsBar,
@@ -70,6 +78,8 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
       );
   }, [combinedNodes, selectedGroup, searchTerm]);
 
+  const hasSearchTerm = searchTerm.trim().length > 0;
+
   const stats = useMemo(() => {
     return {
       onlineCount: filteredNodes.filter((n) => n.status === "online").length,
@@ -94,26 +104,27 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
     };
   }, [filteredNodes]);
 
-  const mainContentRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    const handleScroll = () => {
-      if (mainContentRef.current) {
-        homeStateCache.scrollPosition = mainContentRef.current.scrollTop;
-      }
-    };
+    if (loading) return;
 
-    const mainContentElement = mainContentRef.current;
-    mainContentElement?.addEventListener("scroll", handleScroll);
+    if (homeStateCache.hasLoaded) {
+      setIsLoaded(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+      homeStateCache.hasLoaded = true;
+    }, 300); // 动画过渡
 
     return () => {
-      mainContentElement?.removeEventListener("scroll", handleScroll);
+      clearTimeout(timer);
     };
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
-    if (mainContentRef.current) {
-      mainContentRef.current.scrollTop = homeStateCache.scrollPosition;
+    if (!loading && !homeStateCache.hasLoaded) {
+      homeStateCache.hasLoaded = true;
     }
   }, [loading]);
 
@@ -121,12 +132,17 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
     homeStateCache.selectedGroup = selectedGroup;
   }, [selectedGroup]);
 
-  if (loading) {
-    return <Loading text="正在努力获取数据中..." />;
+  if (!isLoaded) {
+    return (
+      <Loading
+        text="正在努力获取数据中..."
+        className={!loading ? "fade-out" : ""}
+      />
+    );
   }
 
   return (
-    <div ref={mainContentRef}>
+    <div className="fade-in">
       {enableStatsBar && (
         <StatsBar
           displayOptions={statusCardsVisibility}
@@ -152,30 +168,27 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
 
       <div className="space-y-4 my-4">
         {filteredNodes.length > 0 ? (
-          <div
-            className={
-              viewMode === "grid"
-                ? ""
-                : "space-y-2 overflow-auto purcarte-blur theme-card-style p-2"
-            }>
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4"
-                  : "min-w-[1080px]"
-              }>
-              {viewMode === "table" && (
-                <NodeListHeader enableSwap={enableSwap} />
-              )}
-              {filteredNodes.map((node: NodeWithStatus) =>
-                viewMode === "grid" ? (
-                  <NodeCard
-                    key={node.uuid}
-                    node={node}
-                    enableSwap={enableSwap}
-                    selectTrafficProgressStyle={selectTrafficProgressStyle}
-                  />
-                ) : (
+          viewMode === "grid" ? (
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+              {filteredNodes.map((node: NodeWithStatus) => (
+                <NodeCard
+                  key={node.uuid}
+                  node={node}
+                  enableSwap={enableSwap}
+                  selectTrafficProgressStyle={selectTrafficProgressStyle}
+                />
+              ))}
+            </div>
+          ) : (
+            <ScrollArea
+              className="purcarte-blur theme-card-style w-full"
+              viewportProps={{ className: "p-2" }}
+              showHorizontalScrollbar>
+              <div className="space-y-2 min-w-[1080px]">
+                {viewMode === "table" && (
+                  <NodeListHeader enableSwap={enableSwap} />
+                )}
+                {filteredNodes.map((node: NodeWithStatus) => (
                   <NodeListItem
                     key={node.uuid}
                     node={node}
@@ -183,21 +196,49 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
                     enableListItemProgressBar={enableListItemProgressBar}
                     selectTrafficProgressStyle={selectTrafficProgressStyle}
                   />
-                )
-              )}
-            </div>
-          </div>
+                ))}
+              </div>
+            </ScrollArea>
+          )
         ) : (
           <div className="flex flex-grow items-center justify-center">
             <Card className="w-full max-w-md">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold">Not Found</CardTitle>
-                <CardDescription>请尝试更改筛选条件</CardDescription>
+                <CardTitle className="text-2xl font-bold">
+                  {hasSearchTerm
+                    ? "Not Found"
+                    : error
+                    ? "获取节点数据失败"
+                    : "暂无节点数据"}
+                </CardTitle>
+                <CardDescription>
+                  {hasSearchTerm
+                    ? "请尝试更改筛选条件"
+                    : error
+                    ? "获取节点数据失败，请重试"
+                    : "请先通过管理端添加节点"}
+                </CardDescription>
               </CardHeader>
               <CardFooter>
-                <Button onClick={() => setSearchTerm("")} className="w-full">
-                  清空搜索
-                </Button>
+                {hasSearchTerm ? (
+                  <Button onClick={() => setSearchTerm("")} className="w-full">
+                    清空搜索
+                  </Button>
+                ) : error ? (
+                  <Button
+                    onClick={() => void refreshNodes()}
+                    className="w-full">
+                    重试
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() =>
+                      window.open("/admin", "_blank", "noopener,noreferrer")
+                    }
+                    className="w-full">
+                    添加节点
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           </div>

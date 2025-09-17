@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: "127.0.0.1",
+      host: "0.0.0.0",
       proxy: {
         "/api": {
           target: env.VITE_API_TARGET || "http://localhost:3000",

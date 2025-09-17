@@ -20,7 +20,14 @@ const InstancePage = () => {
   const { liveData } = useLiveData();
   useNodeData();
   const [staticNode, setStaticNode] = useState<NodeData | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const [chartType, setChartType] = useState<"load" | "ping">("load");
+  const [displayedChartType, setDisplayedChartType] = useState<"load" | "ping">(
+    "load"
+  );
+  const [chartAnimationState, setChartAnimationState] = useState<
+    "idle" | "fading-out" | "fading-in"
+  >("fading-in");
   const [loadHours, setLoadHours] = useState<number>(0);
   const [pingHours, setPingHours] = useState<number>(1); // 默认1小时
   const { enableInstanceDetail, enablePingChart, publicSettings } =
@@ -78,6 +85,10 @@ const InstancePage = () => {
     }
   }, [staticNodes, uuid]);
 
+  useEffect(() => {
+    setIsReady(false);
+  }, [uuid]);
+
   const node = useMemo(() => {
     if (!staticNode) return null;
     const isOnline = liveData?.online.includes(staticNode.uuid) ?? false;
@@ -88,6 +99,47 @@ const InstancePage = () => {
       stats,
     };
   }, [staticNode, liveData]);
+
+  useEffect(() => {
+    if (nodesLoading) {
+      setIsReady(false);
+      return;
+    }
+
+    if (!node) {
+      return;
+    }
+
+    const timer = setTimeout(() => setIsReady(true), 300);
+
+    return () => clearTimeout(timer);
+  }, [node, nodesLoading]);
+
+  useEffect(() => {
+    if (chartType === displayedChartType) {
+      if (chartAnimationState === "fading-in") {
+        const timer = setTimeout(() => setChartAnimationState("idle"), 300);
+        return () => clearTimeout(timer);
+      }
+      return;
+    }
+
+    setChartAnimationState("fading-out");
+
+    const outTimer = setTimeout(() => {
+      setDisplayedChartType(chartType);
+      setChartAnimationState("fading-in");
+    }, 200);
+
+    return () => clearTimeout(outTimer);
+  }, [chartType, displayedChartType, chartAnimationState]);
+
+  const handleChartTypeChange = (nextType: "load" | "ping") => {
+    if (nextType === chartType || chartAnimationState === "fading-out") {
+      return;
+    }
+    setChartType(nextType);
+  };
 
   if (!node || !staticNode) {
     if (nodesLoading) {
@@ -104,8 +156,19 @@ const InstancePage = () => {
     );
   }
 
+  if (!isReady) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loading
+          text="正在进入节点详情..."
+          className={!nodesLoading ? "fade-out" : ""}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="text-card-foreground space-y-4 my-4">
+    <div className="text-card-foreground space-y-4 my-4 fade-in">
       <div className="flex items-center justify-between purcarte-blur theme-card-style p-4 mb-4 text-secondary-foreground">
         <div className="flex items-center gap-2 min-w-0">
           <Button
@@ -133,14 +196,14 @@ const InstancePage = () => {
             <Button
               variant={chartType === "load" ? "secondary" : "ghost"}
               size="sm"
-              onClick={() => setChartType("load")}>
+              onClick={() => handleChartTypeChange("load")}>
               负载
             </Button>
             {enablePingChart && (
               <Button
                 variant={chartType === "ping" ? "secondary" : "ghost"}
                 size="sm"
-                onClick={() => setChartType("ping")}>
+                onClick={() => handleChartTypeChange("ping")}>
                 延迟
               </Button>
             )}
@@ -178,23 +241,32 @@ const InstancePage = () => {
         </div>
       </div>
 
-      <Suspense
-        fallback={
-          <div className="flex items-center justify-center h-96">
-            <Loading text="正在加载图表..." />
-          </div>
+      <div
+        className={
+          chartAnimationState === "fading-out"
+            ? "fade-out"
+            : chartAnimationState === "fading-in"
+            ? "fade-in"
+            : undefined
         }>
-        {chartType === "load" && staticNode ? (
-          <LoadCharts
-            node={staticNode}
-            hours={loadHours}
-            liveData={liveData?.data[staticNode.uuid]}
-            isOnline={node.status === "online"}
-          />
-        ) : chartType === "ping" && staticNode ? (
-          <PingChart node={staticNode} hours={pingHours} />
-        ) : null}
-      </Suspense>
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-96">
+              <Loading text="正在加载图表..." />
+            </div>
+          }>
+          {displayedChartType === "load" && staticNode ? (
+            <LoadCharts
+              node={staticNode}
+              hours={loadHours}
+              liveData={liveData?.data[staticNode.uuid]}
+              isOnline={node.status === "online"}
+            />
+          ) : displayedChartType === "ping" && staticNode ? (
+            <PingChart node={staticNode} hours={pingHours} />
+          ) : null}
+        </Suspense>
+      </div>
     </div>
   );
 };

@@ -4,11 +4,15 @@ type LoadingProps = {
   text?: string;
   children?: React.ReactNode;
   size?: number;
+  className?: string;
 };
 
-const Loading = ({ text, children, size }: LoadingProps) => {
+const Loading = ({ text, children, size, className }: LoadingProps) => {
   return (
-    <div className="flex items-center justify-center flex-col">
+    <div
+      className={`flex items-center justify-center flex-col ${
+        className || ""
+      }`}>
       <div className={`showbox scale-${size ? size * 10 : 50}`}>
         <div className="loader">
           <svg className="circular" viewBox="25 25 50 50">
