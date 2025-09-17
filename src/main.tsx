@@ -94,7 +94,7 @@ export const AppContent = () => {
         style={{ backgroundColor: "transparent" }}>
         <div className="flex flex-col text-sm h-dvh">
           <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          <div className="flex-1">
+          <div className="flex-1 min-h-0">
             <Suspense fallback={<Loading />}>
               {nodes === "private" ? (
                 <PrivatePage />
