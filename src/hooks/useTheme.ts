@@ -45,11 +45,11 @@ export interface ThemeContextType {
   viewMode: "grid" | "table";
   setViewMode: (mode: "grid" | "table") => void;
   statusCardsVisibility: {
-    currentTime: true;
-    currentOnline: true;
-    regionOverview: true;
-    trafficOverview: true;
-    networkSpeed: true;
+    currentTime: boolean;
+    currentOnline: boolean;
+    regionOverview: boolean;
+    trafficOverview: boolean;
+    networkSpeed: boolean;
   };
   setStatusCardsVisibility: (
     visibility: Partial<ThemeContextType["statusCardsVisibility"]>

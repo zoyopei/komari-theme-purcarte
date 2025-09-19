@@ -91,6 +91,8 @@
 
 | 名称 | 配置项 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- | :--- |
+| 启用紧凑模式 | `enableCompactMode` | `switch` | `false` | 启用后将统计栏挪至标题栏，仅推荐在大屏设备上使用，手机端仅缩小字体和间距 |
+| 合并分组栏与统计栏 | `mergeGroupsWithStats` | `switch` | `false` | 启用后分组栏将合并到统计栏中，并以下拉菜单形式展示 |
 | 启用统计栏 | `enableStatsBar` | `switch` | `true` | 启用后默认显示统计栏 |
 | 启用分组栏 | `enableGroupedBar` | `switch` | `true` | 启用后默认显示分组栏 |
 | 启用 SWAP 显示 | `enableSwap` | `switch` | `true` | 启用后默认显示 SWAP 信息 |

@@ -18,6 +18,8 @@ export interface ConfigOptions {
   titleText: string; // 标题文本
   enableSearchButton: boolean; // 是否启用搜索按钮
   enableAdminButton: boolean; // 是否启用管理员按钮
+  enableCompactMode: boolean; // 是否启用紧凑模式
+  mergeGroupsWithStats: boolean; // 是否在统计栏中合并分组
   enableStatsBar: boolean; // 是否启用统计栏
   enableGroupedBar: boolean; // 是否启用分组栏
   enableInstanceDetail: boolean; // 是否启用实例详情
@@ -51,6 +53,8 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   titleText: "Komari",
   enableSearchButton: true,
   enableAdminButton: true,
+  enableCompactMode: false,
+  mergeGroupsWithStats: false,
   enableStatsBar: true,
   enableGroupedBar: true,
   enableInstanceDetail: true,

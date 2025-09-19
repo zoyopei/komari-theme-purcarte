@@ -20,6 +20,7 @@ import { useNodeData } from "@/contexts/NodeDataContext";
 import Footer from "@/components/sections/Footer";
 import Loading from "./components/loading";
 
+import type { StatsBarProps } from "./components/sections/StatsBar";
 const HomePage = lazy(() => import("@/pages/Home"));
 const InstancePage = lazy(() => import("@/pages/instance"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
@@ -36,6 +37,9 @@ export const AppContent = () => {
   const { nodes } = useNodeData();
   const { appearance, color } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
+  const [statsBarProps, setStatsBarProps] = useState<StatsBarProps | null>(
+    null
+  );
   const enableVideoBackground = useConfigItem("enableVideoBackground");
   const videoBackgroundUrl = useConfigItem("videoBackgroundUrl");
   const location = useLocation();
@@ -93,7 +97,11 @@ export const AppContent = () => {
         scaling="110%"
         style={{ backgroundColor: "transparent" }}>
         <div className="flex flex-col text-sm h-dvh">
-          <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          <Header
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            {...statsBarProps}
+          />
           <div className="flex-1 min-h-0">
             <Suspense fallback={<Loading />}>
               {nodes === "private" ? (
@@ -111,6 +119,7 @@ export const AppContent = () => {
                           <HomePage
                             searchTerm={searchTerm}
                             setSearchTerm={setSearchTerm}
+                            setStatsBarProps={setStatsBarProps}
                           />
                         </main>
                       </ScrollArea>

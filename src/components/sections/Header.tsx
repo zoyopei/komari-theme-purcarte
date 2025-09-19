@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useIsMobile } from "@/hooks/useMobile";
-import { useConfigItem } from "@/config";
+import { useAppConfig } from "@/config";
 import { useTheme } from "@/hooks/useTheme";
+import { useCompactLayout } from "@/hooks/useCompactLayout";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,29 +25,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface HeaderProps {
+import { StatsBar } from "../sections/StatsBar";
+import type { StatsBarProps } from "../sections/StatsBar";
+
+interface HeaderProps extends Partial<StatsBarProps> {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
 
-export const Header = ({ searchTerm, setSearchTerm }: HeaderProps) => {
+export const Header = (props: HeaderProps) => {
+  const { searchTerm, setSearchTerm } = props;
   const { rawAppearance, setAppearance, viewMode, setViewMode } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
   const isInstancePage = location.pathname.startsWith("/instance");
-  const isMobile = useIsMobile();
-  const enableTitle = useConfigItem("enableTitle");
-  const sitename = useConfigItem("titleText");
-  const enableLogo = useConfigItem("enableLogo");
-  const logoUrl = useConfigItem("logoUrl");
-  const enableSearchButton = useConfigItem("enableSearchButton");
-  const enableAdminButton = useConfigItem("enableAdminButton");
+  const {
+    enableTitle,
+    titleText,
+    enableLogo,
+    logoUrl,
+    enableSearchButton,
+    enableAdminButton,
+    enableCompactMode,
+  } = useAppConfig();
+  const { isMobile, layoutIsMobile } = useCompactLayout(enableCompactMode);
 
   useEffect(() => {
-    if (sitename) {
-      document.title = sitename;
+    if (titleText) {
+      document.title = titleText;
     }
-  }, [sitename]);
+  }, [titleText]);
 
   return (
     <header className="purcarte-blur border-b border-(--accent-a4) shadow-sm shadow-(color:--accent-a4) sticky top-0 flex items-center justify-center z-10">
@@ -57,9 +64,20 @@ export const Header = ({ searchTerm, setSearchTerm }: HeaderProps) => {
             {enableLogo && logoUrl && (
               <img src={logoUrl} alt="logo" className="h-8" />
             )}
-            {enableTitle && <span>{sitename}</span>}
+            {enableTitle && <span>{titleText}</span>}
           </a>
         </div>
+        {!isInstancePage &&
+          enableCompactMode &&
+          !layoutIsMobile &&
+          props.displayOptions && (
+            <div className="flex-1 flex justify-center">
+              <StatsBar
+                enableCompactMode={enableCompactMode}
+                {...(props as StatsBarProps)}
+              />
+            </div>
+          )}
         <div className="flex items-center space-x-2">
           {!isInstancePage && (
             <>

@@ -11,6 +11,7 @@ import { useLiveData } from "@/contexts/LiveDataContext";
 import { useAppConfig } from "@/config";
 import { useTheme } from "@/hooks/useTheme";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import type { StatsBarProps } from "@/components/sections/StatsBar";
 import {
   Card,
   CardDescription,
@@ -18,18 +19,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useCompactLayout } from "@/hooks/useCompactLayout";
 
 interface HomePageProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
+  setStatsBarProps: (props: StatsBarProps | null) => void;
 }
-
 const homeStateCache = {
   selectedGroup: "所有",
   hasLoaded: false,
 };
 
-const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
+const HomePage: React.FC<HomePageProps> = ({
+  searchTerm,
+  setSearchTerm,
+  setStatsBarProps,
+}) => {
   const { viewMode, statusCardsVisibility, setStatusCardsVisibility } =
     useTheme();
   const {
@@ -50,6 +56,8 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
     enableSwap,
     enableListItemProgressBar,
     selectTrafficProgressStyle,
+    enableCompactMode,
+    mergeGroupsWithStats,
   } = useAppConfig();
   const combinedNodes = useMemo<NodeWithStatus[]>(() => {
     if (!staticNodes || staticNodes === "private") return [];
@@ -66,6 +74,8 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
   }, [staticNodes, liveData]);
 
   const groups = useMemo(() => ["所有", ...getGroups()], [getGroups]);
+
+  const { layoutIsMobile } = useCompactLayout(enableCompactMode);
 
   const filteredNodes = useMemo(() => {
     return combinedNodes
@@ -132,6 +142,29 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
     homeStateCache.selectedGroup = selectedGroup;
   }, [selectedGroup]);
 
+  useEffect(() => {
+    setStatsBarProps({
+      displayOptions: statusCardsVisibility,
+      setDisplayOptions: setStatusCardsVisibility,
+      stats,
+      loading,
+      enableGroupedBar,
+      groups,
+      selectedGroup,
+      onSelectGroup: setSelectedGroup,
+    });
+  }, [
+    statusCardsVisibility,
+    setStatusCardsVisibility,
+    stats,
+    loading,
+    enableGroupedBar,
+    groups,
+    selectedGroup,
+    setSelectedGroup,
+    setStatsBarProps,
+  ]);
+
   if (!isLoaded) {
     return (
       <Loading
@@ -143,23 +176,29 @@ const HomePage: React.FC<HomePageProps> = ({ searchTerm, setSearchTerm }) => {
 
   return (
     <div className="fade-in">
-      {enableStatsBar && (
+      {enableStatsBar && (!enableCompactMode || layoutIsMobile) && (
         <StatsBar
           displayOptions={statusCardsVisibility}
           setDisplayOptions={setStatusCardsVisibility}
           stats={stats}
           loading={loading}
+          enableCompactMode={enableCompactMode}
+          enableGroupedBar={enableGroupedBar}
+          groups={groups}
+          selectedGroup={selectedGroup}
+          onSelectGroup={setSelectedGroup}
         />
       )}
-      {enableGroupedBar && (
+
+      {enableGroupedBar && !mergeGroupsWithStats && (
         <div className="flex purcarte-blur theme-card-style overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-secondary-foreground space-x-4 px-4 my-4">
           <span>分组</span>
-          {groups.map((group: string) => (
+          {groups?.map((group: string) => (
             <Button
               key={group}
               variant={selectedGroup === group ? "secondary" : "ghost"}
               size="sm"
-              onClick={() => setSelectedGroup(group)}>
+              onClick={() => setSelectedGroup?.(group)}>
               {group}
             </Button>
           ))}
