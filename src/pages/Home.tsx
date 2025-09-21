@@ -60,7 +60,7 @@ const HomePage: React.FC<HomePageProps> = ({
     mergeGroupsWithStats,
   } = useAppConfig();
   const combinedNodes = useMemo<NodeWithStatus[]>(() => {
-    if (!staticNodes || staticNodes === "private") return [];
+    if (!staticNodes) return [];
     return staticNodes.map((node) => {
       const isOnline = liveData?.online.includes(node.uuid) ?? false;
       const stats = isOnline ? liveData?.data[node.uuid] : undefined;

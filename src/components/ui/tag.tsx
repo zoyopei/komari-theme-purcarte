@@ -1,70 +1,13 @@
 import { Badge } from "@radix-ui/themes";
 import React from "react";
 import { cn } from "@/utils";
-import { useConfigItem } from "@/config";
+import { useAppConfig } from "@/config";
+import { allColors } from "@/config/default";
+import type { ColorType } from "@/config/default";
 
 interface TagProps extends React.HTMLAttributes<HTMLDivElement> {
   tags: string[];
 }
-
-// 定义颜色类型
-type ColorType =
-  | "ruby"
-  | "gray"
-  | "gold"
-  | "bronze"
-  | "brown"
-  | "yellow"
-  | "amber"
-  | "orange"
-  | "tomato"
-  | "red"
-  | "crimson"
-  | "pink"
-  | "plum"
-  | "purple"
-  | "violet"
-  | "iris"
-  | "indigo"
-  | "blue"
-  | "cyan"
-  | "teal"
-  | "jade"
-  | "green"
-  | "grass"
-  | "lime"
-  | "mint"
-  | "sky";
-
-// 完整的颜色列表，用于标签颜色匹配
-const allColors: ColorType[] = [
-  "ruby",
-  "gray",
-  "gold",
-  "bronze",
-  "brown",
-  "yellow",
-  "amber",
-  "orange",
-  "tomato",
-  "red",
-  "crimson",
-  "pink",
-  "plum",
-  "purple",
-  "violet",
-  "iris",
-  "indigo",
-  "blue",
-  "cyan",
-  "teal",
-  "jade",
-  "green",
-  "grass",
-  "lime",
-  "mint",
-  "sky",
-];
 
 // 解析带颜色的标签
 const parseTagWithColor = (tag: string) => {
@@ -82,9 +25,7 @@ const parseTagWithColor = (tag: string) => {
 
 const Tag = React.forwardRef<HTMLDivElement, TagProps>(
   ({ className, tags, ...props }, ref) => {
-    // 在组件内部使用 useConfigItem 钩子
-    const tagDefaultColorList = useConfigItem("tagDefaultColorList");
-    const enableTransparentTags = useConfigItem("enableTransparentTags");
+    const { enableTransparentTags, tagDefaultColorList } = useAppConfig();
 
     // 解析配置的颜色列表，仅用于循环排序
     const colorList = React.useMemo(() => {

@@ -1,49 +1,19 @@
 import { useState, useEffect, createContext, useContext } from "react";
-import { useConfigItem } from "@/config";
-import { DEFAULT_CONFIG } from "@/config/default";
+import { useAppConfig } from "@/config";
+import { DEFAULT_CONFIG, allAppearance } from "@/config/default";
+import type { AppearanceType, ColorType, ViewModeType } from "@/config/default";
 
-export const allowedColors = [
-  "gray",
-  "gold",
-  "bronze",
-  "brown",
-  "yellow",
-  "amber",
-  "orange",
-  "tomato",
-  "red",
-  "ruby",
-  "crimson",
-  "pink",
-  "plum",
-  "purple",
-  "violet",
-  "iris",
-  "indigo",
-  "blue",
-  "cyan",
-  "teal",
-  "jade",
-  "green",
-  "grass",
-  "lime",
-  "mint",
-  "sky",
-] as const;
-
-export type Colors = (typeof allowedColors)[number];
-
-export const allowedAppearances = ["light", "dark", "system"] as const;
-export type Appearance = (typeof allowedAppearances)[number];
+type themeAppearanceType = "light" | "dark";
+const defaultThemeAppearance: themeAppearanceType = "light";
 
 export interface ThemeContextType {
-  appearance: "light" | "dark";
-  rawAppearance: Appearance;
-  setAppearance: (appearance: Appearance) => void;
-  color: Colors;
-  setColor: (color: Colors) => void;
-  viewMode: "grid" | "table";
-  setViewMode: (mode: "grid" | "table") => void;
+  appearance: themeAppearanceType;
+  rawAppearance: AppearanceType;
+  setAppearance: (appearance: AppearanceType) => void;
+  color: ColorType;
+  setColor: (color: ColorType) => void;
+  viewMode: ViewModeType;
+  setViewMode: (mode: ViewModeType) => void;
   statusCardsVisibility: {
     currentTime: boolean;
     currentOnline: boolean;
@@ -57,12 +27,12 @@ export interface ThemeContextType {
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
-  appearance: "light",
-  rawAppearance: DEFAULT_CONFIG.selectedDefaultAppearance as Appearance,
+  appearance: defaultThemeAppearance,
+  rawAppearance: DEFAULT_CONFIG.selectedDefaultAppearance as AppearanceType,
   setAppearance: () => {},
-  color: DEFAULT_CONFIG.selectThemeColor as Colors,
+  color: DEFAULT_CONFIG.selectThemeColor as ColorType,
   setColor: () => {},
-  viewMode: DEFAULT_CONFIG.selectedDefaultView as "grid" | "table",
+  viewMode: DEFAULT_CONFIG.selectedDefaultView as ViewModeType,
   setViewMode: () => {},
   statusCardsVisibility: {
     currentTime: true,
@@ -75,12 +45,14 @@ export const ThemeContext = createContext<ThemeContextType>({
 });
 
 /**
- * Custom hook to convert "system" appearance to actual "light" or "dark" for Radix UI
- * @param appearance - The appearance setting from context ("light", "dark", or "system")
- * @returns The resolved appearance for Radix UI ("light" or "dark")
+ * 将 Radix UI 的 "system" 外观转换为实际的 "light" 或 "dark" 外观
+ * @param appearance - 上下文中的外观设置（"light"、"dark" 或 "system"）。
+ * 返回 Radix UI 已解析的外观（ "light" 或 "dark"）
  */
-export const useSystemTheme = (appearance: Appearance): "light" | "dark" => {
-  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(() => {
+export const useSystemTheme = (
+  appearance: AppearanceType
+): themeAppearanceType => {
+  const [systemTheme, setSystemTheme] = useState<themeAppearanceType>(() => {
     // Initial system theme detection
     if (typeof window !== "undefined" && window.matchMedia) {
       return window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -113,7 +85,7 @@ export const useSystemTheme = (appearance: Appearance): "light" | "dark" => {
     return systemTheme;
   }
 
-  return appearance as "light" | "dark";
+  return appearance as themeAppearanceType;
 };
 
 const useStoredState = <T>(
@@ -121,7 +93,7 @@ const useStoredState = <T>(
   defaultValue: T,
   validator?: (value: any) => value is T
 ): [T, React.Dispatch<React.SetStateAction<T>>] => {
-  const enableLocalStorage = useConfigItem("enableLocalStorage");
+  const { enableLocalStorage } = useAppConfig();
 
   const [state, setState] = useState<T>(() => {
     if (enableLocalStorage) {
@@ -155,33 +127,31 @@ const useStoredState = <T>(
 };
 
 export const useThemeManager = () => {
-  const defaultAppearance = useConfigItem(
-    "selectedDefaultAppearance"
-  ) as Appearance;
-  const defaultColor = useConfigItem("selectThemeColor") as Colors;
-  const defaultView = useConfigItem("selectedDefaultView") as "grid" | "table";
-  const defaultStatusCardsVisibility = useConfigItem(
-    "statusCardsVisibility"
-  ) as string;
+  const { selectedDefaultAppearance, selectThemeColor, selectedDefaultView } =
+    useAppConfig();
+  const defaultstatusCardsVisibility = useAppConfig().statusCardsVisibility;
 
-  const [appearance, setAppearance] = useStoredState<Appearance>(
+  const [appearance, setAppearance] = useStoredState<AppearanceType>(
     "appearance",
-    defaultAppearance,
-    (v): v is Appearance => allowedAppearances.includes(v)
+    selectedDefaultAppearance,
+    (v): v is AppearanceType => allAppearance.includes(v)
   );
 
-  const [color, setColor] = useStoredState<Colors>("color", defaultColor);
+  const [color, setColor] = useStoredState<ColorType>(
+    "color",
+    selectThemeColor
+  );
 
-  const [viewMode, setViewMode] = useStoredState<"grid" | "table">(
+  const [viewMode, setViewMode] = useStoredState<ViewModeType>(
     "nodeViewMode",
-    defaultView
+    selectedDefaultView
   );
 
   const [statusCardsVisibility, setStatusCardsVisibility] = useStoredState(
     "statusCardsVisibility",
     (() => {
       const visibility: { [key: string]: boolean } = {};
-      defaultStatusCardsVisibility.split(",").forEach((item) => {
+      defaultstatusCardsVisibility.split(",").forEach((item) => {
         const [key, value] = item.split(":");
         visibility[key] = value === "true";
       });
@@ -196,8 +166,8 @@ export const useThemeManager = () => {
   };
 
   useEffect(() => {
-    setColor(defaultColor);
-  }, [defaultColor, setColor]);
+    setColor(selectThemeColor);
+  }, [selectThemeColor, setColor]);
 
   const resolvedAppearance = useSystemTheme(appearance);
 

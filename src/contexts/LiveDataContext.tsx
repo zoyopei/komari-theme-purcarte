@@ -39,11 +39,11 @@ export const LiveDataProvider = ({
   enableWebSocket = true,
 }: LiveDataProviderProps) => {
   const [liveData, setLiveData] = useState<LiveData | null>(null);
-  const { nodes, loading } = useNodeData();
+  const { loading } = useNodeData();
 
   useEffect(() => {
     // 只有在加载完成、站点非私有且启用了 WebSocket 时才连接
-    if (!loading && nodes !== "private" && enableWebSocket) {
+    if (!loading && enableWebSocket) {
       const wsService = getWsService(); // 在需要时才获取实例
 
       const handleWebSocketData = (data: LiveData) => {
@@ -68,7 +68,7 @@ export const LiveDataProvider = ({
       wsService.disconnect();
       setLiveData(null);
     }
-  }, [loading, nodes, enableWebSocket]);
+  }, [loading, enableWebSocket]);
 
   return (
     <LiveDataContext.Provider value={{ liveData }}>

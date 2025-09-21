@@ -23,7 +23,7 @@ import fillMissingTimePoints, {
   cutPeakValues,
   calculateTaskStats,
 } from "@/utils/RecordHelper";
-import { useConfigItem } from "@/config";
+import { useAppConfig } from "@/config";
 import { CustomTooltip } from "@/components/ui/tooltip";
 import Tips from "@/components/ui/tips";
 import { generateColor, lableFormatter } from "@/utils/chartHelper";
@@ -34,6 +34,7 @@ interface PingChartProps {
 }
 
 const PingChart = memo(({ node, hours }: PingChartProps) => {
+  const { enableConnectBreaks, pingChartMaxPoints } = useAppConfig();
   const { loading, error, pingHistory } = usePingChart(node, hours);
   const [visiblePingTasks, setVisiblePingTasks] = useState<number[]>([]);
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
@@ -42,11 +43,8 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     endIndex?: number;
   }>({});
   const [cutPeak, setCutPeak] = useState(false);
-  const [connectBreaks, setConnectBreaks] = useState(
-    useConfigItem("enableConnectBreaks")
-  );
+  const [connectBreaks, setConnectBreaks] = useState(enableConnectBreaks);
   const [isResetting, setIsResetting] = useState(false);
-  const maxPointsToRender = useConfigItem("pingChartMaxPoints") || 0; // 0表示不限制
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -135,11 +133,11 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     }
 
     // 添加渲染硬限制以防止崩溃，即使在间隔调整后也是如此
-    if (full.length > maxPointsToRender && maxPointsToRender > 0) {
+    if (full.length > pingChartMaxPoints && pingChartMaxPoints > 0) {
       console.log(
-        `数据量过大 (${full.length}), 降采样至 ${maxPointsToRender} 个点。`
+        `数据量过大 (${full.length}), 降采样至 ${pingChartMaxPoints} 个点。`
       );
-      const samplingFactor = Math.ceil(full.length / maxPointsToRender);
+      const samplingFactor = Math.ceil(full.length / pingChartMaxPoints);
       const sampledData = [];
       for (let i = 0; i < full.length; i += samplingFactor) {
         sampledData.push(full[i]);
@@ -153,7 +151,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
     }
 
     return full;
-  }, [pingHistory, hours, maxPointsToRender, cutPeak]);
+  }, [pingHistory, hours, pingChartMaxPoints, cutPeak]);
 
   const handleTaskVisibilityToggle = (taskId: number) => {
     setVisiblePingTasks((prev) =>

@@ -16,24 +16,28 @@ interface ConfigProviderProps {
 export function ConfigProvider({ children }: ConfigProviderProps) {
   const [publicSettings, setPublicSettings] = useState<PublicInfo | null>(null);
   const [config, setConfig] = useState<ConfigOptions | null>(null);
+  const [siteStatus, setSiteStatus] = useState<
+    "public" | "private-unauthenticated" | "private-authenticated"
+  >("public");
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchPublicSettings = async () => {
+    const fetchSiteStatus = async () => {
       try {
-        const settings = await apiService.getPublicSettings();
-        setPublicSettings(settings);
+        const { status, publicInfo } = await apiService.checkSiteStatus();
+        setSiteStatus(status);
+        setPublicSettings(publicInfo);
 
-        if (settings) {
+        if (publicInfo) {
           const themeSettings =
-            (settings.theme_settings as ConfigOptions) || {};
+            (publicInfo.theme_settings as ConfigOptions) || {};
           const mergedConfig = {
             ...DEFAULT_CONFIG,
             ...themeSettings,
             titleText:
               themeSettings.titleText ||
-              settings.sitename ||
+              publicInfo.sitename ||
               DEFAULT_CONFIG.titleText,
           };
           setConfig(mergedConfig);
@@ -41,15 +45,16 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
           setConfig(DEFAULT_CONFIG);
         }
       } catch (error) {
-        console.error("Failed to fetch public settings:", error);
+        console.error("Failed to fetch site status:", error);
         setConfig(DEFAULT_CONFIG);
+        setSiteStatus("private-unauthenticated"); // 出现错误时假定为私有未验证
       } finally {
         setLoading(false);
         setTimeout(() => setIsLoaded(true), 300); // 动画过渡
       }
     };
 
-    fetchPublicSettings();
+    fetchSiteStatus();
   }, []);
 
   const dynamicStyles = useMemo(() => {
@@ -89,7 +94,7 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
   }
 
   return (
-    <ConfigContext.Provider value={{ ...config, publicSettings }}>
+    <ConfigContext.Provider value={{ ...config, publicSettings, siteStatus }}>
       <style>{dynamicStyles}</style>
       <div className="fade-in">{children}</div>
     </ConfigContext.Provider>

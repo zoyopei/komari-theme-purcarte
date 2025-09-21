@@ -6,6 +6,7 @@ export interface NodeData {
   arch: string;
   cpu_cores: number;
   os: string;
+  kernel_version: string;
   gpu_name: string;
   region: string;
   mem_total: number;
@@ -16,8 +17,11 @@ export interface NodeData {
   billing_cycle: number;
   currency: string;
   expired_at: string | null;
+  auto_renewal: boolean;
   group: string;
   tags: string;
+  public_remark: string;
+  hidden: boolean;
   traffic_limit?: number;
   traffic_limit_type?: "sum" | "max" | "min" | "up" | "down";
   created_at: string;
@@ -56,10 +60,13 @@ export interface PublicInfo {
   description: string;
   disable_password_login: boolean;
   oauth_enable: boolean;
+  oauth_provider: string | null;
   ping_record_preserve_time: number;
+  private_site: boolean;
   record_enabled: boolean;
   record_preserve_time: number;
   sitename: string;
+  theme: string;
   theme_settings: object | null;
 }
 
@@ -102,4 +109,13 @@ export interface PingHistoryResponse {
   count: number;
   records: PingHistoryRecord[];
   tasks: PingTask[];
+}
+
+export interface Me {
+  logged_in: boolean;
+  username: string;
+  "2fa_enabled": boolean;
+  sso_id: string;
+  sso_type: string;
+  uuid: string;
 }

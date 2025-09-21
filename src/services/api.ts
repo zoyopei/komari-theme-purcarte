@@ -6,6 +6,7 @@ import type {
   PublicInfo,
   HistoryRecord,
   PingHistoryResponse,
+  Me,
 } from "@/types/node";
 
 class ApiService {
@@ -51,17 +52,11 @@ class ApiService {
   }
 
   // 获取所有节点信息
-  async getNodes(): Promise<NodeData[] | "private"> {
+  async getNodes(): Promise<NodeData[]> {
     const response = await this.get<NodeData[]>("/api/nodes");
-    // 检查是否为私有状态
-    if ("status" in response && response.status === 401) {
-      return "private";
-    }
-    // 检查是否为成功的 API 响应
     if ("status" in response && response.status === "success") {
       return (response as ApiResponse<NodeData[]>).data;
     }
-    // 其他情况返回空数组
     return [];
   }
 
@@ -111,9 +106,34 @@ class ApiService {
   }
 
   // 获取用户信息
-  async getUserInfo(): Promise<any> {
-    const response = await this.get<any>("/api/me");
+  async getUserInfo(): Promise<Me | null> {
+    const response = await this.get<Me>("/api/me");
     return response.status === "success" ? response.data : null;
+  }
+
+  // 检查站点状态
+  async checkSiteStatus(): Promise<{
+    status: "public" | "private-unauthenticated" | "private-authenticated";
+    publicInfo: PublicInfo | null;
+  }> {
+    const publicInfoResponse = await this.getPublicSettings();
+    if (publicInfoResponse) {
+      if (publicInfoResponse.private_site) {
+        const meResponse = await this.getUserInfo();
+        if (meResponse && meResponse.logged_in) {
+          return {
+            status: "private-authenticated",
+            publicInfo: publicInfoResponse,
+          };
+        }
+        return {
+          status: "private-unauthenticated",
+          publicInfo: publicInfoResponse,
+        };
+      }
+      return { status: "public", publicInfo: publicInfoResponse };
+    }
+    return { status: "private-unauthenticated", publicInfo: null };
   }
 }
 

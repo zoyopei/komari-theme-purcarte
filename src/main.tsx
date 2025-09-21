@@ -11,12 +11,11 @@ import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Header } from "@/components/sections/Header";
-import { ConfigProvider } from "@/config";
+import { ConfigProvider, useAppConfig } from "@/config";
 import { useThemeManager, useTheme } from "@/hooks/useTheme";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { NodeDataProvider } from "@/contexts/NodeDataContext";
 import { LiveDataProvider } from "@/contexts/LiveDataContext";
-import { useNodeData } from "@/contexts/NodeDataContext";
 import Footer from "@/components/sections/Footer";
 import Loading from "./components/loading";
 
@@ -26,22 +25,19 @@ const InstancePage = lazy(() => import("@/pages/instance"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 const PrivatePage = lazy(() => import("@/pages/Private"));
 
-import { useConfigItem } from "@/config";
-
 const homeScrollState = {
   position: 0,
 };
 
 // 内部应用组件，在 ConfigProvider 内部使用配置
 export const AppContent = () => {
-  const { nodes } = useNodeData();
+  const { siteStatus, enableVideoBackground, videoBackgroundUrl } =
+    useAppConfig();
   const { appearance, color } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [statsBarProps, setStatsBarProps] = useState<StatsBarProps | null>(
     null
   );
-  const enableVideoBackground = useConfigItem("enableVideoBackground");
-  const videoBackgroundUrl = useConfigItem("videoBackgroundUrl");
   const location = useLocation();
   const homeViewportRef = useRef<HTMLDivElement | null>(null);
   const instanceViewportRef = useRef<HTMLDivElement | null>(null);
@@ -104,7 +100,7 @@ export const AppContent = () => {
           />
           <div className="flex-1 min-h-0">
             <Suspense fallback={<Loading />}>
-              {nodes === "private" ? (
+              {siteStatus === "private-unauthenticated" ? (
                 <PrivatePage />
               ) : (
                 <Routes>
@@ -158,11 +154,32 @@ export const AppContent = () => {
   );
 };
 
+const AppProviders = ({
+  siteStatus,
+  children,
+}: {
+  siteStatus: "public" | "private-unauthenticated" | "private-authenticated";
+  children: React.ReactNode;
+}) => {
+  if (siteStatus === "private-unauthenticated") {
+    return <>{children}</>;
+  }
+  return (
+    <NodeDataProvider>
+      <LiveDataProvider>{children}</LiveDataProvider>
+    </NodeDataProvider>
+  );
+};
+
 const App = () => {
   const themeManager = useThemeManager();
+  const { siteStatus } = useAppConfig();
+
   return (
     <ThemeProvider value={themeManager}>
-      <AppContent />
+      <AppProviders siteStatus={siteStatus}>
+        <AppContent />
+      </AppProviders>
     </ThemeProvider>
   );
 };
@@ -170,13 +187,9 @@ const App = () => {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ConfigProvider>
-      <NodeDataProvider>
-        <LiveDataProvider>
-          <Router>
-            <App />
-          </Router>
-        </LiveDataProvider>
-      </NodeDataProvider>
+      <Router>
+        <App />
+      </Router>
     </ConfigProvider>
   </StrictMode>
 );

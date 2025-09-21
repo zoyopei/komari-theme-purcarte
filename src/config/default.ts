@@ -7,10 +7,10 @@ export interface ConfigOptions {
   blurBackgroundColor: string; // 磨砂玻璃背景颜色
   enableTransparentTags: boolean; // 是否启用标签透明背景
   tagDefaultColorList: string; // 标签默认颜色列表
-  selectThemeColor: string; // 默认主题颜色
+  selectThemeColor: ColorType; // 默认主题颜色
   enableLocalStorage: boolean; // 是否启用本地存储
-  selectedDefaultView: "grid" | "table"; // 默认视图模式
-  selectedDefaultAppearance: "light" | "dark" | "system"; // 默认外观模式
+  selectedDefaultView: ViewModeType; // 默认视图模式
+  selectedDefaultAppearance: AppearanceType; // 默认外观模式
   statusCardsVisibility: string; // 状态卡片显示控制
   enableLogo: boolean; // 是否启用Logo
   logoUrl: string; // Logo图片URL
@@ -65,3 +65,65 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   selectTrafficProgressStyle: "linear",
   enableListItemProgressBar: true,
 };
+
+// 定义颜色类型
+export type ColorType =
+  | "ruby"
+  | "gray"
+  | "gold"
+  | "bronze"
+  | "brown"
+  | "yellow"
+  | "amber"
+  | "orange"
+  | "tomato"
+  | "red"
+  | "crimson"
+  | "pink"
+  | "plum"
+  | "purple"
+  | "violet"
+  | "iris"
+  | "indigo"
+  | "blue"
+  | "cyan"
+  | "teal"
+  | "jade"
+  | "green"
+  | "grass"
+  | "lime"
+  | "mint"
+  | "sky";
+export const allColors: ColorType[] = [
+  "ruby",
+  "gray",
+  "gold",
+  "bronze",
+  "brown",
+  "yellow",
+  "amber",
+  "orange",
+  "tomato",
+  "red",
+  "crimson",
+  "pink",
+  "plum",
+  "purple",
+  "violet",
+  "iris",
+  "indigo",
+  "blue",
+  "cyan",
+  "teal",
+  "jade",
+  "green",
+  "grass",
+  "lime",
+  "mint",
+  "sky",
+];
+
+export type AppearanceType = "light" | "dark" | "system";
+export const allAppearance: AppearanceType[] = ["light", "dark", "system"];
+
+export type ViewModeType = "grid" | "table";
