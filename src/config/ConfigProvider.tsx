@@ -15,6 +15,7 @@ interface ConfigProviderProps {
  */
 export function ConfigProvider({ children }: ConfigProviderProps) {
   const [publicSettings, setPublicSettings] = useState<PublicInfo | null>(null);
+  const [config, setConfig] = useState<ConfigOptions | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -23,8 +24,25 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
       try {
         const settings = await apiService.getPublicSettings();
         setPublicSettings(settings);
+
+        if (settings) {
+          const themeSettings =
+            (settings.theme_settings as ConfigOptions) || {};
+          const mergedConfig = {
+            ...DEFAULT_CONFIG,
+            ...themeSettings,
+            titleText:
+              themeSettings.titleText ||
+              settings.sitename ||
+              DEFAULT_CONFIG.titleText,
+          };
+          setConfig(mergedConfig);
+        } else {
+          setConfig(DEFAULT_CONFIG);
+        }
       } catch (error) {
         console.error("Failed to fetch public settings:", error);
+        setConfig(DEFAULT_CONFIG);
       } finally {
         setLoading(false);
         setTimeout(() => setIsLoaded(true), 300); // 动画过渡
@@ -34,53 +52,37 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
     fetchPublicSettings();
   }, []);
 
-  const config: ConfigOptions = useMemo(() => {
-    const themeSettings =
-      (publicSettings?.theme_settings as ConfigOptions) || {};
-    const mergedConfig = {
-      ...DEFAULT_CONFIG,
-      ...themeSettings,
-      titleText:
-        themeSettings.titleText ||
-        publicSettings?.sitename ||
-        DEFAULT_CONFIG.titleText,
-    };
+  const dynamicStyles = useMemo(() => {
+    if (!config) return "";
 
-    return mergedConfig;
-  }, [publicSettings]);
-
-  useEffect(() => {
     const { backgroundImage, blurValue, blurBackgroundColor } = config;
+    const styles: string[] = [];
 
     if (backgroundImage) {
-      document.body.style.setProperty(
-        "--body-background-url",
-        `url(${backgroundImage})`
-      );
-    } else {
-      document.body.style.removeProperty("--body-background-url");
+      styles.push(`--body-background-url: url(${backgroundImage});`);
     }
 
-    document.documentElement.style.setProperty(
-      "--purcarte-blur",
-      `${blurValue}px`
-    );
+    if (blurValue) {
+      styles.push(`--purcarte-blur: ${blurValue}px;`);
+    }
 
     if (blurBackgroundColor) {
       const colors = blurBackgroundColor
         .split("|")
         .map((color) => color.trim());
       if (colors.length >= 2) {
-        document.documentElement.style.setProperty("--card-light", colors[0]);
-        document.documentElement.style.setProperty("--card-dark", colors[1]);
+        styles.push(`--card-light: ${colors[0]};`);
+        styles.push(`--card-dark: ${colors[1]};`);
       } else if (colors.length === 1) {
-        document.documentElement.style.setProperty("--card-light", colors[0]);
-        document.documentElement.style.setProperty("--card-dark", colors[0]);
+        styles.push(`--card-light: ${colors[0]};`);
+        styles.push(`--card-dark: ${colors[0]};`);
       }
     }
+
+    return `:root { ${styles.join(" ")} }`;
   }, [config]);
 
-  if (!isLoaded) {
+  if (!isLoaded || !config) {
     return (
       <Loading text="加载配置中..." className={!loading ? "fade-out" : ""} />
     );
@@ -88,6 +90,7 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
 
   return (
     <ConfigContext.Provider value={{ ...config, publicSettings }}>
+      <style>{dynamicStyles}</style>
       <div className="fade-in">{children}</div>
     </ConfigContext.Provider>
   );

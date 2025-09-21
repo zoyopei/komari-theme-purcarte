@@ -18,7 +18,7 @@
                 "name": "背景图片链接",
                 "type": "string",
                 "default": "/assets/Moonlit-Scenery.webp",
-                "help": "目前仅支持单张背景图片（eg: https://test.com/1.png）"
+                "help": "目前支持单张背景图片或图片api，请自行测试（eg: https://test.com/1.png）"
             },
             {
                 "key": "enableVideoBackground",
@@ -76,6 +76,10 @@
                 "options": "gray,gold,bronze,brown,yellow,amber,orange,tomato,red,ruby,crimson,pink,plum,purple,violet,iris,indigo,blue,cyan,teal,jade,green,grass,lime,mint,sky",
                 "default": "violet",
                 "help": "设置默认主题颜色，颜色对照请参考：https://www.radix-ui.com/themes/docs/theme/color"
+            },
+            {
+                "name": "浏览器本地存储配置",
+                "type": "title"
             },
             {
                 "key": "enableLocalStorage",
