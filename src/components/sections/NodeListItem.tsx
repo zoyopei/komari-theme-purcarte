@@ -45,24 +45,24 @@ export const NodeListItem = ({
       } text-secondary-foreground transition-colors duration-200`}>
       <div className="col-span-2 flex items-center text-left">
         <Flag flag={node.region} />
-        <Link to={`/instance/${node.uuid}`}>
-          <div className="ml-2 w-full">
+        <div className="ml-2 w-[85%]">
+          <Link to={`/instance/${node.uuid}`}>
             <div className="text-base font-bold">{node.name}</div>
-            <Tag className="text-xs" tags={tagList} />
-            <div className="flex text-xs">
-              <span className="text-secondary-foreground">
-                到期：{expired_at}
-              </span>
-            </div>
-            <div className="flex text-xs">
-              <span className="text-secondary-foreground">
-                {isOnline && stats
-                  ? `在线：${formatUptime(stats.uptime)}`
-                  : "离线"}
-              </span>
-            </div>
+          </Link>
+          <Tag className="text-xs" tags={tagList} />
+          <div className="flex text-xs">
+            <span className="text-secondary-foreground">
+              到期：{expired_at}
+            </span>
           </div>
-        </Link>
+          <div className="flex text-xs">
+            <span className="text-secondary-foreground">
+              {isOnline && stats
+                ? `在线：${formatUptime(stats.uptime)}`
+                : "离线"}
+            </span>
+          </div>
+        </div>
       </div>
       <div className="col-span-1 flex items-center text-left">
         <CpuIcon className="inline-block size-5 flex-shrink-0 text-blue-600" />
