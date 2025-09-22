@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import { useLiveData } from "@/contexts/LiveDataContext";
-import type { NodeData, NodeWithStatus } from "@/types/node";
+import type { NodeData } from "@/types/node";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Instance from "./Instance";
@@ -89,16 +89,13 @@ const InstancePage = () => {
     setIsReady(false);
   }, [uuid]);
 
-  const node = useMemo(() => {
-    if (!staticNode) return null;
-    const isOnline = liveData?.online.includes(staticNode.uuid) ?? false;
-    const stats = isOnline ? liveData?.data[staticNode.uuid] : undefined;
-    return {
-      ...staticNode,
-      status: isOnline ? "online" : "offline",
-      stats,
-    };
+  const stats = useMemo(() => {
+    if (!staticNode || !liveData) return undefined;
+    return liveData[staticNode.uuid];
   }, [staticNode, liveData]);
+
+  const node = staticNode;
+  const isOnline = stats?.online ?? false;
 
   useEffect(() => {
     if (nodesLoading) {
@@ -183,12 +180,12 @@ const InstancePage = () => {
             <span className="text-xl md:text-2xl font-bold">{node.name}</span>
           </div>
           <span className="text-sm text-secondary-foreground flex-shrink-0">
-            {node.status === "online" ? "在线" : "离线"}
+            {isOnline ? "在线" : "离线"}
           </span>
         </div>
       </div>
 
-      {enableInstanceDetail && <Instance node={node as NodeWithStatus} />}
+      {enableInstanceDetail && node && <Instance node={node} />}
 
       <div className="flex flex-col items-center w-full space-y-4">
         <div className="purcarte-blur theme-card-style p-2">
@@ -259,8 +256,8 @@ const InstancePage = () => {
             <LoadCharts
               node={staticNode}
               hours={loadHours}
-              liveData={liveData?.data[staticNode.uuid]}
-              isOnline={node.status === "online"}
+              liveData={stats}
+              isOnline={isOnline}
             />
           ) : displayedChartType === "ping" && staticNode ? (
             <PingChart node={staticNode} hours={pingHours} />

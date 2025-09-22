@@ -1,36 +1,34 @@
 import { useMemo } from "react";
-import type { NodeWithStatus } from "@/types/node";
+import { useLiveData } from "@/contexts/LiveDataContext";
 import { formatPrice } from "@/utils";
+import type { NodeData } from "@/types/node";
 
-export const useNodeCommons = (node: NodeWithStatus) => {
-  const { stats, isOnline } = useMemo(() => {
-    return {
-      stats: node.stats,
-      isOnline: node.status === "online",
-    };
-  }, [node]);
-
+export const useNodeCommons = (node: NodeData) => {
+  const { liveData } = useLiveData();
+  const stats = liveData ? liveData[node.uuid] : undefined;
+  const isOnline = stats ? stats.online : false;
   const price = formatPrice(node.price, node.currency, node.billing_cycle);
 
-  const cpuUsage = stats && isOnline ? stats.cpu.usage : 0;
+  const cpuUsage = stats && isOnline ? stats.cpu : 0;
   const memUsage =
-    stats && isOnline && stats.ram.total > 0
-      ? (stats.ram.used / stats.ram.total) * 100
+    stats && isOnline && stats.ram_total > 0
+      ? (stats.ram / stats.ram_total) * 100
       : 0;
   const swapUsage =
-    stats && isOnline && stats.swap.total > 0
-      ? (stats.swap.used / stats.swap.total) * 100
+    stats && isOnline && stats.swap_total > 0
+      ? (stats.swap / stats.swap_total) * 100
       : 0;
   const diskUsage =
-    stats && isOnline && stats.disk.total > 0
-      ? (stats.disk.used / stats.disk.total) * 100
+    stats && isOnline && stats.disk_total > 0
+      ? (stats.disk / stats.disk_total) * 100
       : 0;
 
-  const load = stats
-    ? `${stats.load.load1.toFixed(2)} | ${stats.load.load5.toFixed(
-        2
-      )} | ${stats.load.load15.toFixed(2)}`
-    : "N/A";
+  const load =
+    stats && isOnline
+      ? `${stats.load.toFixed(2)} | ${stats.load5.toFixed(
+          2
+        )} | ${stats.load15.toFixed(2)}`
+      : "N/A";
 
   const daysLeft = node.expired_at
     ? Math.ceil(
@@ -80,19 +78,19 @@ export const useNodeCommons = (node: NodeWithStatus) => {
     let usedTraffic = 0;
     switch (node.traffic_limit_type) {
       case "up":
-        usedTraffic = stats.network.totalUp;
+        usedTraffic = stats.net_total_up;
         break;
       case "down":
-        usedTraffic = stats.network.totalDown;
+        usedTraffic = stats.net_total_down;
         break;
       case "sum":
-        usedTraffic = stats.network.totalUp + stats.network.totalDown;
+        usedTraffic = stats.net_total_up + stats.net_total_down;
         break;
       case "min":
-        usedTraffic = Math.min(stats.network.totalUp, stats.network.totalDown);
+        usedTraffic = Math.min(stats.net_total_up, stats.net_total_down);
         break;
       default: // max 或者未设置
-        usedTraffic = Math.max(stats.network.totalUp, stats.network.totalDown);
+        usedTraffic = Math.max(stats.net_total_up, stats.net_total_down);
         break;
     }
 

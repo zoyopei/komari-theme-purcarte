@@ -94,6 +94,7 @@
 
 | 名称 | 配置项 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- | :--- |
+| 启用 JSON-RPC2 API 适配（实验性，未完全支持特性） | `enableJsonRPC2Api` | `switch` | `false` | 启用后将在支持的 Komari 版本（>=1.0.7）优先使用 JSON-RPC2 API 获取数据，以提升兼容性和性能，若出现问题请关闭此选项 |
 | 启用紧凑模式 | `enableCompactMode` | `switch` | `false` | 启用后将统计栏挪至标题栏，仅推荐在大屏设备上使用，手机端仅缩小字体和间距 |
 | 合并分组栏与统计栏 | `mergeGroupsWithStats` | `switch` | `false` | 启用后分组栏将合并到统计栏中，并以下拉菜单形式展示 |
 | 启用统计栏 | `enableStatsBar` | `switch` | `true` | 启用后默认显示统计栏 |

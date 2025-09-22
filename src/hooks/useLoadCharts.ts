@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNodeData } from "@/contexts/NodeDataContext";
-import type { HistoryRecord, NodeData, NodeStats } from "@/types/node";
+import type { HistoryRecord, NodeData } from "@/types/node";
+import type { RpcNodeStatus } from "@/types/rpc";
 import { useLiveData } from "@/contexts/LiveDataContext";
 import fillMissingTimePoints from "@/utils/RecordHelper";
 
@@ -27,7 +28,6 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
         const records = data?.records || [];
         setHistoricalData(records);
         setIsDataEmpty(records.length === 0);
-        console.log(isDataEmpty);
 
         setRealtimeData([]); // Clear realtime data
       } catch (err: any) {
@@ -63,29 +63,29 @@ export const useLoadCharts = (node: NodeData | null, hours: number) => {
 
   // Separate effect for WebSocket updates
   useEffect(() => {
-    if (!isRealtime || !node?.uuid || !liveData?.data[node.uuid]) return;
+    if (!isRealtime || !node?.uuid || !liveData || !liveData[node.uuid]) return;
 
-    const stats: NodeStats = liveData.data[node.uuid];
+    const stats: RpcNodeStatus = liveData[node.uuid];
     const newRecord: HistoryRecord = {
       client: node.uuid,
-      time: new Date(stats.updated_at).toISOString(),
-      cpu: stats.cpu.usage,
-      ram: stats.ram.used,
-      disk: stats.disk.used,
-      load: stats.load.load1,
-      net_in: stats.network.down,
-      net_out: stats.network.up,
+      time: new Date(stats.time).toISOString(),
+      cpu: stats.cpu,
+      ram: stats.ram,
+      disk: stats.disk,
+      load: stats.load,
+      net_in: stats.net_in,
+      net_out: stats.net_out,
       process: stats.process,
-      connections: stats.connections.tcp,
-      gpu: 0,
-      ram_total: stats.ram.total,
-      swap: stats.swap.used,
-      swap_total: stats.swap.total,
-      temp: 0,
-      disk_total: stats.disk.total,
-      net_total_up: stats.network.totalUp,
-      net_total_down: stats.network.totalDown,
-      connections_udp: stats.connections.udp,
+      connections: stats.connections,
+      gpu: stats.gpu,
+      ram_total: stats.ram_total,
+      swap: stats.swap,
+      swap_total: stats.swap_total,
+      temp: stats.temp,
+      disk_total: stats.disk_total,
+      net_total_up: stats.net_total_up,
+      net_total_down: stats.net_total_down,
+      connections_udp: stats.connections_udp,
     };
 
     setRealtimeData((prevHistory) => {

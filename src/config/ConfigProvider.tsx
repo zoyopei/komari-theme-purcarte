@@ -2,7 +2,7 @@ import { type ReactNode, useEffect, useMemo, useState } from "react";
 import type { PublicInfo } from "@/types/node.d";
 import { ConfigContext } from "./ConfigContext";
 import { DEFAULT_CONFIG, type ConfigOptions } from "./default";
-import { apiService } from "@/services/api";
+import { apiService, getWsService } from "@/services/api";
 import Loading from "@/components/loading";
 
 // 配置提供者属性类型
@@ -23,16 +23,17 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchSiteStatus = async () => {
+    const initialize = async () => {
       try {
         const { status, publicInfo } = await apiService.checkSiteStatus();
         setSiteStatus(status);
         setPublicSettings(publicInfo);
 
+        let mergedConfig: ConfigOptions;
         if (publicInfo) {
           const themeSettings =
             (publicInfo.theme_settings as ConfigOptions) || {};
-          const mergedConfig = {
+          mergedConfig = {
             ...DEFAULT_CONFIG,
             ...themeSettings,
             titleText:
@@ -40,21 +41,41 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
               publicInfo.sitename ||
               DEFAULT_CONFIG.titleText,
           };
-          setConfig(mergedConfig);
         } else {
-          setConfig(DEFAULT_CONFIG);
+          mergedConfig = DEFAULT_CONFIG;
+        }
+        setConfig(mergedConfig);
+
+        // Initialize RPC
+        if (mergedConfig.enableJsonRPC2Api) {
+          const versionInfo = await apiService.getVersion();
+          if (versionInfo && versionInfo.version) {
+            const match = versionInfo.version.match(/(\d+)\.(\d+)\.(\d+)/);
+            if (match) {
+              const [, major, minor, patch] = match.map(Number);
+              if (
+                major > 1 ||
+                (major === 1 && minor > 0) ||
+                (major === 1 && minor === 0 && patch >= 7)
+              ) {
+                apiService.useRpc = true;
+                getWsService().useRpc = true;
+                console.log("RPC has been enabled for API and WebSocket.");
+              }
+            }
+          }
         }
       } catch (error) {
-        console.error("Failed to fetch site status:", error);
+        console.error("Failed to initialize site:", error);
         setConfig(DEFAULT_CONFIG);
-        setSiteStatus("private-unauthenticated"); // 出现错误时假定为私有未验证
+        setSiteStatus("private-unauthenticated");
       } finally {
         setLoading(false);
-        setTimeout(() => setIsLoaded(true), 300); // 动画过渡
+        setTimeout(() => setIsLoaded(true), 300);
       }
     };
 
-    fetchSiteStatus();
+    initialize();
   }, []);
 
   const dynamicStyles = useMemo(() => {

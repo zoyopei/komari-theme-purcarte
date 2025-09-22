@@ -6,16 +6,11 @@ import {
   type ReactNode,
 } from "react";
 import { getWsService } from "../services/api";
-import type { NodeStats } from "../types/node";
 import { useNodeData } from "./NodeDataContext";
-
-interface LiveData {
-  online: string[];
-  data: { [uuid: string]: NodeStats };
-}
+import type { RpcNodeStatusMap } from "../types/rpc";
 
 interface LiveDataContextType {
-  liveData: LiveData | null;
+  liveData: RpcNodeStatusMap | null;
 }
 
 const LiveDataContext = createContext<LiveDataContextType | null>(null);
@@ -38,7 +33,7 @@ export const LiveDataProvider = ({
   children,
   enableWebSocket = true,
 }: LiveDataProviderProps) => {
-  const [liveData, setLiveData] = useState<LiveData | null>(null);
+  const [liveData, setLiveData] = useState<RpcNodeStatusMap | null>(null);
   const { loading } = useNodeData();
 
   useEffect(() => {
@@ -46,13 +41,8 @@ export const LiveDataProvider = ({
     if (!loading && enableWebSocket) {
       const wsService = getWsService(); // 在需要时才获取实例
 
-      const handleWebSocketData = (data: LiveData) => {
-        if (data.online && data.data) {
-          setLiveData({
-            online: [...data.online],
-            data: { ...data.data },
-          });
-        }
+      const handleWebSocketData = (data: any) => {
+        setLiveData(data as RpcNodeStatusMap);
       };
 
       const unsubscribe = wsService.subscribe(handleWebSocketData);

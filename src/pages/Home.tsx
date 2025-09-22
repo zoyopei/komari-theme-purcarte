@@ -5,7 +5,7 @@ import { NodeCard } from "@/components/sections/NodeCard";
 import { NodeListHeader } from "@/components/sections/NodeListHeader";
 import { NodeListItem } from "@/components/sections/NodeListItem";
 import Loading from "@/components/loading";
-import type { NodeWithStatus } from "@/types/node";
+import type { NodeData } from "@/types/node";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import { useLiveData } from "@/contexts/LiveDataContext";
 import { useAppConfig } from "@/config";
@@ -59,15 +59,12 @@ const HomePage: React.FC<HomePageProps> = ({
     enableCompactMode,
     mergeGroupsWithStats,
   } = useAppConfig();
-  const combinedNodes = useMemo<NodeWithStatus[]>(() => {
+  const combinedNodes = useMemo(() => {
     if (!staticNodes) return [];
     return staticNodes.map((node) => {
-      const isOnline = liveData?.online.includes(node.uuid) ?? false;
-      const stats = isOnline ? liveData?.data[node.uuid] : undefined;
-
+      const stats = liveData ? liveData[node.uuid] : undefined;
       return {
         ...node,
-        status: isOnline ? "online" : "offline",
         stats: stats,
       };
     });
@@ -80,10 +77,10 @@ const HomePage: React.FC<HomePageProps> = ({
   const filteredNodes = useMemo(() => {
     return combinedNodes
       .filter(
-        (node: NodeWithStatus) =>
+        (node: NodeData & { stats?: any }) =>
           selectedGroup === "所有" || node.group === selectedGroup
       )
-      .filter((node: NodeWithStatus) =>
+      .filter((node: NodeData) =>
         node.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
   }, [combinedNodes, selectedGroup, searchTerm]);
@@ -92,23 +89,23 @@ const HomePage: React.FC<HomePageProps> = ({
 
   const stats = useMemo(() => {
     return {
-      onlineCount: filteredNodes.filter((n) => n.status === "online").length,
+      onlineCount: filteredNodes.filter((n) => n.stats?.online).length,
       totalCount: filteredNodes.length,
       uniqueRegions: new Set(filteredNodes.map((n) => n.region)).size,
       totalTrafficUp: filteredNodes.reduce(
-        (acc, node) => acc + (node.stats?.network.totalUp || 0),
+        (acc, node) => acc + (node.stats?.net_total_up || 0),
         0
       ),
       totalTrafficDown: filteredNodes.reduce(
-        (acc, node) => acc + (node.stats?.network.totalDown || 0),
+        (acc, node) => acc + (node.stats?.net_total_down || 0),
         0
       ),
       currentSpeedUp: filteredNodes.reduce(
-        (acc, node) => acc + (node.stats?.network.up || 0),
+        (acc, node) => acc + (node.stats?.net_out || 0),
         0
       ),
       currentSpeedDown: filteredNodes.reduce(
-        (acc, node) => acc + (node.stats?.network.down || 0),
+        (acc, node) => acc + (node.stats?.net_in || 0),
         0
       ),
     };
@@ -209,7 +206,7 @@ const HomePage: React.FC<HomePageProps> = ({
         {filteredNodes.length > 0 ? (
           viewMode === "grid" ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-              {filteredNodes.map((node: NodeWithStatus) => (
+              {filteredNodes.map((node) => (
                 <NodeCard
                   key={node.uuid}
                   node={node}
@@ -227,7 +224,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 {viewMode === "table" && (
                   <NodeListHeader enableSwap={enableSwap} />
                 )}
-                {filteredNodes.map((node: NodeWithStatus) => (
+                {filteredNodes.map((node) => (
                   <NodeListItem
                     key={node.uuid}
                     node={node}

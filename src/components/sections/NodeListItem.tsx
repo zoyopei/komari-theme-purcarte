@@ -1,5 +1,5 @@
 import { formatBytes, formatTrafficLimit, formatUptime } from "@/utils";
-import type { NodeWithStatus } from "@/types/node";
+import type { NodeData } from "@/types/node";
 import { Link } from "react-router-dom";
 import { CpuIcon, MemoryStickIcon, HardDriveIcon } from "lucide-react";
 import Flag from "./Flag";
@@ -9,7 +9,7 @@ import { CircleProgress } from "../ui/progress-circle";
 import { ProgressBar } from "../ui/progress-bar";
 
 interface NodeListItemProps {
-  node: NodeWithStatus;
+  node: NodeData;
   enableSwap: boolean;
   enableListItemProgressBar: boolean;
   selectTrafficProgressStyle: "circular" | "linear";
@@ -135,8 +135,8 @@ export const NodeListItem = ({
         </div>
       </div>
       <div className="col-span-1">
-        <div>↑ {stats ? formatBytes(stats.network.up, true) : "N/A"}</div>
-        <div>↓ {stats ? formatBytes(stats.network.down, true) : "N/A"}</div>
+        <div>↑ {stats ? formatBytes(stats.net_out, true) : "N/A"}</div>
+        <div>↓ {stats ? formatBytes(stats.net_in, true) : "N/A"}</div>
       </div>
       <div className="col-span-2">
         {selectTrafficProgressStyle === "linear" && isOnline && stats ? (
@@ -144,8 +144,8 @@ export const NodeListItem = ({
             <div className="w-full flex justify-center items-center">
               <span>
                 {stats
-                  ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
-                      stats.network.totalDown
+                  ? `↑ ${formatBytes(stats.net_total_up)} ↓ ${formatBytes(
+                      stats.net_total_down
                     )}`
                   : "N/A"}
               </span>
@@ -187,12 +187,8 @@ export const NodeListItem = ({
                 node.traffic_limit !== 0 ? "w-2/3 text-left" : "w-full"
               }>
               <div>
-                <div>
-                  ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}
-                </div>
-                <div>
-                  ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
-                </div>
+                <div>↑ {stats ? formatBytes(stats.net_total_up) : "N/A"}</div>
+                <div>↓ {stats ? formatBytes(stats.net_total_down) : "N/A"}</div>
               </div>
               {node.traffic_limit !== 0 && isOnline && stats && (
                 <div>

@@ -5,7 +5,7 @@ import {
   getOSImage,
   formatTrafficLimit,
 } from "@/utils";
-import type { NodeWithStatus } from "@/types/node";
+import type { NodeData } from "@/types/node";
 import { Link } from "react-router-dom";
 import { CpuIcon, MemoryStickIcon, HardDriveIcon } from "lucide-react";
 import Flag from "./Flag";
@@ -15,7 +15,7 @@ import { ProgressBar } from "../ui/progress-bar";
 import { CircleProgress } from "../ui/progress-circle";
 
 interface NodeCardProps {
-  node: NodeWithStatus;
+  node: NodeData;
   enableSwap: boolean;
   selectTrafficProgressStyle: "circular" | "linear";
 }
@@ -140,8 +140,8 @@ export const NodeCard = ({
               </span>
               <span>
                 {stats
-                  ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
-                      stats.network.totalDown
+                  ? `↑ ${formatBytes(stats.net_total_up)} ↓ ${formatBytes(
+                      stats.net_total_down
                     )}`
                   : "N/A"}
               </span>
@@ -152,9 +152,9 @@ export const NodeCard = ({
         <div className="flex justify-between text-xs">
           <span className="text-secondary-foreground">网络：</span>
           <div>
-            <span>↑ {stats ? formatBytes(stats.network.up, true) : "N/A"}</span>
+            <span>↑ {stats ? formatBytes(stats.net_out, true) : "N/A"}</span>
             <span className="ml-2">
-              ↓ {stats ? formatBytes(stats.network.down, true) : "N/A"}
+              ↓ {stats ? formatBytes(stats.net_in, true) : "N/A"}
             </span>
           </div>
         </div>
@@ -176,10 +176,10 @@ export const NodeCard = ({
               <div className="w-3/4 text-right">
                 <div>
                   <span>
-                    ↑ {stats ? formatBytes(stats.network.totalUp) : "N/A"}
+                    ↑ {stats ? formatBytes(stats.net_total_up) : "N/A"}
                   </span>
                   <span className="ml-2">
-                    ↓ {stats ? formatBytes(stats.network.totalDown) : "N/A"}
+                    ↓ {stats ? formatBytes(stats.net_total_down) : "N/A"}
                   </span>
                 </div>
                 {node.traffic_limit !== 0 && isOnline && stats && (

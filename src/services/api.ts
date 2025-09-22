@@ -1,36 +1,70 @@
 // API 服务 - 用于与 Komari 后端通信
 import type {
   NodeData,
-  NodeStats,
   ApiResponse,
   PublicInfo,
   HistoryRecord,
   PingHistoryResponse,
   Me,
+  NodeStats,
 } from "@/types/node";
+import type { RpcNodeStatus, RpcNodeStatusMap } from "@/types/rpc";
+import { convertNodeStatsToRpcNodeStatus } from "@/utils/converters";
 
 class ApiService {
   private baseUrl: string;
+  public useRpc = false;
+  private rpcCallId = 1;
 
   constructor() {
-    // 使用相对路径，这样在部署时会自动适配
     this.baseUrl = "";
+  }
+
+  private async rpcCall<T>(
+    method: string,
+    params: any = {}
+  ): Promise<ApiResponse<T>> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/rpc2`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method,
+          params,
+          id: this.rpcCallId++,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const rpcResponse = await response.json();
+      if (rpcResponse.error) {
+        throw new Error(
+          `RPC Error: ${rpcResponse.error.message} (Code: ${rpcResponse.error.code})`
+        );
+      }
+      return { status: "success", message: "", data: rpcResponse.result };
+    } catch (error) {
+      console.error(`RPC call to '${method}' failed:`, error);
+      return {
+        status: "error",
+        message: error instanceof Error ? error.message : "Unknown RPC error",
+        data: null as any,
+      };
+    }
   }
 
   async get<T>(
     endpoint: string
-  ): Promise<
-    | ApiResponse<T>
-    | { status: number }
-    | { status: string; message: string; data: any }
-  > {
+  ): Promise<ApiResponse<T> | { status: string; message: string; data: any }> {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`);
       if (!response.ok) {
-        if (response.status === 401) {
-          return { status: 401 };
-        }
-        // 对于其他 HTTP 错误，直接返回错误对象，而不是抛出异常
         return {
           status: "error",
           message: `HTTP error! status: ${response.status}`,
@@ -40,7 +74,6 @@ class ApiService {
       const data = await response.json();
       return data;
     } catch (error) {
-      // 这个 catch 块现在只处理网络层面的错误
       console.error("API request failed (network error):", error);
       return {
         status: "error",
@@ -53,6 +86,15 @@ class ApiService {
 
   // 获取所有节点信息
   async getNodes(): Promise<NodeData[]> {
+    if (this.useRpc) {
+      const response = await this.rpcCall<{ [uuid: string]: NodeData }>(
+        "common:getNodes"
+      );
+      if (response.status === "success" && response.data) {
+        return Object.values(response.data);
+      }
+      return [];
+    }
     const response = await this.get<NodeData[]>("/api/nodes");
     if ("status" in response && response.status === "success") {
       return (response as ApiResponse<NodeData[]>).data;
@@ -61,9 +103,21 @@ class ApiService {
   }
 
   // 获取指定节点的最近状态
-  async getNodeRecentStats(uuid: string): Promise<NodeStats[]> {
+  async getNodeRecentStats(uuid: string): Promise<RpcNodeStatus[]> {
+    if (this.useRpc) {
+      const response = await this.rpcCall<{ records: RpcNodeStatus[] }>(
+        "common:getNodeRecentStatus",
+        { uuid }
+      );
+      return response.status === "success" ? response.data.records : [];
+    }
     const response = await this.get<NodeStats[]>(`/api/recent/${uuid}`);
-    return response.status === "success" ? response.data : [];
+    if (response.status === "success" && Array.isArray(response.data)) {
+      return response.data.map((stats) =>
+        convertNodeStatsToRpcNodeStatus(stats, uuid, true)
+      );
+    }
+    return [];
   }
 
   // 获取负载历史记录
@@ -71,6 +125,23 @@ class ApiService {
     uuid: string,
     hours: number = 24
   ): Promise<{ count: number; records: HistoryRecord[] } | null> {
+    if (this.useRpc) {
+      const response = await this.rpcCall<any>("common:getRecords", {
+        uuid,
+        hours,
+        type: "load",
+      });
+      if (response.status === "success" && response.data) {
+        if (response.data.records[uuid]) {
+          return {
+            count: response.data.count,
+            records: response.data.records[uuid],
+          };
+        }
+        return response.data;
+      }
+      return null;
+    }
     const response = await this.get<{
       count: number;
       records: HistoryRecord[];
@@ -83,6 +154,24 @@ class ApiService {
     uuid: string,
     hours: number = 24
   ): Promise<PingHistoryResponse | null> {
+    if (this.useRpc) {
+      const response = await this.rpcCall<any>("common:getRecords", {
+        uuid,
+        hours,
+        type: "ping",
+      });
+      if (response.status === "success" && response.data) {
+        if (response.data[uuid]) {
+          return {
+            count: response.data[uuid].length,
+            records: response.data[uuid],
+            tasks: response.data.tasks,
+          };
+        }
+        return response.data;
+      }
+      return null;
+    }
     const response = await this.get<PingHistoryResponse>(
       `/api/records/ping?uuid=${uuid}&hours=${hours}`
     );
@@ -91,12 +180,24 @@ class ApiService {
 
   // 获取公开设置
   async getPublicSettings(): Promise<PublicInfo | null> {
+    if (this.useRpc) {
+      const response = await this.rpcCall<PublicInfo>("common:getPublicInfo");
+      return response.status === "success" ? response.data : null;
+    }
     const response = await this.get<PublicInfo>("/api/public");
     return response.status === "success" ? response.data : null;
   }
 
   // 获取版本信息
   async getVersion(): Promise<{ version: string; hash: string }> {
+    if (this.useRpc) {
+      const response = await this.rpcCall<{ version: string; hash: string }>(
+        "common:getVersion"
+      );
+      if (response.status === "success" && response.data) {
+        return response.data;
+      }
+    }
     const response = await this.get<{ version: string; hash: string }>(
       "/api/version"
     );
@@ -107,6 +208,10 @@ class ApiService {
 
   // 获取用户信息
   async getUserInfo(): Promise<Me | null> {
+    if (this.useRpc) {
+      const response = await this.rpcCall<Me>("common:getMe");
+      return response.status === "success" ? response.data : null;
+    }
     const response = await this.get<Me>("/api/me");
     return response.status === "success" ? response.data : null;
   }
@@ -149,39 +254,61 @@ export class WebSocketService {
   private listeners: Set<(data: any) => void> = new Set();
   private url: string;
   private statusInterval: ReturnType<typeof setInterval> | null = null;
+  private rpcCallId = 1;
+  public useRpc = false;
 
   constructor(url: string = "") {
     this.url = url;
   }
 
   connect() {
-    // 如果已有连接，则不重复连接
     if (this.ws && this.ws.readyState < 2) {
       return;
     }
+
+    const endpoint = this.useRpc ? "/api/rpc2" : "/api/clients";
+    const wsUrl =
+      this.url ||
+      `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${
+        window.location.host
+      }${endpoint}`;
+
     try {
-      this.ws = new WebSocket(
-        this.url ||
-          `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${
-            window.location.host
-          }/api/clients`
-      );
+      this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
-        console.log("WebSocket connected");
+        console.log(`WebSocket connected to ${endpoint}`);
         this.reconnectAttempts = 0;
-        // 发送获取数据请求
-        this.send("get");
-        // 启动定时状态更新
+        this.sendUpdateRequest();
         this.startStatusUpdates();
       };
 
       this.ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          if (data.status === "success" && data.data) {
-            // 直接将收到的数据传递给监听器
-            this.listeners.forEach((listener) => listener(data.data));
+          if (this.useRpc) {
+            if (data.result) {
+              this.listeners.forEach((listener) => listener(data.result));
+            }
+          } else {
+            if (data.status === "success" && data.data) {
+              const oldData = data.data as {
+                online: string[];
+                data: { [uuid: string]: NodeStats };
+              };
+              if (oldData.online && oldData.data) {
+                const convertedData: RpcNodeStatusMap = {};
+                for (const uuid in oldData.data) {
+                  const isOnline = oldData.online.includes(uuid);
+                  convertedData[uuid] = convertNodeStatsToRpcNodeStatus(
+                    oldData.data[uuid],
+                    uuid,
+                    isOnline
+                  );
+                }
+                this.listeners.forEach((listener) => listener(convertedData));
+              }
+            }
           }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
@@ -215,9 +342,22 @@ export class WebSocketService {
     }
   }
 
-  send(data: string) {
+  private send(data: string) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(data);
+    }
+  }
+
+  private sendUpdateRequest() {
+    if (this.useRpc) {
+      const rpcRequest = {
+        jsonrpc: "2.0",
+        method: "common:getNodesLatestStatus",
+        id: this.rpcCallId++,
+      };
+      this.send(JSON.stringify(rpcRequest));
+    } else {
+      this.send("get");
     }
   }
 
@@ -239,7 +379,7 @@ export class WebSocketService {
       clearInterval(this.statusInterval);
     }
     this.statusInterval = setInterval(() => {
-      this.send("get");
+      this.sendUpdateRequest();
     }, 2000);
   }
 

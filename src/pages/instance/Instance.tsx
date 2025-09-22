@@ -1,47 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { NodeWithStatus } from "@/types/node";
-import { useMemo, memo } from "react";
+import type { NodeData } from "@/types/node";
+import { memo } from "react";
 import { formatBytes, formatUptime, formatTrafficLimit } from "@/utils";
 import { CircleProgress } from "@/components/ui/progress-circle";
+import { useNodeCommons } from "@/hooks/useNodeCommons";
 
 interface InstanceProps {
-  node: NodeWithStatus;
+  node: NodeData;
 }
 
 const Instance = memo(({ node }: InstanceProps) => {
-  const { stats, isOnline } = useMemo(() => {
-    return {
-      stats: node.stats,
-      isOnline: node.status === "online",
-    };
-  }, [node]);
+  const { stats, isOnline, trafficPercentage } = useNodeCommons(node);
 
   // 计算流量使用百分比
-  const trafficPercentage = useMemo(() => {
-    if (!node.traffic_limit || !stats || !isOnline) return 0;
-
-    // 根据流量限制类型确定使用的流量值
-    let usedTraffic = 0;
-    switch (node.traffic_limit_type) {
-      case "up":
-        usedTraffic = stats.network.totalUp;
-        break;
-      case "down":
-        usedTraffic = stats.network.totalDown;
-        break;
-      case "sum":
-        usedTraffic = stats.network.totalUp + stats.network.totalDown;
-        break;
-      case "min":
-        usedTraffic = Math.min(stats.network.totalUp, stats.network.totalDown);
-        break;
-      default: // max 或者未设置
-        usedTraffic = Math.max(stats.network.totalUp, stats.network.totalDown);
-        break;
-    }
-
-    return (usedTraffic / node.traffic_limit) * 100;
-  }, [node.traffic_limit, node.traffic_limit_type, stats, isOnline]);
 
   return (
     <Card>
@@ -73,9 +44,7 @@ const Instance = memo(({ node }: InstanceProps) => {
           <p className="theme-text-muted">内存</p>
           <p>
             {stats && isOnline
-              ? `${formatBytes(stats.ram.used)} / ${formatBytes(
-                  node.mem_total
-                )}`
+              ? `${formatBytes(stats.ram)} / ${formatBytes(node.mem_total)}`
               : `N/A / ${formatBytes(node.mem_total)}`}
           </p>
         </div>
@@ -83,9 +52,7 @@ const Instance = memo(({ node }: InstanceProps) => {
           <p className="theme-text-muted">交换</p>
           <p>
             {stats && isOnline
-              ? `${formatBytes(stats.swap.used)} / ${formatBytes(
-                  node.swap_total
-                )}`
+              ? `${formatBytes(stats.swap)} / ${formatBytes(node.swap_total)}`
               : `N/A / ${formatBytes(node.swap_total)}`}
           </p>
         </div>
@@ -93,9 +60,7 @@ const Instance = memo(({ node }: InstanceProps) => {
           <p className="theme-text-muted">磁盘</p>
           <p>
             {stats && isOnline
-              ? `${formatBytes(stats.disk.used)} / ${formatBytes(
-                  node.disk_total
-                )}`
+              ? `${formatBytes(stats.disk)} / ${formatBytes(node.disk_total)}`
               : `N/A / ${formatBytes(node.disk_total)}`}
           </p>
         </div>
@@ -107,8 +72,8 @@ const Instance = memo(({ node }: InstanceProps) => {
           <p className="theme-text-muted">实时网络</p>
           <p>
             {stats && isOnline
-              ? `↑ ${formatBytes(stats.network.up, true)} ↓ ${formatBytes(
-                  stats.network.down,
+              ? `↑ ${formatBytes(stats.net_out, true)} ↓ ${formatBytes(
+                  stats.net_in,
                   true
                 )}`
               : "N/A"}
@@ -129,8 +94,8 @@ const Instance = memo(({ node }: InstanceProps) => {
             <div>
               <p>
                 {stats && isOnline
-                  ? `↑ ${formatBytes(stats.network.totalUp)} ↓ ${formatBytes(
-                      stats.network.totalDown
+                  ? `↑ ${formatBytes(stats.net_total_up)} ↓ ${formatBytes(
+                      stats.net_total_down
                     )}`
                   : "N/A"}
               </p>
@@ -147,18 +112,16 @@ const Instance = memo(({ node }: InstanceProps) => {
           <p className="theme-text-muted">负载</p>
           <p>
             {stats && isOnline
-              ? `${stats.load.load1.toFixed(2)} | ${stats.load.load5.toFixed(
+              ? `${stats.load.toFixed(2)} | ${stats.load5.toFixed(
                   2
-                )} | ${stats.load.load15.toFixed(2)}`
+                )} | ${stats.load15.toFixed(2)}`
               : "N/A"}
           </p>
         </div>
         <div>
           <p className="theme-text-muted">最后上报</p>
           <p>
-            {stats && isOnline
-              ? new Date(stats.updated_at).toLocaleString()
-              : "N/A"}
+            {stats && isOnline ? new Date(stats.time).toLocaleString() : "N/A"}
           </p>
         </div>
       </CardContent>

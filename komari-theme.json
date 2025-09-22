@@ -163,6 +163,13 @@
                 "type": "title"
             },
             {
+                "key": "enableJsonRPC2Api",
+                "name": "启用 JSON-RPC2 API 适配（实验性，未完全支持特性）",
+                "type": "switch",
+                "default": false,
+                "help": "启用后将在支持的 Komari 版本（>=1.0.7）优先使用 JSON-RPC2 API 获取数据，以提升兼容性和性能，若出现问题请关闭此选项"
+            },
+            {
                 "key": "enableCompactMode",
                 "name": "启用紧凑模式",
                 "type": "switch",

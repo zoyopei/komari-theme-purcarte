@@ -11,18 +11,19 @@ import {
 } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import type { NodeData, NodeStats } from "@/types/node";
+import type { NodeData } from "@/types/node";
 import { formatBytes } from "@/utils";
 import { Flex } from "@radix-ui/themes";
 import Loading from "@/components/loading";
 import { useLoadCharts } from "@/hooks/useLoadCharts";
 import { CustomTooltip } from "@/components/ui/tooltip";
 import { lableFormatter, loadChartTimeFormatter } from "@/utils/chartHelper";
+import type { RpcNodeStatus } from "@/types/rpc";
 
 interface LoadChartsProps {
   node: NodeData;
   hours: number;
-  liveData?: NodeStats;
+  liveData?: RpcNodeStatus;
   isOnline: boolean;
 }
 
@@ -45,7 +46,7 @@ const LoadCharts = memo(
         id: "cpu",
         title: "CPU",
         type: "area",
-        value: liveData?.cpu?.usage ? `${liveData.cpu.usage.toFixed(2)}%` : "-",
+        value: liveData?.cpu ? `${liveData.cpu.toFixed(2)}%` : "-",
         dataKey: "cpu",
         yAxisDomain: [0, 100],
         yAxisFormatter: (value: number, index: number) =>
@@ -62,15 +63,15 @@ const LoadCharts = memo(
         value: (
           <Flex gap="0" direction="column" align="end">
             <label>
-              {liveData?.ram?.used
-                ? `${formatBytes(liveData.ram.used)} / ${formatBytes(
+              {liveData?.ram
+                ? `${formatBytes(liveData.ram)} / ${formatBytes(
                     node?.mem_total || 0
                   )}`
                 : "N/A"}
             </label>
             <label>
-              {liveData?.swap?.used
-                ? `${formatBytes(liveData.swap.used)} / ${formatBytes(
+              {liveData?.swap
+                ? `${formatBytes(liveData.swap)} / ${formatBytes(
                     node?.swap_total || 0
                   )}`
                 : "N/A"}
@@ -102,8 +103,8 @@ const LoadCharts = memo(
         id: "disk",
         title: "磁盘",
         type: "area",
-        value: liveData?.disk?.used
-          ? `${formatBytes(liveData.disk.used)} / ${formatBytes(
+        value: liveData?.disk
+          ? `${formatBytes(liveData.disk)} / ${formatBytes(
               node?.disk_total || 0
             )}`
           : "-",
@@ -123,8 +124,8 @@ const LoadCharts = memo(
         value: (
           <>
             <Flex gap="0" align="end" direction="column">
-              <span>↑ {formatBytes(liveData?.network.up || 0)}/s</span>
-              <span>↓ {formatBytes(liveData?.network.down || 0)}/s</span>
+              <span>↑ {formatBytes(liveData?.net_out || 0)}/s</span>
+              <span>↓ {formatBytes(liveData?.net_in || 0)}/s</span>
             </Flex>
           </>
         ),
@@ -152,8 +153,8 @@ const LoadCharts = memo(
         type: "line",
         value: (
           <Flex gap="0" align="end" direction="column">
-            <span>TCP: {liveData?.connections.tcp}</span>
-            <span>UDP: {liveData?.connections.udp}</span>
+            <span>TCP: {liveData?.connections}</span>
+            <span>UDP: {liveData?.connections_udp}</span>
           </Flex>
         ),
         series: [
