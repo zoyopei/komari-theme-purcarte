@@ -28,12 +28,13 @@ export const useNodeCommons = (node: NodeData & { stats?: any }) => {
         )} | ${stats.load15.toFixed(2)}`
       : "N/A";
 
-  const daysLeft = node.expired_at
-    ? Math.ceil(
-        (new Date(node.expired_at).getTime() - new Date().getTime()) /
-          (1000 * 60 * 60 * 24)
-      )
-    : null;
+  const daysLeft =
+    node.expired_at && new Date(node.expired_at).getTime() > 0
+      ? Math.ceil(
+          (new Date(node.expired_at).getTime() - new Date().getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
+      : null;
 
   let daysLeftTag = null;
   if (daysLeft !== null) {
