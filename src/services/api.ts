@@ -208,12 +208,17 @@ class ApiService {
 
   // 获取用户信息
   async getUserInfo(): Promise<Me | null> {
-    if (this.useRpc) {
-      const response = await this.rpcCall<Me>("common:getMe");
-      return response.status === "success" ? response.data : null;
+    try {
+      const response = await fetch(`${this.baseUrl}/api/me`);
+      if (!response.ok) {
+        return null;
+      }
+      const data: Me = await response.json();
+      return data;
+    } catch (error) {
+      console.error("API request failed (network error):", error);
+      return null;
     }
-    const response = await this.get<Me>("/api/me");
-    return response.status === "success" ? response.data : null;
   }
 
   // 检查站点状态

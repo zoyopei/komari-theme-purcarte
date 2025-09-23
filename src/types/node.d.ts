@@ -114,8 +114,8 @@ export interface PingHistoryResponse {
 export interface Me {
   logged_in: boolean;
   username: string;
-  "2fa_enabled": boolean;
-  sso_id: string;
-  sso_type: string;
-  uuid: string;
+  "2fa_enabled"?: boolean;
+  sso_id?: string;
+  sso_type?: string;
+  uuid?: string;
 }
