@@ -54,7 +54,7 @@ export const useNodeCommons = (node: NodeData & { stats?: any }) => {
   const expired_at =
     daysLeft !== null && daysLeft > 36500
       ? "长期"
-      : node.expired_at
+      : node.expired_at && new Date(node.expired_at).getTime() > 0
       ? new Date(node.expired_at).toLocaleDateString()
       : "未设置";
 
