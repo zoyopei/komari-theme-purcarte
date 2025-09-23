@@ -84,25 +84,17 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
     const { backgroundImage, blurValue, blurBackgroundColor } = config;
     const styles: string[] = [];
 
-    if (backgroundImage) {
-      styles.push(`--body-background-url: url(${backgroundImage});`);
-    }
+    styles.push(`--body-background-url: url(${backgroundImage});`);
 
-    if (blurValue) {
-      styles.push(`--purcarte-blur: ${blurValue}px;`);
-    }
+    styles.push(`--purcarte-blur: ${blurValue}px;`);
 
-    if (blurBackgroundColor) {
-      const colors = blurBackgroundColor
-        .split("|")
-        .map((color) => color.trim());
-      if (colors.length >= 2) {
-        styles.push(`--card-light: ${colors[0]};`);
-        styles.push(`--card-dark: ${colors[1]};`);
-      } else if (colors.length === 1) {
-        styles.push(`--card-light: ${colors[0]};`);
-        styles.push(`--card-dark: ${colors[0]};`);
-      }
+    const colors = blurBackgroundColor.split("|").map((color) => color.trim());
+    if (colors.length >= 2) {
+      styles.push(`--card-light: ${colors[0]};`);
+      styles.push(`--card-dark: ${colors[1]};`);
+    } else if (colors.length === 1) {
+      styles.push(`--card-light: ${colors[0]};`);
+      styles.push(`--card-dark: ${colors[0]};`);
     }
 
     return `:root { ${styles.join(" ")} }`;
