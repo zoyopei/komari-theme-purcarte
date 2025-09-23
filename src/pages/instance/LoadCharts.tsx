@@ -70,7 +70,9 @@ const LoadCharts = memo(
                 : "N/A"}
             </label>
             <label>
-              {liveData?.swap
+              {node?.swap_total === 0
+                ? "OFF"
+                : liveData?.swap
                 ? `${formatBytes(liveData.swap)} / ${formatBytes(
                     node?.swap_total || 0
                   )}`
@@ -91,7 +93,9 @@ const LoadCharts = memo(
             color: colors[1],
             tooltipLabel: "交换",
             tooltipFormatter: (value: number, raw: any) =>
-              `${formatBytes(raw?.swap_raw || 0)} (${value.toFixed(0)}%)`,
+              node.swap_total === 0
+                ? "OFF"
+                : `${formatBytes(raw?.swap_raw || 0)} (${value.toFixed(0)}%)`,
           },
         ],
         yAxisDomain: [0, 100],

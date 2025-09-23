@@ -1,18 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { NodeData } from "@/types/node";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { formatBytes, formatUptime, formatTrafficLimit } from "@/utils";
 import { CircleProgress } from "@/components/ui/progress-circle";
 import { useNodeCommons } from "@/hooks/useNodeCommons";
+import { useLiveData } from "@/contexts/LiveDataContext";
 
 interface InstanceProps {
   node: NodeData;
 }
 
 const Instance = memo(({ node }: InstanceProps) => {
-  const { stats, isOnline, trafficPercentage } = useNodeCommons(node);
+  const { liveData } = useLiveData();
+  const nodeWithStats = useMemo(
+    () => ({
+      ...node,
+      stats: liveData?.[node.uuid],
+    }),
+    [node, liveData]
+  );
 
-  // 计算流量使用百分比
+  const { stats, isOnline, trafficPercentage } = useNodeCommons(nodeWithStats);
 
   return (
     <Card>
@@ -49,9 +57,11 @@ const Instance = memo(({ node }: InstanceProps) => {
           </p>
         </div>
         <div>
-          <p className="theme-text-muted">交换</p>
+          <p className="theme-text-muted">交换内存</p>
           <p>
-            {stats && isOnline
+            {node.swap_total === 0
+              ? "OFF"
+              : stats && isOnline
               ? `${formatBytes(stats.swap)} / ${formatBytes(node.swap_total)}`
               : `N/A / ${formatBytes(node.swap_total)}`}
           </p>
