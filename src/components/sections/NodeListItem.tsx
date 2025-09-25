@@ -70,7 +70,11 @@ export const NodeListItem = ({
           <div>{node.cpu_cores} Cores</div>
           {enableListItemProgressBar ? (
             <div className="flex items-center gap-1">
-              <ProgressBar value={cpuUsage} h="h-2" />
+              <ProgressBar
+                value={cpuUsage}
+                h="h-2"
+                tooltip={`CPU: ${cpuUsage.toFixed(1)}%`}
+              />
               <span className="w-10 text-right text-xs">
                 {isOnline ? `${cpuUsage.toFixed(0)}%` : "N/A"}
               </span>
@@ -86,7 +90,11 @@ export const NodeListItem = ({
           <div>{formatBytes(node.mem_total)}</div>
           {enableListItemProgressBar ? (
             <div className="flex items-center gap-1">
-              <ProgressBar value={memUsage} h="h-2" />
+              <ProgressBar
+                value={memUsage}
+                h="h-2"
+                tooltip={`内存: ${stats && isOnline ? formatBytes(stats.ram) : '0B'} / ${formatBytes(node.mem_total)}`}
+              />
               <span className="w-10 text-right text-xs">
                 {isOnline ? `${memUsage.toFixed(0)}%` : "N/A"}
               </span>
@@ -104,7 +112,11 @@ export const NodeListItem = ({
               <div>{formatBytes(node.swap_total)}</div>
               {enableListItemProgressBar ? (
                 <div className="flex items-center gap-1">
-                  <ProgressBar value={swapUsage} h="h-2" />
+                  <ProgressBar
+                    value={swapUsage}
+                    h="h-2"
+                    tooltip={`SWAP: ${stats && isOnline ? formatBytes(stats.swap) : '0B'} / ${formatBytes(node.swap_total)}`}
+                  />
                   <span className="w-10 text-right text-xs">
                     {isOnline ? `${swapUsage.toFixed(0)}%` : "N/A"}
                   </span>
@@ -124,7 +136,11 @@ export const NodeListItem = ({
           <div>{formatBytes(node.disk_total)}</div>
           {enableListItemProgressBar ? (
             <div className="flex items-center gap-1">
-              <ProgressBar value={diskUsage} h="h-2" />
+              <ProgressBar
+                value={diskUsage}
+                h="h-2"
+                tooltip={`硬盘: ${stats && isOnline ? formatBytes(stats.disk) : '0B'} / ${formatBytes(node.disk_total)}`}
+              />
               <span className="w-10 text-right text-xs">
                 {isOnline ? `${diskUsage.toFixed(0)}%` : "N/A"}
               </span>
@@ -153,7 +169,14 @@ export const NodeListItem = ({
             {node.traffic_limit !== 0 && isOnline && stats && (
               <>
                 <div className="w-[80%] flex items-center gap-1 mt-1">
-                  <ProgressBar value={trafficPercentage} h="h-2" />
+                  <ProgressBar
+                    value={trafficPercentage}
+                    h="h-2"
+                    tooltip={node.traffic_limit !== 0
+                      ? `流量: ${formatBytes((stats?.net_total_up || 0) + (stats?.net_total_down || 0))} / ${formatTrafficLimit(node.traffic_limit, node.traffic_limit_type)}`
+                      : '无流量限制'
+                    }
+                  />
                   <span className="text-right text-xs">
                     {node.traffic_limit !== 0
                       ? `${trafficPercentage.toFixed(0)}%`
